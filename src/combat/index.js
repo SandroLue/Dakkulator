@@ -71,9 +71,15 @@ export function resolveUnitVsUnit(
 		groups: buildDefenderProfiles(defender),
 		...selected,
 	});
-	const { profiles, groups } = modified;
+	const { groups } = modified;
 	const effectiveCtx = modified.ctx;
 	const targetModelCount = getUnitTotalModels(defender) || 1;
+	const profiles = pickBestProfiles(
+		modified.profiles,
+		groups,
+		targetModelCount,
+		effectiveCtx,
+	);
 
 	const empty = {
 		attackerName: attacker?.name,
@@ -87,6 +93,7 @@ export function resolveUnitVsUnit(
 		appliedModifiers: modified.applied,
 		totals: {
 			attacks: 0,
+			declaredAttacks: 0,
 			hits: 0,
 			wounds: 0,
 			failedSaves: 0,
@@ -97,6 +104,8 @@ export function resolveUnitVsUnit(
 			pDestroyed: 0,
 			roundsToClear: Number.POSITIVE_INFINITY,
 			damagePer100Points: 0,
+			pointsRemoved: 0,
+			pointsReturnPer100: 0,
 		},
 		warnings: buildWarnings(profiles, attackerAbilities, defenderAbilities),
 	};
@@ -105,6 +114,7 @@ export function resolveUnitVsUnit(
 	const weapons = [];
 	const totals = {
 		attacks: 0,
+		declaredAttacks: 0,
 		hits: 0,
 		wounds: 0,
 		failedSaves: 0,
@@ -124,13 +134,25 @@ export function resolveUnitVsUnit(
 		groups,
 	);
 
+	// `attacks` counts only dice rolled while the unit still stood; `declaredAttacks`
+	// is the weapon's full attack count, split between groups like its dice.
+	const shownShares = allocation.diceShare.map((shares) =>
+		shares.map((share, index) => (index > 0 && share < 1e-4 ? 0 : share)),
+	);
 	for (const [index, row] of fullStreams.entries()) {
 		for (const [weapon, full] of row.entries()) {
-			const share = allocation.diceShare[weapon][index];
-			if (index > 0 && share < 1e-4) continue;
-			const w = { ...scaleStreams(full, share), groupIndex: index };
+			const share = shownShares[weapon][index];
+			if (index > 0 && share === 0) continue;
+			const shownTotal = shownShares[weapon].reduce((a, b) => a + b, 0);
+			const w = {
+				...scaleStreams(full, share),
+				declaredAttacks:
+					shownTotal > 0 ? (full.attacks * share) / shownTotal : full.attacks,
+				groupIndex: index,
+			};
 			weapons.push(w);
 			totals.attacks += w.attacks;
+			totals.declaredAttacks += w.declaredAttacks;
 			totals.hits += w.hits;
 			totals.wounds += w.wounds;
 			totals.failedSaves += w.failedSaves;
@@ -145,12 +167,20 @@ export function resolveUnitVsUnit(
 	// Unchosen profiles, each resolved alone against a fresh first group; never totalled.
 	const firstGroup = { ...groups[0], targetModelCount };
 	const alternatives = (profiles.alternatives || []).map((profile) => ({
-		...computeAttackStreams(profile, firstGroup, effectiveCtx),
+		...withDeclared(computeAttackStreams(profile, firstGroup, effectiveCtx)),
 		groupIndex: 0,
 	}));
 
 	const totalWounds = getGroupTotalWounds(groups);
 	const attackerPoints = attacker?.cost?.points || 0;
+	// Share of the target's wounds removed, valued at the target's cost: unlike raw
+	// wounds this is comparable across targets, and unlike points killed it credits
+	// damage left on a surviving multi-wound model.
+	const pointsRemoved =
+		totalWounds > 0
+			? (defender?.cost?.points || 0) *
+				Math.min(1, totals.woundsLost / totalWounds)
+			: 0;
 
 	return {
 		...empty,
@@ -173,8 +203,61 @@ export function resolveUnitVsUnit(
 					: Number.POSITIVE_INFINITY,
 			damagePer100Points:
 				attackerPoints > 0 ? (totals.woundsLost / attackerPoints) * 100 : 0,
+			pointsRemoved,
+			pointsReturnPer100:
+				attackerPoints > 0 ? (pointsRemoved / attackerPoints) * 100 : 0,
 		},
 	};
+}
+
+const withDeclared = (streams) => ({
+	...streams,
+	declaredAttacks: streams.attacks,
+});
+
+/**
+ * A model uses one firing mode per weapon and one normal melee weapon. Of the
+ * profiles sharing a `choice`, keep the one that alone removes the most wounds
+ * from this defender; ties keep the default pick.
+ */
+function pickBestProfiles(profiles, groups, targetModelCount, ctx) {
+	const alternatives = profiles.alternatives || [];
+	if (!alternatives.length || !groups.length) return profiles;
+	const woundsLostBy = (profile) =>
+		allocateAttacks(
+			[
+				groups.map((group) =>
+					computeAttackStreams(profile, { ...group, targetModelCount }, ctx),
+				),
+			],
+			groups,
+		).woundsLost;
+
+	const chosen = [...profiles];
+	const rejected = [];
+	for (const [index, current] of profiles.entries()) {
+		const rivals = alternatives.filter(
+			(p) => current.choice && p.choice === current.choice,
+		);
+		if (!rivals.length) continue;
+		let best = current;
+		let bestWounds = woundsLostBy(current);
+		for (const rival of rivals) {
+			const wounds = woundsLostBy(rival);
+			if (wounds > bestWounds + 1e-9) {
+				best = rival;
+				bestWounds = wounds;
+			}
+		}
+		chosen[index] = best;
+		rejected.push(...[current, ...rivals].filter((p) => p !== best));
+	}
+	// Alternatives without a surviving rival in `profiles` stay as they were.
+	for (const p of alternatives) {
+		if (!chosen.includes(p) && !rejected.includes(p)) rejected.push(p);
+	}
+	chosen.alternatives = rejected;
+	return chosen;
 }
 
 function buildWarnings(profiles, attackerAbilities, defenderAbilities) {

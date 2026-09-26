@@ -318,3 +318,59 @@ function describeEffects(raw) {
 	}
 	return effects.join(", ") || "no effect";
 }
+
+/** The army a roster belongs to, e.g. "Imperium - Adeptus Custodes". */
+export const armyOf = (roster) => roster?.forces?.[0]?.catalog || "";
+
+/**
+ * Modifiers are stored per army: `{ armies: { [army]: Modifier[] }, shared }`.
+ * A list-A or list-B modifier belongs to that list's army, so it comes back
+ * whenever a roster of the same army is loaded, in either slot. "Both lists"
+ * modifiers belong to no army and are `shared`.
+ */
+export function parseModifierStore(json) {
+	try {
+		const parsed = JSON.parse(json || "{}");
+		const armies = {};
+		for (const [army, list] of Object.entries(parsed?.armies ?? {})) {
+			if (Array.isArray(list)) armies[army] = list.map(normalizeModifier);
+		}
+		const shared = Array.isArray(parsed?.shared)
+			? parsed.shared.map(normalizeModifier)
+			: [];
+		return { armies, shared };
+	} catch {
+		return { armies: {}, shared: [] };
+	}
+}
+
+/** The modifiers in play for the two loaded armies, labelled with their list. */
+export function modifiersForArmies(store, armyA, armyB) {
+	const mirror = armyA === armyB;
+	const forList = (army, list) =>
+		(store.armies[army] ?? [])
+			// In a mirror match both lists share one army; the stored list tells them apart.
+			.filter((m) => !mirror || m.list === list)
+			.map((m) => (m.list === list ? m : { ...m, list }));
+	return [
+		...forList(armyA, "A"),
+		...forList(armyB, "B"),
+		...store.shared.filter((m) => m.list === "any"),
+	];
+}
+
+/** Writes the edited modifiers back to the loaded armies; other armies are kept. */
+export function storeModifiersForArmies(store, armyA, armyB, modifiers) {
+	const ofList = (list) => modifiers.filter((m) => m.list === list);
+	const armies = { ...store.armies };
+	if (armyA === armyB) {
+		armies[armyA] = [...ofList("A"), ...ofList("B")];
+	} else {
+		armies[armyA] = ofList("A");
+		armies[armyB] = ofList("B");
+	}
+	for (const [army, list] of Object.entries(armies)) {
+		if (!list.length) delete armies[army];
+	}
+	return { armies, shared: ofList("any") };
+}

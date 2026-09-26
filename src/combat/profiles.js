@@ -251,7 +251,9 @@ function weaponBaseName(name) {
 /**
  * @param {object} unit a parsed 11th-edition roster unit
  * @param {"shooting"|"fight"} phase
- * @returns {Array} one entry per (carrier model type × weapon)
+ * @returns {Array} one entry per (carrier model type × weapon). Profiles that
+ * exclude each other share a `choice` key; the strongest by a target-independent
+ * estimate is used here, and `resolveUnitVsUnit` re-picks per target.
  */
 export function buildAttackerProfiles(unit, phase = "shooting") {
 	if (!unit) return [];
@@ -259,7 +261,7 @@ export function buildAttackerProfiles(unit, phase = "shooting") {
 	const profiles = [];
 	const alternatives = [];
 
-	for (const model of unit.models || []) {
+	for (const [modelIndex, model] of (unit.models || []).entries()) {
 		const stats = findCarrierStats(unit, model);
 		const weapons = (isMelee ? model.meleeWeapons : model.rangedWeapons) || [];
 		const modelCount = model.count || 1;
@@ -277,6 +279,7 @@ export function buildAttackerProfiles(unit, phase = "shooting") {
 					modelCount,
 				);
 				const key = weaponBaseName(weapon.name);
+				profile.choice = `${modelIndex}|ranged|${key}`;
 				const existing = byWeapon.get(key);
 				if (!existing) {
 					byWeapon.set(key, profile);
@@ -304,7 +307,10 @@ export function buildAttackerProfiles(unit, phase = "shooting") {
 				modelCount,
 			);
 			if (profile.abilities.extraAttacks) profiles.push(profile);
-			else candidates.push(profile);
+			else {
+				profile.choice = `${modelIndex}|melee`;
+				candidates.push(profile);
+			}
 		}
 		if (!candidates.length) continue;
 

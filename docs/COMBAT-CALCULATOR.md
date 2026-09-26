@@ -344,7 +344,7 @@ round n + 1) and `medianRounds`.
 
 | Metric             | Definition                                               |
 | ------------------ | -------------------------------------------------------- |
-| Attacks            | attack dice gathered                                     |
+| Attacks            | declared attack dice (`declaredAttacks`); `attacks` only counts dice rolled before the unit is destroyed |
 | Hits               | including `[SUSTAINED HITS]` extra hits                  |
 | Wounds             | successful wound rolls + `[LETHAL HITS]` auto-wounds     |
 | Mortal wounds      | `[DEVASTATING WOUNDS]` critical wounds                   |
@@ -355,6 +355,8 @@ round n + 1) and `medianRounds`.
 | Points killed      | slain models × points per model, per allocation group    |
 | P(destroyed)       | exact allocation (one round)                             |
 | Damage per 100 pts | wounds lost ÷ attacker points × 100                      |
+| Points removed     | defender points × wounds lost ÷ defender total wounds    |
+| Efficiency         | points removed ÷ attacker points × 100 (% of own cost)   |
 | Rounds to clear    | expected: total wounds ÷ wounds lost; Monte-Carlo median |
 
 ### 3.6 Context — `defaultContext()`
@@ -402,8 +404,11 @@ Feel No Pain is not applied), `Damaged: X-Y wounds remaining`, `Stealth`,
 and rules. Anything else is listed in the UI as not modelled.
 
 Attacker profiles map each model to its stat line with `getNameMatchScore`,
-prefer the weapon's own BS/WS, and collapse a weapon's firing modes to the
-strongest profile; the others are reported as `unusedWeaponProfiles`.
+prefer the weapon's own BS/WS, and keep one firing mode per weapon and one
+normal melee weapon per model (plus every `[EXTRA ATTACKS]` weapon). Exclusive
+profiles share a `choice` key; against each target `resolveUnitVsUnit` resolves
+every candidate alone and keeps the one that removes the most wounds. The others
+are reported as `alternatives` / `unusedWeaponProfiles`.
 
 Defender allocation groups are ordered worst save first, leaders last (§05.03).
 
@@ -426,15 +431,20 @@ interpreted. The user builds each effect as a plain-JSON modifier:
   defensively Feel No Pain, invulnerable save, benefit of cover.
 
 Roll modifiers from every source share the ±1 cap. Modifiers are built in
-`ui/ModifierBuilder.jsx` and persisted in `localStorage` under `modifiers`; the
-breakdown lists those applied to a pairing.
+`ui/ModifierBuilder.jsx` and persisted in `localStorage` under `modifiersByArmy`,
+per army (the roster's catalog, e.g. `Imperium - Adeptus Custodes`): a list-A
+or list-B modifier belongs to that list's army and returns whenever a roster of
+that army is loaded, in either slot; "both lists" modifiers are shared by all
+armies. The old single `modifiers` list is filed under the armies loaded on first
+visit. The breakdown lists the modifiers applied to a pairing.
 
 ### 4.4 Share links — [src/combat/shareState.js](../src/combat/shareState.js)
 
 "Copy share link" encodes the selection, attachments, `ctx`, direction and
 modifiers in `#share=`. Rosters are not included; the selection is restored once
-rosters with the same names are loaded. Shared modifiers are merged in and the
-recipient's own are switched off, never deleted.
+rosters with the same names are loaded (or the recipient applies it to the
+loaded rosters). Shared modifiers are merged in at that point, so they are filed
+under the right armies, and the recipient's own are switched off, never deleted.
 
 ### 4.5 Army lists and comparison
 

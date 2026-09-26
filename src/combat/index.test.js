@@ -22,6 +22,9 @@ describe("resolveUnitVsUnit", () => {
 		const result = resolveUnitVsUnit(boltgunSquad, marineTarget);
 		expect(result.totals.roundsToClear).toBeCloseTo(20 / 2.2222, 2);
 		expect(result.totals.damagePer100Points).toBeCloseTo(2.2222, 2);
+		// 2.2222 of 20 wounds on a 100-point target, bought with 100 points.
+		expect(result.totals.pointsRemoved).toBeCloseTo(11.111, 2);
+		expect(result.totals.pointsReturnPer100).toBeCloseTo(11.111, 2);
 	});
 
 	it("resolves the fight phase with melee weapons", () => {
@@ -45,6 +48,39 @@ describe("resolveUnitVsUnit", () => {
 		expect(result.alternatives.map((w) => w.weaponName)).toEqual(["Knife"]);
 		expect(result.alternatives[0].attacks).toBeGreaterThan(0);
 		expect(result.totals).toEqual(base.totals);
+	});
+
+	it("picks the firing mode that does the most against each target", () => {
+		const unit = structuredClone(boltgunSquad);
+		// Krak scores higher on A × S × D, but frag removes more of a 1-wound horde.
+		unit.models[0].rangedWeapons = [
+			{
+				...unit.models[0].rangedWeapons[0],
+				name: "Launcher - frag",
+				attacks: "6",
+				str: "4",
+				ap: "0",
+				damage: "1",
+			},
+			{
+				...unit.models[0].rangedWeapons[0],
+				name: "Launcher - krak",
+				attacks: "1",
+				str: "9",
+				ap: "-2",
+				damage: "D6",
+			},
+		];
+		const vsHorde = resolveUnitVsUnit(unit, fnpHorde);
+		const vsTank = resolveUnitVsUnit(unit, vehicleTarget);
+		expect(vsHorde.weapons[0].weaponName).toBe("Launcher - frag");
+		expect(vsHorde.alternatives.map((w) => w.weaponName)).toEqual([
+			"Launcher - krak",
+		]);
+		expect(vsTank.weapons[0].weaponName).toBe("Launcher - krak");
+		expect(vsTank.alternatives.map((w) => w.weaponName)).toEqual([
+			"Launcher - frag",
+		]);
 	});
 
 	it("respects the invulnerable save of a vehicle", () => {
@@ -80,6 +116,11 @@ describe("resolveUnitVsUnit", () => {
 		const used = result.weapons[0].attacks + result.weapons[1].attacks;
 		expect(used).toBeLessThan(20);
 		expect(used).toBeGreaterThan(20 * (1 - result.totals.pDestroyed));
+		// The breakdown still shows the 20 declared shots, split across groups.
+		expect(result.totals.declaredAttacks).toBeCloseTo(20, 10);
+		expect(result.weapons[1].declaredAttacks).toBeGreaterThan(
+			result.weapons[1].attacks,
+		);
 		expect(result.totals.modelsSlain).toBeGreaterThan(3);
 	});
 

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { getUnitTotalModels } from "../profiles";
-import { Toggle } from "./controls";
 
 const format = (value, digits = 2) =>
 	Number.isFinite(value) ? value.toFixed(digits) : "∞";
@@ -11,11 +10,22 @@ const woundShare = (t) =>
 		: 0;
 
 /**
- * `get` sorts rows and fills the cell; `share` colours
- * cells on a fixed 0–1 scale so the colour means the same in every matchup
- * (1 = `full`).
+ * `get` fills the cell; `share` colours it on a fixed 0–1 scale so the colour
+ * means the same in every matchup (1 = `full`). ★ marks the best attacker
+ * against each defender.
  */
 const METRICS = {
+	pointsReturn: {
+		label: "Efficiency (% of own cost removed)",
+		get: (t) => t.pointsReturnPer100,
+		digits: 0,
+		suffix: "%",
+		share: (t) => (t.pointsReturnPer100 ?? 0) / 100,
+		full: "own cost removed",
+		// Points' worth of the target removed, out of the target's cost.
+		detail: (t, _attacker, defender) =>
+			`${format(t.pointsRemoved ?? 0, 0)} / ${defender.cost?.points ?? 0} pts`,
+	},
 	woundsLost: {
 		label: "Wounds lost",
 		get: (t) => t.woundsLost,
@@ -38,7 +48,7 @@ const METRICS = {
 		full: "unit wiped",
 	},
 	damagePer100Points: {
-		label: "Efficiency (dmg / 100 pts)",
+		label: "Wounds lost / 100 pts",
 		get: (t) => t.damagePer100Points,
 		digits: 1,
 		// Points' worth of wounds dealt, relative to the attacker's own cost.
@@ -65,7 +75,37 @@ const METRICS = {
 	},
 };
 
-// Scores can be ±Infinity (never cleared), so plain subtraction would give NaN.
+// Higher is better and never negative; also the sort score.
+function goodness(value, lowerIsBetter) {
+	if (value === undefined || Number.isNaN(value)) return 0;
+	if (!lowerIsBetter) return Math.max(0, value);
+	return value > 0 && Number.isFinite(value) ? 1 / value : 0;
+}
+
+/** `grid[row][col]` = `{ value, score, share, best }`; `best` = top attacker in its column. */
+function buildGrid(matchup, metric) {
+	const { get, share, lowerIsBetter = false } = METRICS[metric];
+	const grid = matchup.rows.map((row) =>
+		row.cells.map((cell, col) => {
+			const value = get(cell.totals);
+			return {
+				value,
+				score: goodness(value, lowerIsBetter),
+				share: share(cell.totals, row.attacker, matchup.defenderUnits[col]),
+			};
+		}),
+	);
+	const colBest = matchup.defenderUnits.map((_, col) =>
+		Math.max(0, ...grid.map((row) => row[col].score)),
+	);
+	return grid.map((row) =>
+		row.map((cell, col) => ({
+			...cell,
+			best: colBest[col] > 0 && cell.score === colBest[col],
+		})),
+	);
+}
+
 const byScoreDesc = (a, b) =>
 	a.score === b.score ? 0 : a.score < b.score ? 1 : -1;
 
@@ -152,7 +192,7 @@ function SortableHeader({ unit, active, onClick, arrow, placement, onTip }) {
 }
 
 export function ResultsMatrix({ matchup, selectedCell, onSelectCell }) {
-	const [metric, setMetric] = useState("woundsLost");
+	const [metric, setMetric] = useState("pointsReturn");
 	const [tip, setTip] = useState(null);
 	// A fixed tooltip would drift away from its header on scroll.
 	useEffect(() => {
@@ -161,22 +201,12 @@ export function ResultsMatrix({ matchup, selectedCell, onSelectCell }) {
 		window.addEventListener("scroll", hide, true);
 		return () => window.removeEventListener("scroll", hide, true);
 	}, [tip]);
-	// null | { by: "average" | defender column index, desc }
+	// null | { by: defender column index, desc }
 	const [rowSort, setRowSort] = useState(null);
 	// null | { by: attacker row index, desc }
 	const [colSort, setColSort] = useState(null);
-	const metricValue = METRICS[metric].get;
-	const shareOf = METRICS[metric].share;
-	const { digits = 2, suffix = "", lowerIsBetter = false } = METRICS[metric];
-	// "Descending" always means best first.
-	const scoreOf = useMemo(
-		() => (totals) => {
-			const value = metricValue(totals);
-			if (value === undefined || Number.isNaN(value)) return 0;
-			return lowerIsBetter ? -value : value;
-		},
-		[metricValue, lowerIsBetter],
-	);
+	const { digits = 2, suffix = "" } = METRICS[metric];
+	const grid = useMemo(() => buildGrid(matchup, metric), [matchup, metric]);
 
 	const toggleSort = (by) => (current) =>
 		current?.by === by ? { by, desc: !current.desc } : { by, desc: true };
@@ -184,35 +214,32 @@ export function ResultsMatrix({ matchup, selectedCell, onSelectCell }) {
 	const rows = useMemo(() => {
 		// Keep the original row index so the drill-down keeps pointing at the
 		// right pairing even when rows are re-ordered.
+		// "Descending" always means best first.
 		const indexed = matchup.rows.map((row, index) => ({
 			row,
 			index,
-			score:
-				rowSort?.by === "average"
-					? row.cells.reduce((sum, cell) => sum + scoreOf(cell.totals), 0) /
-						Math.max(1, row.cells.length)
-					: scoreOf(row.cells[rowSort?.by]?.totals ?? {}),
+			score: grid[index][rowSort?.by]?.score ?? 0,
 		}));
 		if (rowSort) {
 			const sign = rowSort.desc ? 1 : -1;
 			indexed.sort((a, b) => sign * byScoreDesc(a, b));
 		}
 		return indexed;
-	}, [matchup, scoreOf, rowSort]);
+	}, [matchup, grid, rowSort]);
 
 	const columns = useMemo(() => {
-		const sortRow = colSort ? matchup.rows[colSort.by] : null;
+		const sortRow = colSort ? grid[colSort.by] : null;
 		const indexed = matchup.defenderUnits.map((unit, index) => ({
 			unit,
 			index,
-			score: sortRow ? scoreOf(sortRow.cells[index]?.totals ?? {}) : 0,
+			score: sortRow?.[index]?.score ?? 0,
 		}));
 		if (sortRow) {
 			const sign = colSort.desc ? 1 : -1;
 			indexed.sort((a, b) => sign * byScoreDesc(a, b));
 		}
 		return indexed;
-	}, [matchup, scoreOf, colSort]);
+	}, [matchup, grid, colSort]);
 
 	return (
 		<div className="panel overflow-hidden">
@@ -234,14 +261,6 @@ export function ResultsMatrix({ matchup, selectedCell, onSelectCell }) {
 						))}
 					</select>
 				</label>
-				<Toggle
-					pressed={rowSort?.by === "average"}
-					onChange={(pressed) =>
-						setRowSort(pressed ? { by: "average", desc: true } : null)
-					}
-				>
-					Sort attackers
-				</Toggle>
 			</div>
 			<div className="print-display-none flex items-center gap-2 px-4 pt-3 text-xs text-muted">
 				<span>0</span>
@@ -250,6 +269,7 @@ export function ResultsMatrix({ matchup, selectedCell, onSelectCell }) {
 					style={{ background: LEGEND }}
 				/>
 				<span>{METRICS[metric].full}</span>
+				<span className="ml-2">★ best attacker vs this target</span>
 			</div>
 			<div className="overflow-x-auto p-4">
 				<table
@@ -314,10 +334,12 @@ export function ResultsMatrix({ matchup, selectedCell, onSelectCell }) {
 								</th>
 								{columns.map(({ index: colIndex }) => {
 									const cell = row.cells[colIndex];
+									const value = grid[rowIndex][colIndex];
 									const isSelected =
 										selectedCell?.row === rowIndex &&
 										selectedCell?.col === colIndex;
-									const share = shareOf(
+									const shown = `${format(value.value, digits)}${suffix}`;
+									const detail = METRICS[metric].detail?.(
 										cell.totals,
 										row.attacker,
 										matchup.defenderUnits[colIndex],
@@ -325,8 +347,8 @@ export function ResultsMatrix({ matchup, selectedCell, onSelectCell }) {
 									return (
 										<td
 											key={`${cell.defenderName}-${colIndex}`}
-											style={{ backgroundColor: shareColor(share) }}
-											title={`${Math.round(share * 100)}% (100% = ${METRICS[metric].full})`}
+											style={{ backgroundColor: shareColor(value.share) }}
+											title={`${METRICS[metric].label}: ${shown}${detail ? ` (${detail} removed)` : ""} · ${Math.round(value.share * 100)}% of ${METRICS[metric].full}${value.best ? " · ★ best attacker vs this target" : ""}`}
 											className={`border p-0 ${
 												isSelected
 													? "outline outline-2 -outline-offset-2 outline-ink"
@@ -338,11 +360,11 @@ export function ResultsMatrix({ matchup, selectedCell, onSelectCell }) {
 												onClick={() =>
 													onSelectCell({ row: rowIndex, col: colIndex })
 												}
-												className="block w-full cursor-pointer rounded-none border-0 bg-transparent px-3 py-2.5 text-left font-normal hover:bg-[#ffffff14]"
+												className="block w-full cursor-pointer rounded-none border-0 bg-transparent px-3 py-2.5 text-center font-normal hover:bg-[#ffffff14]"
 											>
 												<b className="text-base">
-													{format(metricValue(cell.totals), digits)}
-													{suffix}
+													{value.best && "★ "}
+													{shown}
 												</b>
 											</button>
 										</td>

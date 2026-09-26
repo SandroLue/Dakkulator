@@ -10,9 +10,12 @@ import { resolveUnitVsUnit } from "./index";
 import {
 	createModifier,
 	describeModifier,
+	modifiersForArmies,
 	normalizeModifier,
 	parseModifierList,
+	parseModifierStore,
 	selectModifiers,
+	storeModifiersForArmies,
 } from "./modifiers";
 
 const resolve = (attacker, defender, modifiers, ctx = {}) =>
@@ -217,5 +220,70 @@ describe("describeModifier", () => {
 		).toBe(
 			"+1 Hit roll, re-roll wounds (1s) — when attacking, fight only, vs MONSTER / VEHICLE",
 		);
+	});
+});
+
+describe("modifiers stored per army", () => {
+	const CUSTODES = "Imperium - Adeptus Custodes";
+	const NECRONS = "Xenos - Necrons";
+	const TYRANIDS = "Xenos - Tyranids";
+	const empty = { armies: {}, shared: [] };
+	const names = (list) => list.map((m) => `${m.list}:${m.name}`);
+
+	it("hides an army's modifiers while another army is loaded", () => {
+		const store = storeModifiersForArmies(empty, CUSTODES, TYRANIDS, [
+			createModifier({ name: "Martial Ka'tah", list: "A" }),
+			createModifier({ name: "Synapse", list: "B" }),
+			createModifier({ name: "Night fight", list: "any" }),
+		]);
+		expect(names(modifiersForArmies(store, NECRONS, TYRANIDS))).toEqual([
+			"B:Synapse",
+			"any:Night fight",
+		]);
+		expect(names(modifiersForArmies(store, CUSTODES, TYRANIDS))).toEqual([
+			"A:Martial Ka'tah",
+			"B:Synapse",
+			"any:Night fight",
+		]);
+	});
+
+	it("keeps other armies' modifiers when saving", () => {
+		const first = storeModifiersForArmies(empty, CUSTODES, TYRANIDS, [
+			createModifier({ name: "Martial Ka'tah", list: "A" }),
+		]);
+		const second = storeModifiersForArmies(first, NECRONS, TYRANIDS, [
+			createModifier({ name: "Reanimation", list: "A" }),
+		]);
+		expect(Object.keys(second.armies).sort()).toEqual([CUSTODES, NECRONS]);
+	});
+
+	it("follows the army into the other list", () => {
+		const store = storeModifiersForArmies(empty, CUSTODES, TYRANIDS, [
+			createModifier({ name: "Martial Ka'tah", list: "A" }),
+		]);
+		expect(names(modifiersForArmies(store, TYRANIDS, CUSTODES))).toEqual([
+			"B:Martial Ka'tah",
+		]);
+	});
+
+	it("keeps both lists apart in a mirror match", () => {
+		const modifiers = [
+			createModifier({ name: "Ka'tah A", list: "A" }),
+			createModifier({ name: "Ka'tah B", list: "B" }),
+		];
+		const store = storeModifiersForArmies(empty, CUSTODES, CUSTODES, modifiers);
+		expect(names(modifiersForArmies(store, CUSTODES, CUSTODES))).toEqual([
+			"A:Ka'tah A",
+			"B:Ka'tah B",
+		]);
+	});
+
+	it("round-trips through JSON and drops malformed entries", () => {
+		const store = storeModifiersForArmies(empty, CUSTODES, TYRANIDS, [
+			createModifier({ name: "Martial Ka'tah", list: "A" }),
+		]);
+		expect(parseModifierStore(JSON.stringify(store))).toEqual(store);
+		expect(parseModifierStore("not json")).toEqual(empty);
+		expect(parseModifierStore('{"armies":{"x":5}}')).toEqual(empty);
 	});
 });

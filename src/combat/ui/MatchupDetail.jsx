@@ -41,7 +41,7 @@ function weaponLabel(w) {
 
 const COLUMNS = [
 	["Weapon", weaponLabel],
-	["Attacks", (w) => format(w.attacks)],
+	["Attacks", (w) => format(w.declaredAttacks ?? w.attacks)],
 	["Hits", (w) => format(w.hits)],
 	["Wounds", (w) => format(w.wounds)],
 	["Mortal", (w) => format(w.mortalWounds)],

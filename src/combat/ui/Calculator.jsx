@@ -4,7 +4,13 @@ import {
 	useLocalStorage,
 } from "../../helpers/useLocalStorage";
 import { calculateMatchup } from "../index";
-import { parseModifierList } from "../modifiers";
+import {
+	armyOf,
+	modifiersForArmies,
+	parseModifierList,
+	parseModifierStore,
+	storeModifiersForArmies,
+} from "../modifiers";
 import { unitAbilityEntries } from "../profiles";
 import {
 	decodeShareState,
@@ -17,6 +23,9 @@ import { MatchupDetail } from "./MatchupDetail";
 import { ModifierBuilder } from "./ModifierBuilder";
 import { ResultsMatrix } from "./ResultsMatrix";
 import { UnitPicker, applyAttachments, listUnits } from "./UnitPicker";
+
+const MODIFIER_KEY = "modifiersByArmy";
+const LEGACY_MODIFIER_KEY = "modifiers";
 
 const is11th = (roster) => roster?.gameType === "Warhammer 40,000 11th Edition";
 
@@ -173,13 +182,34 @@ export function Calculator({
 	}
 	// No initial value: `useLocalStorage` would write it during render and update App.
 	const [storedModifiers, setStoredModifiers] = useLocalStorage(
-		"modifiers",
+		MODIFIER_KEY,
 		"",
 	);
-	const modifiers = useMemo(
-		() => parseModifierList(storedModifiers),
+	const armyA = armyOf(rosterA);
+	const armyB = armyOf(rosterB);
+	const modifierStore = useMemo(
+		() => parseModifierStore(storedModifiers),
 		[storedModifiers],
 	);
+	const modifiers = useMemo(
+		() => modifiersForArmies(modifierStore, armyA, armyB),
+		[modifierStore, armyA, armyB],
+	);
+	const saveModifiers = (next) => {
+		const json = JSON.stringify(
+			storeModifiersForArmies(modifierStore, armyA, armyB, next),
+		);
+		// The hook's storage listener re-reads localStorage, so write it first.
+		trySettingLocalStorage(MODIFIER_KEY, json, setStoredModifiers);
+		setStoredModifiers(json);
+	};
+	// Modifiers used to be one list for every army: file them under the armies loaded now.
+	useEffect(() => {
+		const legacy = localStorage.getItem(LEGACY_MODIFIER_KEY);
+		if (legacy === null) return;
+		localStorage.removeItem(LEGACY_MODIFIER_KEY);
+		if (!storedModifiers) saveModifiers(parseModifierList(legacy));
+	});
 	const unitNames = useMemo(
 		() => ({ A: uniqueNames(rosterA), B: uniqueNames(rosterB) }),
 		[rosterA, rosterB],
@@ -209,16 +239,7 @@ export function Calculator({
 		if (pendingShare?.stage !== "settings") return;
 		setCtx(pendingShare.ctx);
 		onReversedChange?.(pendingShare.reversed);
-		const merged = mergeSharedModifiers(modifiers, pendingShare.modifiers);
-		const json = JSON.stringify(merged.modifiers);
-		// The hook's storage listener re-reads localStorage, so write it first.
-		trySettingLocalStorage("modifiers", json, setStoredModifiers);
-		setStoredModifiers(json);
-		setShareNotice(
-			`Loaded a shared setup: ${merged.added} modifier(s) added${
-				merged.disabled ? `, ${merged.disabled} of yours switched off` : ""
-			}.`,
-		);
+		setShareNotice("Loaded the shared battlefield settings.");
 		setPendingShare({ ...pendingShare, stage: "selection" });
 		// Reloading should not re-apply the link.
 		window.history.replaceState(
@@ -226,9 +247,17 @@ export function Calculator({
 			"",
 			`${window.location.pathname}${window.location.search}`,
 		);
-	}, [pendingShare, modifiers, setStoredModifiers, onReversedChange]);
+	}, [pendingShare, onReversedChange]);
 
+	// Modifiers are stored per army, so they wait until the shared rosters are loaded.
 	const applySharedSelection = (shared) => {
+		const merged = mergeSharedModifiers(modifiers, shared.modifiers);
+		saveModifiers(merged.modifiers);
+		setShareNotice(
+			`Loaded a shared setup: ${merged.added} modifier(s) added${
+				merged.disabled ? `, ${merged.disabled} of yours switched off` : ""
+			}.`,
+		);
 		setSelectedA(new Set(shared.selected.A));
 		setSelectedB(new Set(shared.selected.B));
 		setAttachA(shared.attachments.A);
@@ -410,7 +439,7 @@ export function Calculator({
 				<ModifierBuilder
 					abilities={unmodelledAbilities(matchup)}
 					modifiers={modifiers}
-					onChange={(next) => setStoredModifiers(JSON.stringify(next))}
+					onChange={saveModifiers}
 					unitNames={unitNames}
 					keywords={unitKeywords}
 					abilityTexts={abilityTexts}
