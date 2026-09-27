@@ -110,15 +110,20 @@ function pinOf(matchup, { row, col }) {
 	return { key: label, label, attacker, defender };
 }
 
+/** Abilities the engine doesn't model, split by the side whose units have them. */
 function unmodelledAbilities(matchup) {
-	const names = new Set();
+	const attacker = new Set();
+	const defender = new Set();
 	for (const row of matchup?.rows || []) {
 		for (const cell of row.cells) {
-			for (const t of cell.warnings.unmodelledAttackerAbilities) names.add(t);
-			for (const t of cell.warnings.unmodelledDefenderAbilities) names.add(t);
+			for (const t of cell.warnings.unmodelledAttackerAbilities)
+				attacker.add(t);
+			for (const t of cell.warnings.unmodelledDefenderAbilities)
+				defender.add(t);
 		}
 	}
-	return [...names].sort((a, b) => a.localeCompare(b));
+	const sorted = (names) => [...names].sort((a, b) => a.localeCompare(b));
+	return { attacker: sorted(attacker), defender: sorted(defender) };
 }
 
 function Warnings({ matchup }) {
@@ -157,6 +162,8 @@ export function Calculator({
 	const [attachB, setAttachB] = useState({});
 	const [ctx, setCtx] = useState(bestCaseContext);
 	const [selectedCell, setSelectedCell] = useState(null);
+	// Shared by the results matrix and the comparison panel.
+	const [metric, setMetric] = useState("pointsReturn");
 	const [pins, setPins] = useState([]);
 	const [shownReversed, setShownReversed] = useState(reversed);
 	// Swapping roles transposes the matrix, so the selected cell no longer applies.
@@ -413,11 +420,19 @@ export function Calculator({
 		);
 	}
 
-	const pairing =
-		matchup && selectedCell
-			? matchup.rows[selectedCell.row]?.cells[selectedCell.col]
-			: null;
-	const selectedPin = pairing ? pinOf(matchup, selectedCell) : null;
+	// Never leave the breakdown empty: without a (still valid) pick, show the first
+	// pairing whose attacker has weapons in this phase.
+	const firstArmedRow = matchup
+		? Math.max(
+				0,
+				matchup.rows.findIndex((row) => row.cells[0]?.weapons.length),
+			)
+		: 0;
+	const shownCell = matchup?.rows[selectedCell?.row]?.cells[selectedCell?.col]
+		? selectedCell
+		: { row: firstArmedRow, col: 0 };
+	const pairing = matchup?.rows[shownCell.row]?.cells[shownCell.col] ?? null;
+	const selectedPin = pairing ? pinOf(matchup, shownCell) : null;
 	const isPinned = pins.some((pin) => pin.key === selectedPin?.key);
 	const togglePin = () =>
 		setPins(
@@ -438,6 +453,7 @@ export function Calculator({
 			<div className="print-display-none">
 				<ModifierBuilder
 					abilities={unmodelledAbilities(matchup)}
+					attackerList={reversed ? "B" : "A"}
 					modifiers={modifiers}
 					onChange={saveModifiers}
 					unitNames={unitNames}
@@ -462,13 +478,15 @@ export function Calculator({
 					<Warnings matchup={matchup} />
 					<ResultsMatrix
 						matchup={matchup}
-						selectedCell={selectedCell}
+						selectedCell={shownCell}
 						onSelectCell={setSelectedCell}
+						metric={metric}
+						onMetricChange={setMetric}
 					/>
 					{pairing && (
 						<MatchupDetail
 							pairing={pairing}
-							rowCells={matchup.rows[selectedCell.row].cells}
+							rowCells={matchup.rows[shownCell.row].cells}
 							pinned={isPinned}
 							onTogglePin={togglePin}
 						/>
@@ -476,6 +494,8 @@ export function Calculator({
 					{pinnedItems.length > 0 && (
 						<ComparisonPanel
 							items={pinnedItems}
+							metric={metric}
+							onMetricChange={setMetric}
 							onUnpin={(key) => setPins(pins.filter((pin) => pin.key !== key))}
 							onClear={() => setPins([])}
 						/>

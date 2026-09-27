@@ -1,79 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { getUnitTotalModels } from "../profiles";
-
-const format = (value, digits = 2) =>
-	Number.isFinite(value) ? value.toFixed(digits) : "∞";
-
-const woundShare = (t) =>
-	Number.isFinite(t.roundsToClear) && t.roundsToClear > 0
-		? 1 / t.roundsToClear
-		: 0;
-
-/**
- * `get` fills the cell; `share` colours it on a fixed 0–1 scale so the colour
- * means the same in every matchup (1 = `full`). ★ marks the best attacker
- * against each defender.
- */
-const METRICS = {
-	pointsReturn: {
-		label: "Efficiency (% of own cost removed)",
-		get: (t) => t.pointsReturnPer100,
-		digits: 0,
-		suffix: "%",
-		share: (t) => (t.pointsReturnPer100 ?? 0) / 100,
-		full: "own cost removed",
-		// Points' worth of the target removed, out of the target's cost.
-		detail: (t, _attacker, defender) =>
-			`${format(t.pointsRemoved ?? 0, 0)} / ${defender.cost?.points ?? 0} pts`,
-	},
-	woundsLost: {
-		label: "Wounds lost",
-		get: (t) => t.woundsLost,
-		share: woundShare,
-		full: "unit wiped",
-	},
-	modelsSlain: {
-		label: "Models slain",
-		get: (t) => t.modelsSlain,
-		share: (t, _attacker, defender) =>
-			t.modelsSlain / (getUnitTotalModels(defender) || 1),
-		full: "unit wiped",
-	},
-	pointsKilled: {
-		label: "Points killed",
-		get: (t) => t.pointsKilled,
-		digits: 0,
-		share: (t, _attacker, defender) =>
-			t.pointsKilled / (defender.cost?.points || 1),
-		full: "unit wiped",
-	},
-	damagePer100Points: {
-		label: "Wounds lost / 100 pts",
-		get: (t) => t.damagePer100Points,
-		digits: 1,
-		// Points' worth of wounds dealt, relative to the attacker's own cost.
-		share: (t, attacker, defender) =>
-			(woundShare(t) * (defender.cost?.points || 0)) /
-			(attacker.cost?.points || 1),
-		full: "own cost traded",
-	},
-	pDestroyed: {
-		label: "P(unit destroyed)",
-		get: (t) => t.pDestroyed * 100,
-		digits: 0,
-		suffix: "%",
-		share: (t) => t.pDestroyed,
-		full: "certain kill",
-	},
-	roundsToClear: {
-		label: "Rounds to clear",
-		get: (t) => t.roundsToClear,
-		digits: 1,
-		lowerIsBetter: true,
-		share: woundShare,
-		full: "cleared in one round",
-	},
-};
+import { MetricSelect } from "./MetricSelect";
+import { METRICS, format } from "./metrics";
 
 // Higher is better and never negative; also the sort score.
 function goodness(value, lowerIsBetter) {
@@ -191,8 +119,13 @@ function SortableHeader({ unit, active, onClick, arrow, placement, onTip }) {
 	);
 }
 
-export function ResultsMatrix({ matchup, selectedCell, onSelectCell }) {
-	const [metric, setMetric] = useState("pointsReturn");
+export function ResultsMatrix({
+	matchup,
+	selectedCell,
+	onSelectCell,
+	metric,
+	onMetricChange,
+}) {
 	const [tip, setTip] = useState(null);
 	// A fixed tooltip would drift away from its header on scroll.
 	useEffect(() => {
@@ -248,19 +181,11 @@ export function ResultsMatrix({ matchup, selectedCell, onSelectCell }) {
 				<span className="hint">
 					Click a cell for the breakdown, a name to sort by it.
 				</span>
-				<label className="ml-auto flex items-center gap-2">
-					<span className="text-muted">Show</span>
-					<select
-						value={metric}
-						onChange={(event) => setMetric(event.target.value)}
-					>
-						{Object.entries(METRICS).map(([key, { label }]) => (
-							<option key={key} value={key}>
-								{label}
-							</option>
-						))}
-					</select>
-				</label>
+				<MetricSelect
+					value={metric}
+					onChange={onMetricChange}
+					className="ml-auto"
+				/>
 			</div>
 			<div className="print-display-none flex items-center gap-2 px-4 pt-3 text-xs text-muted">
 				<span>0</span>
@@ -345,11 +270,13 @@ export function ResultsMatrix({ matchup, selectedCell, onSelectCell }) {
 										matchup.defenderUnits[colIndex],
 									);
 									return (
+										// `h-px` lets the button fill the row, which the name column can make taller;
+										// the hover shade sits on the cell for the same reason.
 										<td
 											key={`${cell.defenderName}-${colIndex}`}
 											style={{ backgroundColor: shareColor(value.share) }}
 											title={`${METRICS[metric].label}: ${shown}${detail ? ` (${detail} removed)` : ""} · ${Math.round(value.share * 100)}% of ${METRICS[metric].full}${value.best ? " · ★ best attacker vs this target" : ""}`}
-											className={`border p-0 ${
+											className={`h-px border p-0 hover:shadow-[inset_0_0_0_999px_#ffffff14] ${
 												isSelected
 													? "outline outline-2 -outline-offset-2 outline-ink"
 													: ""
@@ -360,7 +287,7 @@ export function ResultsMatrix({ matchup, selectedCell, onSelectCell }) {
 												onClick={() =>
 													onSelectCell({ row: rowIndex, col: colIndex })
 												}
-												className="block w-full cursor-pointer rounded-none border-0 bg-transparent px-3 py-2.5 text-center font-normal hover:bg-[#ffffff14]"
+												className="block h-full w-full cursor-pointer rounded-none border-0 bg-transparent px-3 py-2.5 text-center font-normal"
 											>
 												<b className="text-base">
 													{value.best && "★ "}

@@ -365,7 +365,8 @@ export function ModifierBuilder({
 	listNames,
 	keywords = { A: [], B: [] },
 	abilityTexts = new Map(),
-	abilities = [],
+	abilities = { attacker: [], defender: [] },
+	attackerList = "A",
 }) {
 	const [editingId, setEditingId] = useState(null);
 
@@ -388,8 +389,32 @@ export function ModifierBuilder({
 	};
 	const active = modifiers.filter((m) => m.enabled).length;
 	const editing = modifiers.find((m) => m.id === editingId);
-	const named = new Set(modifiers.map((m) => m.name.trim().toLowerCase()));
-	const missing = abilities.filter((name) => !named.has(name.toLowerCase()));
+	const defenderList = attackerList === "A" ? "B" : "A";
+	// An ability counts as applied once a modifier of that name covers its list.
+	const missingFor = (names, list) => {
+		const named = new Set(
+			modifiers
+				.filter((m) => m.list === list || m.list === "any")
+				.map((m) => m.name.trim().toLowerCase()),
+		);
+		return names.filter((name) => !named.has(name.toLowerCase()));
+	};
+	const sides = [
+		{
+			role: "attacking",
+			label: "Attacker",
+			list: attackerList,
+			names: missingFor(abilities.attacker, attackerList),
+			open: true,
+		},
+		{
+			role: "defending",
+			label: "Defender",
+			list: defenderList,
+			names: missingFor(abilities.defender, defenderList),
+			open: false,
+		},
+	].filter((side) => side.names.length);
 
 	return (
 		<section className="panel text-sm">
@@ -411,24 +436,33 @@ export function ModifierBuilder({
 					Datasheet, faction and stratagem abilities are not read from the
 					roster. Build their effect here and switch it on when it applies.
 				</p>
-				{missing.length > 0 && (
-					<div className="flex flex-wrap items-center gap-1.5">
-						<span className="hint">
-							Not yet applied from the selected units:
-						</span>
-						{missing.map((name) => (
-							<button
-								type="button"
-								key={name}
-								className="button-small button-ghost rounded-full border-dashed border-line-strong"
-								title={`Add a modifier for ${name}`}
-								onClick={() => add({ name })}
-							>
-								+ {name}
-							</button>
-						))}
-					</div>
-				)}
+				{sides.map((side) => (
+					// Keyed by role, so each side keeps its own open state when roles swap.
+					<details key={side.role} open={side.open}>
+						<summary className="cursor-pointer">
+							<span className="section-label">
+								Not yet applied — {side.label.toLowerCase()} ·{" "}
+								{listNames?.[side.list] ?? `List ${side.list}`}
+							</span>{" "}
+							<span className="badge">{side.names.length}</span>
+						</summary>
+						<div className="flex flex-wrap items-center gap-1.5 pt-2">
+							{side.names.map((name) => (
+								<button
+									type="button"
+									key={name}
+									className="button-small button-ghost rounded-full border-dashed border-line-strong"
+									title={`Add a modifier for ${name} (${side.label.toLowerCase()}, List ${side.list})`}
+									onClick={() =>
+										add({ name, list: side.list, role: side.role })
+									}
+								>
+									+ {name}
+								</button>
+							))}
+						</div>
+					</details>
+				))}
 				{modifiers.length > 0 && (
 					<div className="flex flex-wrap gap-2">
 						{modifiers.map((m) => {
