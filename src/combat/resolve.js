@@ -260,22 +260,29 @@ export function allocateAttacks(weaponStreams, groups) {
 	let state = new Float64Array(layout.size);
 	state[freshModel(layout, 0)] = 1;
 
-	const diceShare = [];
-	for (const perGroup of weaponStreams) {
-		const result = applyWeapon(state, layout, perGroup, fnps);
-		state = result.state;
-		diceShare.push(result.diceShare);
-	}
-
-	let woundsLost = 0;
-	let modelsSlain = 0;
-	let pointsKilled = 0;
 	const before = { wounds: [0], models: [0], points: [0] };
 	for (const g of layout.groups) {
 		before.wounds.push(before.wounds.at(-1) + g.count * g.wounds);
 		before.models.push(before.models.at(-1) + g.count);
 		before.points.push(before.points.at(-1) + g.count * g.points);
 	}
+
+	const diceShare = [];
+	// Each weapon's share of the wounds lost: what it adds on top of the weapons before it.
+	const weaponWoundsLost = [];
+	let lostSoFar = 0;
+	for (const perGroup of weaponStreams) {
+		const result = applyWeapon(state, layout, perGroup, fnps);
+		state = result.state;
+		diceShare.push(result.diceShare);
+		const lost = expectedWoundsLost(state, layout, before.wounds);
+		weaponWoundsLost.push(lost - lostSoFar);
+		lostSoFar = lost;
+	}
+
+	let woundsLost = 0;
+	let modelsSlain = 0;
+	let pointsKilled = 0;
 	for (let s = 0; s < layout.destroyed; s++) {
 		const p = state[s];
 		if (!p) continue;
@@ -298,8 +305,26 @@ export function allocateAttacks(weaponStreams, groups) {
 		pointsKilled,
 		pDestroyed,
 		diceShare,
+		weaponWoundsLost,
 		state,
 	};
+}
+
+function expectedWoundsLost(state, layout, woundsBefore) {
+	let lost = state[layout.destroyed] * woundsBefore.at(-1);
+	for (let s = 0; s < layout.destroyed; s++) {
+		const p = state[s];
+		if (!p) continue;
+		const g = layout.groupOf[s];
+		const { wounds } = layout.groups[g];
+		lost +=
+			p *
+			(woundsBefore[g] +
+				layout.slain[s] * wounds +
+				wounds -
+				layout.woundsLeft[s]);
+	}
+	return lost;
 }
 
 function hitModifiers(profile, group, ctx, indirect) {
@@ -458,8 +483,10 @@ export function computeAttackStreams(profile, group, context = {}) {
 		failedSaves,
 		damageExpr,
 		damagePmf,
+		// Unsaved wounds and [DEVASTATING WOUNDS] mortal wounds both inflict the weapon's damage.
 		rawDamage:
-			failedSaves * damagePmf.reduce((sum, p, value) => sum + p * value, 0),
+			(failedSaves + mortalHits) *
+			damagePmf.reduce((sum, p, value) => sum + p * value, 0),
 		// Everything Monte-Carlo needs to replay this profile die by die.
 		sampling: {
 			attacksExpr: dice.expr,

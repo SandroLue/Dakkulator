@@ -9,7 +9,6 @@ import {
 	XAxis,
 	YAxis,
 } from "recharts";
-import { formatDiceExpr } from "../diceExpr";
 import { AXIS, GRID, TOOLTIP, axisLabel, percent } from "./charts";
 import { useSimulation } from "./useSimulation";
 
@@ -39,6 +38,25 @@ function weaponLabel(w) {
 	);
 }
 
+const SUMMED = [
+	"attacks",
+	"declaredAttacks",
+	"hits",
+	"wounds",
+	"mortalWounds",
+	"failedSaves",
+	"rawDamage",
+];
+
+/** Column totals over the counted weapons (alternatives are not counted). */
+function sumWeapons(weapons) {
+	const total = {};
+	for (const key of SUMMED) {
+		total[key] = weapons.reduce((sum, w) => sum + (w[key] ?? 0), 0);
+	}
+	return total;
+}
+
 const COLUMNS = [
 	["Weapon", weaponLabel],
 	["Attacks", (w) => format(w.declaredAttacks ?? w.attacks)],
@@ -47,6 +65,8 @@ const COLUMNS = [
 	["Mortal", (w) => format(w.mortalWounds)],
 	["Failed saves", (w) => format(w.failedSaves)],
 	["Damage", (w) => format(w.rawDamage)],
+	// After the one-model damage cap, excess damage and Feel No Pain.
+	["Wounds lost", (w) => format(w.woundsLost)],
 ];
 
 function WeaponRow({ weapon, groups, multiGroup, muted = false }) {
@@ -64,15 +84,64 @@ function WeaponRow({ weapon, groups, multiGroup, muted = false }) {
 					{describeGroup(groups[weapon.groupIndex ?? 0])}
 				</td>
 			)}
-			<td className="border border-line px-3 py-2 text-xs text-muted">
-				{weapon.detail.autoHit ? "auto-hit" : `hit ${weapon.detail.hitTarget}+`}{" "}
-				· wound {weapon.detail.woundTarget}+ · save{" "}
-				{weapon.detail.saveTarget >= 7
-					? "none"
-					: `${weapon.detail.saveTarget}+`}{" "}
-				· D {formatDiceExpr(weapon.detail.damage)}
-			</td>
 		</tr>
+	);
+}
+
+/** Explains why the columns don't simply multiply down from the attacks. */
+function HowToRead() {
+	return (
+		<div className="group relative">
+			<button
+				type="button"
+				aria-label="How to read this table"
+				aria-describedby="breakdown-help"
+				className="button-small flex h-7 w-7 items-center justify-center rounded-full p-0"
+			>
+				<svg
+					viewBox="0 0 24 24"
+					aria-hidden="true"
+					className="h-4 w-4"
+					fill="none"
+					stroke="currentColor"
+					strokeWidth="2.2"
+					strokeLinecap="round"
+				>
+					<circle cx="12" cy="12" r="9" />
+					<path d="M12 11v5M12 7.5v.01" />
+				</svg>
+			</button>
+			<div
+				id="breakdown-help"
+				role="tooltip"
+				className="absolute right-0 top-full z-50 mt-2 hidden w-96 max-w-[90vw] flex-col gap-2 rounded-lg border border-line-strong bg-surface-raised px-4 py-3 text-sm shadow-lg shadow-black/40 group-focus-within:flex group-hover:flex"
+			>
+				<div className="font-bold">How to read this table</div>
+				<p>
+					Every number is an <b>average</b> over all possible dice rolls, so
+					fractions are normal.
+				</p>
+				<p>
+					<b>Attacks</b> is the weapon's full number of attacks. <b>Hits</b> and
+					the columns after it only count dice rolled while the target is still
+					alive: once the unit is likely wiped out, the remaining attacks do
+					nothing. That's why hits can be lower than attacks × the hit chance.
+				</p>
+				<p>
+					<b>Hits</b> include [SUSTAINED HITS] extra hits. <b>Wounds</b> are
+					successful wound rolls, including [LETHAL HITS]. <b>Mortal</b> is the
+					part of those wounds that became mortal wounds through [DEVASTATING
+					WOUNDS] and skips the save.
+				</p>
+				<p>
+					<b>Damage</b> is what the unsaved and mortal wounds inflict.{" "}
+					<b>Wounds lost</b> is what the target actually loses after damage
+					beyond one model is wasted and Feel No Pain. With several weapons,
+					each row shows what that weapon adds on top of the ones above it. The
+					total matches the results matrix.
+				</p>
+			</div>
+		</div>
 	);
 }
 
@@ -133,16 +202,19 @@ export function MatchupDetail({
 							: describeGroup(groups[0])}
 					</div>
 				</div>
-				{onTogglePin && (
-					<button
-						type="button"
-						className="button-small print-display-none ml-auto"
-						aria-pressed={pinned}
-						onClick={onTogglePin}
-					>
-						{pinned ? "Unpin from comparison" : "Pin to compare"}
-					</button>
-				)}
+				<div className="print-display-none ml-auto flex items-center gap-2">
+					{onTogglePin && (
+						<button
+							type="button"
+							className="button-small"
+							aria-pressed={pinned}
+							onClick={onTogglePin}
+						>
+							{pinned ? "Unpin from comparison" : "Pin to compare"}
+						</button>
+					)}
+					<HowToRead />
+				</div>
 			</div>
 			{pairing.appliedModifiers?.length > 0 && (
 				<div className="flex flex-wrap items-center gap-1.5 text-xs">
@@ -172,9 +244,6 @@ export function MatchupDetail({
 									Target
 								</th>
 							)}
-							<th className="section-label border border-line bg-surface-muted px-3 py-2 text-left">
-								Rolls
-							</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -186,10 +255,28 @@ export function MatchupDetail({
 								multiGroup={multiGroup}
 							/>
 						))}
+						<tr>
+							<td className="border border-line px-3 py-2">Total</td>
+							{COLUMNS.slice(1).map(([label, accessor]) => (
+								<td
+									key={label}
+									className={`border border-line px-3 py-2 ${
+										label === "Wounds lost" ? "font-bold" : ""
+									}`}
+								>
+									{accessor({
+										...sumWeapons(pairing.weapons),
+										// The exact total, as in the results matrix.
+										woundsLost: pairing.totals.woundsLost,
+									})}
+								</td>
+							))}
+							{multiGroup && <td className="border border-line px-3 py-2" />}
+						</tr>
 						{pairing.alternatives?.length > 0 && (
 							<tr>
 								<td
-									colSpan={COLUMNS.length + (multiGroup ? 2 : 1)}
+									colSpan={COLUMNS.length + (multiGroup ? 1 : 0)}
 									className="section-label border border-line bg-surface-muted px-3 py-2"
 								>
 									Alternative profiles — not counted in the totals

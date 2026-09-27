@@ -81,6 +81,10 @@ describe("resolveUnitVsUnit", () => {
 		expect(vsTank.alternatives.map((w) => w.weaponName)).toEqual([
 			"Launcher - frag",
 		]);
+		// The alternative did less on its own than the chosen profile.
+		expect(vsTank.alternatives[0].woundsLost).toBeLessThan(
+			vsTank.totals.woundsLost,
+		);
 	});
 
 	it("respects the invulnerable save of a vehicle", () => {
@@ -121,6 +125,9 @@ describe("resolveUnitVsUnit", () => {
 		expect(result.weapons[1].declaredAttacks).toBeGreaterThan(
 			result.weapons[1].attacks,
 		);
+		// Each row's wounds lost adds up to the unit's.
+		const rowsLost = result.weapons.reduce((sum, w) => sum + w.woundsLost, 0);
+		expect(rowsLost).toBeCloseTo(result.totals.woundsLost, 10);
 		expect(result.totals.modelsSlain).toBeGreaterThan(3);
 	});
 

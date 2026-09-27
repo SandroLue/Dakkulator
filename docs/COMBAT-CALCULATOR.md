@@ -305,7 +305,7 @@ wounds       = woundRolls × P(wound) + autoWounds
 critWounds   = woundRolls × P(critWound)
 mortalWounds = critWounds                               // with [DEVASTATING WOUNDS]
 failedSaves  = (wounds − mortalWounds) × P(fail save)
-rawDamage    = failedSaves × E[D]
+rawDamage    = (failedSaves + mortalWounds) × E[D]
 ```
 
 Each stream also carries `sampling` (the per-die probabilities) and the damage

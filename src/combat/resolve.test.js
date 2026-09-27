@@ -128,6 +128,8 @@ describe("resolveWeaponVsGroup", () => {
 		const dev = resolveWeaponVsGroup(boltgun("[DEVASTATING WOUNDS]"), t4sv3w2);
 		expect(dev.mortalWounds).toBeCloseTo(plain.wounds / 3, 3);
 		expect(dev.woundsLost).toBeGreaterThan(plain.woundsLost);
+		// Mortal wounds deal the weapon's damage too, so raw damage counts them.
+		expect(dev.rawDamage).toBeCloseTo(dev.failedSaves + dev.mortalWounds, 10);
 	});
 
 	it("caps [DEVASTATING WOUNDS] at one model per critical wound (§24.10)", () => {

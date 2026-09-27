@@ -148,6 +148,10 @@ export function resolveUnitVsUnit(
 				...scaleStreams(full, share),
 				declaredAttacks:
 					shownTotal > 0 ? (full.attacks * share) / shownTotal : full.attacks,
+				// Split between groups like the dice, so the rows add up to the weapon's share.
+				woundsLost:
+					allocation.weaponWoundsLost[weapon] *
+					(shownTotal > 0 ? share / shownTotal : index === 0 ? 1 : 0),
 				groupIndex: index,
 			};
 			weapons.push(w);
@@ -167,7 +171,13 @@ export function resolveUnitVsUnit(
 	// Unchosen profiles, each resolved alone against a fresh first group; never totalled.
 	const firstGroup = { ...groups[0], targetModelCount };
 	const alternatives = (profiles.alternatives || []).map((profile) => ({
-		...withDeclared(computeAttackStreams(profile, firstGroup, effectiveCtx)),
+		...computeAttackStreams(profile, firstGroup, effectiveCtx),
+		woundsLost: woundsLostAlone(
+			profile,
+			groups,
+			targetModelCount,
+			effectiveCtx,
+		),
 		groupIndex: 0,
 	}));
 
@@ -210,10 +220,17 @@ export function resolveUnitVsUnit(
 	};
 }
 
-const withDeclared = (streams) => ({
-	...streams,
-	declaredAttacks: streams.attacks,
-});
+/** Wounds one profile removes from the whole unit when it attacks alone. */
+function woundsLostAlone(profile, groups, targetModelCount, ctx) {
+	return allocateAttacks(
+		[
+			groups.map((group) =>
+				computeAttackStreams(profile, { ...group, targetModelCount }, ctx),
+			),
+		],
+		groups,
+	).woundsLost;
+}
 
 /**
  * A model uses one firing mode per weapon and one normal melee weapon. Of the
@@ -224,14 +241,7 @@ function pickBestProfiles(profiles, groups, targetModelCount, ctx) {
 	const alternatives = profiles.alternatives || [];
 	if (!alternatives.length || !groups.length) return profiles;
 	const woundsLostBy = (profile) =>
-		allocateAttacks(
-			[
-				groups.map((group) =>
-					computeAttackStreams(profile, { ...group, targetModelCount }, ctx),
-				),
-			],
-			groups,
-		).woundsLost;
+		woundsLostAlone(profile, groups, targetModelCount, ctx);
 
 	const chosen = [...profiles];
 	const rejected = [];
