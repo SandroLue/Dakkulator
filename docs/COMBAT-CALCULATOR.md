@@ -284,6 +284,8 @@ Pure functions, no React, in [src/combat](../src/combat):
 | `index.js`                                | `resolveUnitVsUnit`, `calculateMatchup` (memoised), `simulatePairing` |
 | `modifiers.js`                            | user-built modifiers (§4.3)                                           |
 | `attach.js`                               | leader / bodyguard attachment (§4.2)                                  |
+| `unitList.js`                             | a roster's units: every copy listed, grouped again after attachment   |
+| `setupStore.js`                           | remembered setup: units/leaders per list, context and metric globally |
 | `shareState.js`                           | share-link encoding (§4.4)                                            |
 | `simulate.worker.js`, `simulateClient.js` | runs Monte-Carlo in a Web Worker, cached per pairing                  |
 
@@ -451,13 +453,11 @@ rosters with the same names are loaded (or the recipient applies it to the
 loaded rosters). Shared modifiers are merged in at that point, so they are filed
 under the right armies, and the recipient's own are switched off, never deleted.
 
-### 4.5 Army lists and comparison
+### 4.5 Army lists
 
 - Army lists live in [src/library/](../src/library/): one upload area (several
-  files at once) and a table of saved lists; List A / List B select from it.
-- "Pin to compare" adds a pairing to the comparison panel (key metrics plus
-  overlaid "destroyed by round" curves). Swapping roles or changing a list
-  clears the pins.
+  files at once) and a table of saved lists; the attacker and defender pick
+  from it.
 
 ---
 
@@ -493,4 +493,3 @@ A rule change in the engine must also be made in `oracle.js`.
 - `[HAZARDOUS]` self-inflicted mortal wounds are not shown.
 - `Deadly Demise X` is mined but not surfaced.
 - A random `[RAPID FIRE]` value (e.g. `D3`) adds its average as flat attack dice.
-- Pinned pairings are not part of the share link.

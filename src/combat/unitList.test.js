@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { boltgunSquad, captain } from "./__fixtures__/units";
-import { applyAttachments, listUnits } from "./ui/UnitPicker";
+import { applyAttachments, listUnits, suggestAttachments } from "./unitList";
 
 const roster = (...units) => ({
 	forces: [{ catalog: "Test", units: units.map((u) => structuredClone(u)) }],
@@ -48,5 +48,25 @@ describe("applyAttachments", () => {
 		]);
 		// The first copy stands for the group in the selection.
 		expect(grouped[0].key).toBe("0:0");
+	});
+});
+
+describe("suggestAttachments", () => {
+	it("attaches each leader with a single choice to its own free copy", () => {
+		// Both Captains can only lead Intercessor Squads.
+		expect(suggestAttachments(listUnits(army))).toEqual({
+			"0:3": "0:0",
+			"0:4": "0:1",
+		});
+	});
+
+	it("keeps existing attachments and skips taken squads", () => {
+		expect(suggestAttachments(listUnits(army), { "0:3": "0:0" })).toEqual({
+			"0:4": "0:1",
+		});
+	});
+
+	it("suggests nothing without a unit the leader can join", () => {
+		expect(suggestAttachments(listUnits(roster(captain)))).toEqual({});
 	});
 });

@@ -10,16 +10,28 @@ function goodness(value, lowerIsBetter) {
 	return value > 0 && Number.isFinite(value) ? 1 / value : 0;
 }
 
-/** `grid[row][col]` = `{ value, score, share }`. */
+/**
+ * `grid[row][col]` = `{ value, score, share, unarmed }`; `unarmed` marks an
+ * attacker with no weapons in this phase, which is not the same as failing.
+ */
 function buildGrid(matchup, metric) {
 	const { get, share, lowerIsBetter = false } = METRICS[metric];
 	return matchup.rows.map((row) =>
 		row.cells.map((cell, col) => {
+			if (!cell.weapons.length) {
+				return {
+					value: Number.NaN,
+					score: 0,
+					share: Number.NaN,
+					unarmed: true,
+				};
+			}
 			const value = get(cell.totals);
 			return {
 				value,
 				score: goodness(value, lowerIsBetter),
 				share: share(cell.totals, row.attacker, matchup.defenderUnits[col]),
+				unarmed: false,
 			};
 		}),
 	);
@@ -28,17 +40,24 @@ function buildGrid(matchup, metric) {
 const byScoreDesc = (a, b) =>
 	a.score === b.score ? 0 : a.score < b.score ? 1 : -1;
 
-/** Red at 0 → yellow at 50% → green at 100%. */
-function shareColor(share) {
-	if (Number.isNaN(share)) return "transparent";
+/**
+ * Red at 0 → yellow at 50% → green at 100%, getting lighter all the way, so the
+ * order also reads without telling red from green. Text turns dark on the light
+ * half, where it contrasts better than light text.
+ */
+function shareColors(share) {
+	if (Number.isNaN(share)) return {};
 	const t = Math.max(0, Math.min(1, share));
-	return `hsla(${Math.round(110 * t)}, 50%, 50%, 0.4)`;
+	return {
+		backgroundColor: `hsl(${Math.round(110 * t)}, 40%, ${22 + 24 * t}%)`,
+		color: t >= 0.5 ? "var(--primary-ink)" : undefined,
+	};
 }
 
 const NAME_COLUMN_REM = 10;
 const CELL_REM = 6.5;
 const HEADER_BUTTON =
-	"block w-full cursor-pointer rounded-none border-0 bg-transparent px-3 py-2 text-left font-normal hover:bg-[#ffffff14]";
+	"block w-full cursor-pointer rounded-none border-0 bg-transparent px-3 py-2 text-left font-normal hover:bg-[#ffffff14] focus-visible:-outline-offset-2";
 
 const TIP_WIDTH_PX = 256;
 const TIP_GAP_PX = 6;
@@ -208,7 +227,7 @@ export function ResultsMatrix({
 					<thead>
 						<tr>
 							{/* The pickers above already name the sides. */}
-							<th className="border border-line bg-surface-muted p-0" />
+							<th className="sticky left-0 z-20 border border-line bg-surface-muted p-0" />
 							{columns.map(({ unit, index }) => (
 								<th
 									key={`${unit.name}-${index}`}
@@ -230,7 +249,8 @@ export function ResultsMatrix({
 					<tbody>
 						{rows.map(({ row, index: rowIndex }) => (
 							<tr key={`${row.attacker.name}-${rowIndex}`}>
-								<th className="border border-line bg-surface-muted p-0 text-left">
+								{/* Sticky, so attacker names stay visible while scrolling sideways. */}
+								<th className="sticky left-0 z-10 border border-line bg-surface-muted p-0 text-left">
 									<SortableHeader
 										showPoints={showPoints}
 										unit={row.attacker}
@@ -247,7 +267,9 @@ export function ResultsMatrix({
 									const isSelected =
 										selectedCell?.row === rowIndex &&
 										selectedCell?.col === colIndex;
-									const shown = formatValue(metric, value.value);
+									const shown = value.unarmed
+										? "—"
+										: formatValue(metric, value.value);
 									const detail = METRICS[metric].detail?.(
 										cell.totals,
 										row.attacker,
@@ -258,8 +280,12 @@ export function ResultsMatrix({
 										// the hover shade sits on the cell for the same reason.
 										<td
 											key={`${cell.defenderName}-${colIndex}`}
-											style={{ backgroundColor: shareColor(value.share) }}
-											title={`${METRICS[metric].label}: ${shown}${detail ? ` (${detail} removed)` : ""} · ${Math.round(value.share * 100)}% of ${METRICS[metric].full}`}
+											style={shareColors(value.share)}
+											title={
+												value.unarmed
+													? "No weapons in this phase"
+													: `${METRICS[metric].label}: ${shown}${detail ? ` (${detail} removed)` : ""} · ${Math.round(value.share * 100)}% of ${METRICS[metric].full}`
+											}
 											className={`h-px border p-0 hover:shadow-[inset_0_0_0_999px_#ffffff14] ${
 												isSelected
 													? "outline outline-2 -outline-offset-2 outline-ink"
@@ -271,9 +297,13 @@ export function ResultsMatrix({
 												onClick={() =>
 													onSelectCell({ row: rowIndex, col: colIndex })
 												}
-												className="block h-full w-full cursor-pointer rounded-none border-0 bg-transparent px-3 py-2.5 text-center font-normal"
+												className="block h-full w-full cursor-pointer rounded-none border-0 bg-transparent px-3 py-2.5 text-center font-normal text-inherit focus-visible:-outline-offset-2"
 											>
-												<b className="text-base">{shown}</b>
+												<b
+													className={`text-base ${value.unarmed ? "font-normal text-muted" : ""}`}
+												>
+													{shown}
+												</b>
 											</button>
 										</td>
 									);

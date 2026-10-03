@@ -3,7 +3,11 @@ import { runSimulation } from "../simulateClient";
 
 /**
  * Monte-Carlo result for a pairing, computed in a Web Worker.
- * @returns `{ result, error }`; `result` is `null` while the simulation runs
+ *
+ * While a new pairing is simulated, the previous result is kept and marked
+ * `stale`, so charts stay mounted and animate to the new values instead of
+ * disappearing and redrawing.
+ * @returns `{ result, error, stale }`; `result` is `null` only before the first run
  */
 export function useSimulation(pairing, { trials = 10000, seed = 1 } = {}) {
 	const [state, setState] = useState({ pairing: null, result: null });
@@ -20,38 +24,9 @@ export function useSimulation(pairing, { trials = 10000, seed = 1 } = {}) {
 		};
 	}, [pairing, trials, seed]);
 
-	// A result for a previous pairing is stale.
-	return state.pairing === pairing
-		? { result: state.result, error: state.error }
-		: { result: null, error: null };
-}
-
-/**
- * Monte-Carlo results for several pairings; `null` until all have finished.
- * `pairings` must be memoised, or the simulations restart on every render.
- */
-export function useSimulations(pairings, { trials = 10000, seed = 1 } = {}) {
-	const [state, setState] = useState({ pairings: null, entries: [] });
-
-	useEffect(() => {
-		let cancelled = false;
-		Promise.allSettled(
-			pairings.map((pairing) => runSimulation(pairing, { trials, seed })),
-		).then((settled) => {
-			if (cancelled) return;
-			setState({
-				pairings,
-				entries: settled.map((outcome) =>
-					outcome.status === "fulfilled"
-						? { result: outcome.value, error: null }
-						: { result: null, error: outcome.reason?.message },
-				),
-			});
-		});
-		return () => {
-			cancelled = true;
-		};
-	}, [pairings, trials, seed]);
-
-	return state.pairings === pairings ? state.entries : null;
+	return {
+		result: state.result,
+		error: state.pairing === pairing ? state.error : null,
+		stale: state.pairing !== pairing,
+	};
 }

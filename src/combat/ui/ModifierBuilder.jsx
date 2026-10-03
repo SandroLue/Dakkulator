@@ -379,6 +379,8 @@ export function ModifierBuilder({
 	attackerList = "A",
 }) {
 	const [editingId, setEditingId] = useState(null);
+	// Resetting deletes the user's own work, so it asks first.
+	const [confirmReset, setConfirmReset] = useState(false);
 
 	const replace = (next) =>
 		onChange(
@@ -440,6 +442,41 @@ export function ModifierBuilder({
 				>
 					+ Add modifier
 				</button>
+				{confirmReset ? (
+					<span className="inline-flex items-center gap-1">
+						<span className="hint">
+							Delete all {modifiers.length} modifiers?
+						</span>
+						<button
+							type="button"
+							className="button-small button-danger"
+							onClick={() => {
+								onChange([]);
+								setEditingId(null);
+								setConfirmReset(false);
+							}}
+						>
+							Delete
+						</button>
+						<button
+							type="button"
+							className="button-small"
+							onClick={() => setConfirmReset(false)}
+						>
+							Cancel
+						</button>
+					</span>
+				) : (
+					<button
+						type="button"
+						className="button-small"
+						title="Delete every modifier of these two armies"
+						onClick={() => setConfirmReset(true)}
+						disabled={!modifiers.length}
+					>
+						Reset
+					</button>
+				)}
 			</div>
 			<div className="flex flex-col gap-4 p-4">
 				<p className="hint">

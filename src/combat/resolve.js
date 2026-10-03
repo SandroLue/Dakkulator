@@ -181,7 +181,7 @@ function compound(counts, unit) {
 }
 
 /** The FNP a weapon's stream was resolved against, else the group's. */
-export function streamFnp(sampling, groupFnp) {
+function streamFnp(sampling, groupFnp) {
 	return sampling?.fnp !== undefined ? sampling.fnp : groupFnp;
 }
 

@@ -36,6 +36,11 @@ jobs:
           cache: "npm"
       - name: Clean install dependencies
         run: npm ci
+      # A failing check stops the deploy, so a broken build never goes live.
+      - name: Lint
+        run: npm run lint
+      - name: Test
+        run: npm test
       - name: Build
         run: npm run build
         env:

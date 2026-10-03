@@ -11,13 +11,18 @@ import {
 } from "recharts";
 import { abilityLabels } from "../weaponKeywords";
 import { phaseLabel } from "./ContextControls";
-import { AXIS, GRID, TOOLTIP, axisLabel, percent } from "./charts";
+import {
+	AXIS,
+	BAR_ANIMATION,
+	GRID,
+	TOOLTIP,
+	axisLabel,
+	percent,
+} from "./charts";
+import { format } from "./metrics";
 import { useSimulation } from "./useSimulation";
 
 const ROUNDS_CAP = 10;
-
-const format = (value, digits = 2) =>
-	Number.isFinite(value) ? value.toFixed(digits) : "∞";
 
 const describeGroup = (group) =>
 	group
@@ -184,12 +189,39 @@ function HowToRead() {
 	);
 }
 
-export function MatchupDetail({
-	pairing,
-	rowCells = [],
-	pinned = false,
-	onTogglePin,
-}) {
+const weaponName = (w) => String(w.weaponName ?? "").replace(/^[➤▸▶>*\s]+/, "");
+
+/** The pairing's result in one plain sentence, before any tables. */
+function summarise(pairing) {
+	const groups = pairing.groups || [];
+	const t = pairing.totals;
+	const wounds = groups.reduce((sum, g) => sum + g.count * g.wounds, 0);
+	const models = groups.reduce((sum, g) => sum + g.count, 0);
+	if (!(t.woundsLost >= 0.05)) {
+		return `Barely damages ${pairing.defenderName}: ${format(t.woundsLost, 1)} of ${wounds} wounds per round.`;
+	}
+
+	// The weapon that removes the most, when there is more than one.
+	const byWeapon = new Map();
+	for (const w of pairing.weapons) {
+		const name = weaponName(w);
+		byWeapon.set(name, (byWeapon.get(name) || 0) + (w.woundsLost || 0));
+	}
+	const [top] = [...byWeapon.entries()].sort((a, b) => b[1] - a[1]);
+	const mostly = byWeapon.size > 1 && top ? `, mostly with the ${top[0]}` : "";
+
+	const share = Math.round((t.woundsLost / (wounds || 1)) * 100);
+	const removed =
+		models > 1
+			? `Kills ${format(t.modelsSlain, 1)} of ${models} models per round (${share}% of its wounds)`
+			: `Removes ${format(t.woundsLost, 1)} of ${wounds} wounds per round (${share}%)`;
+	const rounds = Number.isFinite(t.roundsToClear)
+		? `; about ${format(t.roundsToClear, 1)} rounds to clear on average`
+		: "";
+	return `${removed}${mostly}. Clears it in one round ${Math.round(t.pDestroyed * 100)}% of the time${rounds}.`;
+}
+
+export function MatchupDetail({ pairing, rowCells = [] }) {
 	const { result: simulation, error: simulationError } = useSimulation(
 		pairing,
 		{
@@ -241,20 +273,8 @@ export function MatchupDetail({
 							: describeGroup(groups[0])}
 					</div>
 				</div>
-				<div className="print-display-none ml-auto flex items-center gap-2">
-					{onTogglePin && (
-						<button
-							type="button"
-							className="button-small"
-							aria-pressed={pinned}
-							onClick={onTogglePin}
-						>
-							{pinned ? "Unpin from comparison" : "Pin to compare"}
-						</button>
-					)}
-					<HowToRead />
-				</div>
 			</div>
+			<p className="text-base">{summarise(pairing)}</p>
 			{pairing.appliedModifiers?.length > 0 && (
 				<div className="flex flex-wrap items-center gap-1.5 text-xs">
 					<span className="text-muted">Modifiers applied:</span>
@@ -266,87 +286,96 @@ export function MatchupDetail({
 				</div>
 			)}
 
-			<div className="overflow-x-auto">
-				<table className="w-full border-collapse text-sm">
-					<thead>
-						<tr>
-							{COLUMNS.map(([label]) => (
-								<th
-									key={label}
-									className="section-label border border-line bg-surface-muted px-3 py-2 text-left"
-								>
-									{label}
-								</th>
-							))}
-							{multiGroup && (
-								<th className="section-label border border-line bg-surface-muted px-3 py-2 text-left">
-									Target
-								</th>
-							)}
-						</tr>
-					</thead>
-					<tbody>
-						{pairing.weapons.map((weapon, index) => (
-							<WeaponRow
-								key={`${weapon.weaponName}-${index}`}
-								weapon={weapon}
-								groups={groups}
-								multiGroup={multiGroup}
-							/>
-						))}
-						<tr>
-							<td className="border border-line px-3 py-2">Total</td>
-							{COLUMNS.slice(1).map(([label, accessor]) => (
-								<td
-									key={label}
-									className={`border border-line px-3 py-2 ${
-										label === "Wounds lost" ? "font-bold" : ""
-									}`}
-								>
-									{accessor({
-										...sumWeapons(pairing.weapons),
-										// The exact total, as in the results matrix.
-										woundsLost: pairing.totals.woundsLost,
-									})}
-								</td>
-							))}
-							{multiGroup && <td className="border border-line px-3 py-2" />}
-						</tr>
-						{pairing.alternatives?.length > 0 && (
+			{/* The dice maths, for whoever wants to check the numbers. */}
+			<details>
+				<summary className="section-label cursor-pointer py-1 hover:text-ink">
+					Show breakdown
+				</summary>
+				<div className="flex justify-end pb-2 print-display-none">
+					<HowToRead />
+				</div>
+				<div className="overflow-x-auto">
+					<table className="w-full border-collapse text-sm">
+						<thead>
 							<tr>
-								<td
-									colSpan={COLUMNS.length + (multiGroup ? 1 : 0)}
-									className="section-label border border-line bg-surface-muted px-3 py-2"
-								>
-									Alternative profiles — not counted in the totals
-								</td>
+								{COLUMNS.map(([label]) => (
+									<th
+										key={label}
+										className="section-label border border-line bg-surface-muted px-3 py-2 text-left"
+									>
+										{label}
+									</th>
+								))}
+								{multiGroup && (
+									<th className="section-label border border-line bg-surface-muted px-3 py-2 text-left">
+										Target
+									</th>
+								)}
 							</tr>
-						)}
-						{pairing.alternatives?.map((weapon, index) => (
-							<WeaponRow
-								key={`alt-${weapon.weaponName}-${index}`}
-								weapon={weapon}
-								groups={groups}
-								multiGroup={multiGroup}
-								muted
-							/>
-						))}
-					</tbody>
-				</table>
-			</div>
+						</thead>
+						<tbody>
+							{pairing.weapons.map((weapon, index) => (
+								<WeaponRow
+									key={`${weapon.weaponName}-${index}`}
+									weapon={weapon}
+									groups={groups}
+									multiGroup={multiGroup}
+								/>
+							))}
+							<tr>
+								<td className="border border-line px-3 py-2">Total</td>
+								{COLUMNS.slice(1).map(([label, accessor]) => (
+									<td
+										key={label}
+										className={`border border-line px-3 py-2 ${
+											label === "Wounds lost" ? "font-bold" : ""
+										}`}
+									>
+										{accessor({
+											...sumWeapons(pairing.weapons),
+											// The exact total, as in the results matrix.
+											woundsLost: pairing.totals.woundsLost,
+										})}
+									</td>
+								))}
+								{multiGroup && <td className="border border-line px-3 py-2" />}
+							</tr>
+							{pairing.alternatives?.length > 0 && (
+								<tr>
+									<td
+										colSpan={COLUMNS.length + (multiGroup ? 1 : 0)}
+										className="section-label border border-line bg-surface-muted px-3 py-2"
+									>
+										Alternative profiles — not counted in the totals
+									</td>
+								</tr>
+							)}
+							{pairing.alternatives?.map((weapon, index) => (
+								<WeaponRow
+									key={`alt-${weapon.weaponName}-${index}`}
+									weapon={weapon}
+									groups={groups}
+									multiGroup={multiGroup}
+									muted
+								/>
+							))}
+						</tbody>
+					</table>
+				</div>
+			</details>
 
 			<div className="grid gap-4 md:grid-cols-2">
 				<div className="flex flex-col gap-4">
-					{!simulation && (
-						<div className="hint">
-							{simulationError
-								? `Monte-Carlo failed: ${simulationError}`
-								: "Running Monte-Carlo…"}
-						</div>
-					)}
 					<div className="flex flex-col gap-1">
 						<div className="section-label">Wounds lost in one round</div>
 						<div style={{ height: 220 }}>
+							{!chartData && (
+								<div className="hint flex h-full items-center justify-center">
+									{simulationError
+										? `Monte-Carlo failed: ${simulationError}`
+										: "Running Monte-Carlo…"}
+								</div>
+							)}
 							{chartData && (
 								<ResponsiveContainer width="100%" height="100%">
 									<BarChart
@@ -369,7 +398,7 @@ export function MatchupDetail({
 											dataKey="probability"
 											fill="var(--primary-color)"
 											radius={[3, 3, 0, 0]}
-											isAnimationActive={false}
+											{...BAR_ANIMATION}
 										/>
 									</BarChart>
 								</ResponsiveContainer>
@@ -406,7 +435,7 @@ export function MatchupDetail({
 											dataKey="probability"
 											fill="var(--color-accent)"
 											radius={[3, 3, 0, 0]}
-											isAnimationActive={false}
+											{...BAR_ANIMATION}
 										/>
 									</BarChart>
 								</ResponsiveContainer>
@@ -452,7 +481,7 @@ export function MatchupDetail({
 										dataKey="rounds"
 										fill="var(--primary-color)"
 										radius={[0, 3, 3, 0]}
-										isAnimationActive={false}
+										{...BAR_ANIMATION}
 									>
 										<LabelList
 											dataKey="label"

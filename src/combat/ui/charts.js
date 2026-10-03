@@ -29,14 +29,16 @@ export const TOOLTIP = {
 	},
 };
 
-/** Distinct on the dark theme and still readable when printed. */
-export const SERIES_COLORS = [
-	"#7cb342",
-	"#f5c518",
-	"#5b9bd5",
-	"#e5493c",
-	"#b57edc",
-	"#4dd0c8",
-	"#ff9f43",
-	"#ece9d8",
-];
+const reducedMotion =
+	typeof window !== "undefined" &&
+	window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+/**
+ * Bars glide from the previous values to the new ones when the data changes
+ * (e.g. after a battlefield toggle) instead of being redrawn from scratch.
+ */
+export const BAR_ANIMATION = {
+	isAnimationActive: !reducedMotion,
+	animationDuration: 300,
+	animationEasing: "ease-out",
+};

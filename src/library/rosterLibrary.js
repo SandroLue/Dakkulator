@@ -9,7 +9,7 @@ import { SUPPORTED_GAME } from "./loadRoster";
  * the id of the list used as attacker / defender.
  */
 
-export const SLOTS = ["A", "B"];
+const SLOTS = ["A", "B"];
 const LIBRARY_KEY = "library";
 const SLOT_KEYS = { A: "slotA", B: "slotB" };
 const LEGACY_KEYS = ["rosters", "rosterA", "rosterB"];
@@ -68,10 +68,6 @@ export function describeEntry(entry) {
 		name: entry.roster.name || "Unnamed list",
 		faction: forces[0]?.catalog || "",
 		points: entry.roster.cost?.points ?? 0,
-		unitCount: forces.reduce(
-			(sum, force) => sum + (force.units?.length || 0),
-			0,
-		),
 	};
 }
 

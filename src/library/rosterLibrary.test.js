@@ -88,7 +88,6 @@ describe("describeEntry", () => {
 			name: "Bugs",
 			faction: "Xenos - Tyranids",
 			points: 1995,
-			unitCount: 2,
 		});
 	});
 });

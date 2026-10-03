@@ -29,10 +29,19 @@ export { parseWeaponAbilities } from "./weaponKeywords";
 const cache = new Map();
 const MAX_CACHE_ENTRIES = 200;
 
+// Units are keyed by identity: two lists can share unit names and points but
+// differ in wargear, and a re-imported list must not reuse old results.
+const unitIds = new WeakMap();
+let nextUnitId = 0;
+const unitId = (unit) => {
+	if (!unitIds.has(unit)) unitIds.set(unit, ++nextUnitId);
+	return unitIds.get(unit);
+};
+
 function cacheKey(attackerUnits, defenderUnits, ctx, options) {
 	return JSON.stringify([
-		attackerUnits.map((u) => `${u.name}#${u.cost?.points}`),
-		defenderUnits.map((u) => `${u.name}#${u.cost?.points}`),
+		attackerUnits.map(unitId),
+		defenderUnits.map(unitId),
 		ctx,
 		options,
 	]);

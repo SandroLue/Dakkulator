@@ -83,7 +83,7 @@ function validKeys(value) {
 		: [];
 }
 
-function validAttachments(value) {
+export function validAttachments(value) {
 	if (!value || typeof value !== "object" || Array.isArray(value)) return {};
 	return Object.fromEntries(
 		Object.entries(value).filter(
@@ -95,7 +95,7 @@ function validAttachments(value) {
 	);
 }
 
-function validContext(value) {
+export function validContext(value) {
 	const defaults = defaultContext();
 	const ctx = {};
 	if (!value || typeof value !== "object") return defaults;

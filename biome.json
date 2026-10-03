@@ -43,5 +43,10 @@
 		"formatter": {
 			"quoteStyle": "double"
 		}
+	},
+	"css": {
+		"formatter": {
+			"enabled": false
+		}
 	}
 }

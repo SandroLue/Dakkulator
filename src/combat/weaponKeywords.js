@@ -8,7 +8,7 @@ import { mean, parseDiceExpr } from "./diceExpr";
  * unrecognised is kept in `unknown[]` for the UI to surface.
  */
 
-export function emptyAbilities() {
+function emptyAbilities() {
 	return {
 		anti: [],
 		assault: false,

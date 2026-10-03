@@ -38,6 +38,10 @@ export default {
 			fontFamily: {
 				display: ["Bangers", "Impact", "sans-serif"],
 			},
+			// The smallest text stays readable on the 13px base (~10.4px).
+			fontSize: {
+				xs: ["0.8rem", { lineHeight: "1.1rem" }],
+			},
 		},
 	},
 	plugins: [],

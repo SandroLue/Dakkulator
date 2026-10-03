@@ -1,6 +1,6 @@
 import { METRICS } from "./metrics";
 
-/** The metric picker; the results matrix and the comparison share one selection. */
+/** The metric picker above the results matrix. */
 export function MetricSelect({ value, onChange, className = "" }) {
 	return (
 		<select

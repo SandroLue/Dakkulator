@@ -293,6 +293,22 @@ describe("calculateMatchup", () => {
 		expect(result.totals.hits).toBeCloseTo(10, 10);
 	});
 
+	it("does not reuse results for a different unit with the same name and points", () => {
+		// Same datasheet and cost, better wargear: every Boltgun deals 2 damage.
+		const upgraded = structuredClone(boltgunSquad);
+		const visit = (node) => {
+			if (!node || typeof node !== "object") return;
+			if (node.name === "Boltgun" && "damage" in node) node.damage = "2";
+			for (const value of Object.values(node)) visit(value);
+		};
+		visit(upgraded);
+		const plain = calculateMatchup([boltgunSquad], [marineTarget]);
+		const better = calculateMatchup([upgraded], [marineTarget]);
+		expect(better.rows[0].cells[0].totals.woundsLost).toBeGreaterThan(
+			plain.rows[0].cells[0].totals.woundsLost,
+		);
+	});
+
 	it("builds a row per attacker and a cell per defender", () => {
 		const result = calculateMatchup(
 			[boltgunSquad],

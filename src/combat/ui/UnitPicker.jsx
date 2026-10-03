@@ -1,111 +1,15 @@
 import { useMemo, useState } from "react";
-import { attachLeaders, canLead, isLeader } from "../attach";
+import { canLead, isLeader } from "../attach";
 import { buildDefenderProfiles, getUnitTotalModels } from "../profiles";
-
-export function unitKey(forceIndex, unitIndex) {
-	return `${forceIndex}:${unitIndex}`;
-}
-
-const unitSignature = (unit) =>
-	JSON.stringify(unit, (_key, value) =>
-		value instanceof Map || value instanceof Set ? [...value] : value,
-	);
-
-/** Gives entries that share a name a "#n" suffix so they can be told apart. */
-function numberLabels(entries, baseOf) {
-	const totals = new Map();
-	for (const entry of entries) {
-		const base = baseOf(entry);
-		totals.set(base, (totals.get(base) || 0) + 1);
-	}
-	const seen = new Map();
-	for (const entry of entries) {
-		const base = baseOf(entry);
-		const ordinal = (seen.get(base) || 0) + 1;
-		seen.set(base, ordinal);
-		entry.label = totals.get(base) > 1 ? `${base} #${ordinal}` : base;
-	}
-	return entries;
-}
-
-/**
- * Lists every unit in the roster, identical copies included, so each copy can
- * take its own leader. `applyAttachments` groups identical units afterwards.
- */
-export function listUnits(roster) {
-	const entries = [];
-	(roster?.forces || []).forEach((force, forceIndex) => {
-		(force.units || []).forEach((unit, unitIndex) => {
-			entries.push({
-				key: unitKey(forceIndex, unitIndex),
-				force: force.catalog || force.name,
-				role: unit.role || "NONE",
-				unit,
-				baseLabel: unit.name,
-			});
-		});
-	});
-	return numberLabels(entries, (entry) => entry.baseLabel);
-}
-
-/**
- * Replaces every led unit with the attached unit it forms and drops the leaders
- * that joined it, so the rest of the calculator sees one unit. Units that are
- * then identical — e.g. two Custodian Guard squads, or two Custodian Guard
- * squads each led by a Blade Champion — are shown once; `key` is the first
- * copy's, `copies` counts them.
- */
-export function applyAttachments(entries, attachments = {}) {
-	const byKey = new Map(entries.map((entry) => [entry.key, entry]));
-	const leadersFor = new Map();
-	const attached = new Set();
-
-	for (const [leaderKey, bodyguardKey] of Object.entries(attachments)) {
-		const leader = byKey.get(leaderKey);
-		const bodyguard = byKey.get(bodyguardKey);
-		if (!leader || !bodyguard || leaderKey === bodyguardKey) continue;
-		if (!leadersFor.has(bodyguardKey)) leadersFor.set(bodyguardKey, []);
-		leadersFor.get(bodyguardKey).push(leader);
-		attached.add(leaderKey);
-	}
-
-	const formed = entries
-		.filter((entry) => !attached.has(entry.key))
-		.map((entry) => {
-			const leaders = leadersFor.get(entry.key);
-			if (!leaders) return entry;
-			return {
-				...entry,
-				unit: attachLeaders(
-					entry.unit,
-					leaders.map((leader) => leader.unit),
-				),
-				baseLabel: [entry.unit.name, ...leaders.map((l) => l.unit.name)].join(
-					" + ",
-				),
-			};
-		});
-
-	const grouped = [];
-	const bySignature = new Map();
-	for (const entry of formed) {
-		const signature = `${entry.force}|${unitSignature(entry.unit)}`;
-		const existing = bySignature.get(signature);
-		if (existing) {
-			existing.copies++;
-			continue;
-		}
-		const group = { ...entry, copies: 1 };
-		bySignature.set(signature, group);
-		grouped.push(group);
-	}
-	// Copies with different gear or size stay apart; number those.
-	return numberLabels(grouped, (entry) => entry.baseLabel);
-}
+import { applyAttachments, listUnits, suggestAttachments } from "../unitList";
 
 function AttachControls({ entries, attachments, onChange }) {
 	const leaders = entries.filter((entry) => isLeader(entry.unit));
 	if (!leaders.length) return null;
+
+	// Leaders with only one datasheet to join can be attached in one click.
+	const suggested = suggestAttachments(entries, attachments);
+	const suggestions = Object.keys(suggested).length;
 
 	const setLeader = (leaderKey, bodyguardKey) => {
 		const next = { ...attachments };
@@ -119,9 +23,21 @@ function AttachControls({ entries, attachments, onChange }) {
 			<summary className="section-label cursor-pointer hover:text-ink">
 				Attach leaders ({Object.keys(attachments).length})
 			</summary>
-			<p className="hint py-2">
-				Rosters do not record this — leaders join a unit before the battle.
-			</p>
+			<div className="flex flex-wrap items-center gap-2 py-2">
+				<p className="hint flex-1">
+					Rosters do not record this — leaders join a unit before the battle.
+				</p>
+				{suggestions > 0 && (
+					<button
+						type="button"
+						className="button-small"
+						title="Attach every leader that can only join one kind of unit"
+						onClick={() => onChange({ ...attachments, ...suggested })}
+					>
+						Attach the obvious ones ({suggestions})
+					</button>
+				)}
+			</div>
 			<div className="flex flex-col gap-1.5 pb-1">
 				{leaders.map((leader) => {
 					const options = entries.filter((entry) =>

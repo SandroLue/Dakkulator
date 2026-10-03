@@ -11,8 +11,8 @@ import { parseWeaponAbilities } from "./weaponKeywords";
  * Modifiers are plain JSON so they can be persisted and used as a cache key.
  */
 
-export const LISTS = ["A", "B", "any"];
-export const ROLES = ["attacking", "defending"];
+const LISTS = ["A", "B", "any"];
+const ROLES = ["attacking", "defending"];
 export const PHASES = ["any", "shooting", "fight"];
 export const REROLL_MODES = ["none", "ones", "all"];
 
@@ -154,7 +154,7 @@ const REROLL_RANK = { none: 0, ones: 1, all: 2 };
 const bestReroll = (a, b) => (REROLL_RANK[b] > REROLL_RANK[a] ? b : a);
 
 /** Grants weapon abilities on top of a weapon's own; duplicates keep the best (§24.02). */
-export function mergeAbilities(base, extra) {
+function mergeAbilities(base, extra) {
 	const merged = {
 		...base,
 		anti: base.anti.map((a) => ({ ...a })),
