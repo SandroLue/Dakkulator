@@ -10,6 +10,7 @@ import {
 	YAxis,
 } from "recharts";
 import { abilityLabels } from "../weaponKeywords";
+import { phaseLabel } from "./ContextControls";
 import { AXIS, GRID, TOOLTIP, axisLabel, percent } from "./charts";
 import { useSimulation } from "./useSimulation";
 
@@ -200,7 +201,7 @@ export function MatchupDetail({
 	if (!pairing?.weapons.length) {
 		return (
 			<div className="panel p-4 text-sm text-muted">
-				No weapons for this pairing in the {pairing?.phase} phase.
+				No weapons for this pairing ({phaseLabel(pairing?.phase)}).
 			</div>
 		);
 	}
@@ -234,7 +235,7 @@ export function MatchupDetail({
 						{pairing.defenderName}
 					</div>
 					<div className="text-sm text-muted">
-						<span className="capitalize">{pairing.phase}</span> ·{" "}
+						{phaseLabel(pairing.phase)} ·{" "}
 						{groups.length > 1
 							? `${groups.length} allocation groups, in the order the defender must use`
 							: describeGroup(groups[0])}

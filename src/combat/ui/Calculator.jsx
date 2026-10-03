@@ -63,8 +63,10 @@ function ShareBanner({
 			<span>{notice}</span>
 			{waiting && (
 				<span>
-					To restore the unit selection, choose “{pending.rosterNames.A}” as
-					List A and “{pending.rosterNames.B}” as List B.
+					To restore the unit selection, choose “{pending.rosterNames.A}” as the{" "}
+					{pending.reversed ? "defender" : "attacker"} and “
+					{pending.rosterNames.B}” as the{" "}
+					{pending.reversed ? "attacker" : "defender"}.
 				</span>
 			)}
 			{waiting && rosterA && rosterB && (
@@ -156,6 +158,8 @@ export function Calculator({
 	onReversedChange,
 	listSelect,
 }) {
+	// Every unit starts selected, so both unit lists stay closed until needed.
+	const [choosingUnits, setChoosingUnits] = useState(false);
 	const [selectedA, setSelectedA] = useState(() => allUnitKeys(rosterA));
 	const [selectedB, setSelectedB] = useState(() => allUnitKeys(rosterB));
 	const [attachA, setAttachA] = useState({});
@@ -163,7 +167,7 @@ export function Calculator({
 	const [ctx, setCtx] = useState(bestCaseContext);
 	const [selectedCell, setSelectedCell] = useState(null);
 	// Shared by the results matrix and the comparison panel.
-	const [metric, setMetric] = useState("pointsReturn");
+	const [metric, setMetric] = useState("pDestroyed");
 	const [pins, setPins] = useState([]);
 	const [shownReversed, setShownReversed] = useState(reversed);
 	// Swapping roles transposes the matrix, so the selected cell no longer applies.
@@ -367,13 +371,15 @@ export function Calculator({
 				onChange={setSelectedA}
 				attachments={attachA}
 				onAttachmentsChange={setAttachA}
+				open={choosingUnits}
+				onOpenChange={setChoosingUnits}
 			/>
 			<button
 				type="button"
 				onClick={() => onReversedChange?.(!reversed)}
 				aria-label="Swap attacker and defender"
 				title="Swap attacker and defender (keeps the unit selection)"
-				className="self-center justify-self-center rounded-full p-2 md:mt-[42px] md:self-start"
+				className="self-center justify-self-center rounded-full p-2"
 			>
 				<svg
 					viewBox="0 0 24 24"
@@ -395,6 +401,8 @@ export function Calculator({
 				onChange={setSelectedB}
 				attachments={attachB}
 				onAttachmentsChange={setAttachB}
+				open={choosingUnits}
+				onOpenChange={setChoosingUnits}
 			/>
 		</div>
 	);
@@ -413,8 +421,18 @@ export function Calculator({
 				{pickers}
 				<div className="panel border-danger px-4 py-4 text-danger">
 					The combat calculator supports Warhammer 40,000 11th Edition only.
-					{!is11th(rosterA) && <div>List A is {rosterA.gameType}.</div>}
-					{!is11th(rosterB) && <div>List B is {rosterB.gameType}.</div>}
+					{!is11th(rosterA) && (
+						<div>
+							The {reversed ? "defender" : "attacker"} list is{" "}
+							{rosterA.gameType}.
+						</div>
+					)}
+					{!is11th(rosterB) && (
+						<div>
+							The {reversed ? "attacker" : "defender"} list is{" "}
+							{rosterB.gameType}.
+						</div>
+					)}
 				</div>
 			</div>
 		);
@@ -445,23 +463,6 @@ export function Calculator({
 		<div className="flex w-full flex-col gap-5">
 			{banner}
 			{pickers}
-
-			<div className="print-display-none">
-				<ContextControls ctx={ctx} onChange={setCtx} />
-			</div>
-
-			<div className="print-display-none">
-				<ModifierBuilder
-					abilities={unmodelledAbilities(matchup)}
-					attackerList={reversed ? "B" : "A"}
-					modifiers={modifiers}
-					onChange={saveModifiers}
-					unitNames={unitNames}
-					keywords={unitKeywords}
-					abilityTexts={abilityTexts}
-					listNames={{ A: rosterA.name, B: rosterB.name }}
-				/>
-			</div>
 
 			<PhaseTabs
 				phase={ctx.phase}
@@ -510,6 +511,23 @@ export function Calculator({
 					Select at least one unit in each list.
 				</div>
 			)}
+
+			<div className="print-display-none">
+				<ContextControls ctx={ctx} onChange={setCtx} />
+			</div>
+
+			<div className="print-display-none">
+				<ModifierBuilder
+					abilities={unmodelledAbilities(matchup)}
+					attackerList={reversed ? "B" : "A"}
+					modifiers={modifiers}
+					onChange={saveModifiers}
+					unitNames={unitNames}
+					keywords={unitKeywords}
+					abilityTexts={abilityTexts}
+					listNames={{ A: rosterA.name, B: rosterB.name }}
+				/>
+			</div>
 
 			<div className="print-display-none flex flex-wrap items-center justify-center gap-3 text-sm">
 				<button type="button" onClick={copyShareLink}>

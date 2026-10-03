@@ -12,7 +12,13 @@ import { REROLL_OPTIONS, Segmented, Toggle } from "./controls";
 
 const STEPS = [-3, -2, -1, 0, 1, 2, 3];
 const THRESHOLDS = [2, 3, 4, 5, 6];
-const LIST_TAG = { A: "A", B: "B", any: "A+B" };
+/** "Attacker" / "Defender" for a stored list, which follows the swap button. */
+const sideOf = (list, attackerList) =>
+	list === "any"
+		? "Both armies"
+		: list === attackerList
+			? "Attacker"
+			: "Defender";
 // Only abilities that change the calculation are worth granting.
 const GRANTABLE_ABILITIES = [
 	"LETHAL HITS",
@@ -142,6 +148,7 @@ function ModifierEditor({
 	onDelete,
 	unitNames,
 	listNames,
+	attackerList,
 	keywords,
 	abilityText,
 }) {
@@ -188,16 +195,19 @@ function ModifierEditor({
 						onChange={(e) => set("name", e.target.value)}
 					/>
 				</Field>
-				<Field label="List">
+				<Field label="Army">
 					<select
 						value={modifier.list}
 						onChange={(e) =>
 							onChange({ ...modifier, list: e.target.value, unitName: "" })
 						}
 					>
-						<option value="A">List A — {listNames.A}</option>
-						<option value="B">List B — {listNames.B}</option>
-						<option value="any">Both lists</option>
+						{[attackerList, attackerList === "A" ? "B" : "A"].map((list) => (
+							<option key={list} value={list}>
+								{sideOf(list, attackerList)} — {listNames[list]}
+							</option>
+						))}
+						<option value="any">Both armies</option>
 					</select>
 				</Field>
 				<Field label="Unit" hint="a leader covers its attached unit">
@@ -384,7 +394,7 @@ export function ModifierBuilder({
 		setEditingId(null);
 	};
 	const scopeLabel = (m) => {
-		const list = m.list === "any" ? "Both lists" : `List ${m.list}`;
+		const list = sideOf(m.list, attackerList);
 		return m.unitName ? `${list} · ${m.unitName}` : `${list} · every unit`;
 	};
 	const active = modifiers.filter((m) => m.enabled).length;
@@ -442,7 +452,7 @@ export function ModifierBuilder({
 						<summary className="cursor-pointer">
 							<span className="section-label">
 								Not yet applied — {side.label.toLowerCase()} ·{" "}
-								{listNames?.[side.list] ?? `List ${side.list}`}
+								{listNames?.[side.list] ?? side.label}
 							</span>{" "}
 							<span className="badge">{side.names.length}</span>
 						</summary>
@@ -452,7 +462,7 @@ export function ModifierBuilder({
 									type="button"
 									key={name}
 									className="button-small button-ghost rounded-full border-dashed border-line-strong"
-									title={`Add a modifier for ${name} (${side.label.toLowerCase()}, List ${side.list})`}
+									title={`Add a modifier for ${name} (${side.label.toLowerCase()})`}
 									onClick={() =>
 										add({ name, list: side.list, role: side.role })
 									}
@@ -477,7 +487,7 @@ export function ModifierBuilder({
 										className="rounded-r-none"
 									>
 										{label}
-										<span className="hint">{LIST_TAG[m.list]}</span>
+										<span className="hint">{sideOf(m.list, attackerList)}</span>
 									</Toggle>
 									<button
 										type="button"
@@ -518,6 +528,7 @@ export function ModifierBuilder({
 						onDelete={() => remove(editing.id)}
 						unitNames={unitNames}
 						listNames={listNames}
+						attackerList={attackerList}
 						keywords={keywords}
 						abilityText={abilityTexts.get(editing.name.trim().toLowerCase())}
 					/>

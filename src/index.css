@@ -31,6 +31,9 @@
 		--color-link: #f5c518;
 		--color-danger: #e5493c;
 		--color-danger-transparent: #e5493c1f;
+		/* Calmer red for destructive buttons; error text keeps the full red. */
+		--color-danger-muted: #ba665e;
+		--color-danger-muted-transparent: #ba665e1f;
 		--color-info: #5b9bd5;
 		--color-info-transparent: #5b9bd51f;
 		--hazard: repeating-linear-gradient(
@@ -398,13 +401,13 @@
 	}
 
 	.button-danger {
-		color: var(--color-danger);
-		border-color: var(--color-danger);
+		color: var(--color-danger-muted);
+		border-color: var(--color-danger-muted);
 		background-color: transparent;
 	}
 	.button-danger:hover {
-		border-color: var(--color-danger);
-		background-color: var(--color-danger-transparent);
+		border-color: var(--color-danger-muted);
+		background-color: var(--color-danger-muted-transparent);
 	}
 
 	/* On/off switches: highlighted when pressed instead of a checkbox. */
@@ -423,6 +426,11 @@
 	}
 	.toggle[aria-pressed="true"]:hover {
 		background-color: var(--primary-color-hover);
+	}
+	/* Text-only buttons with a smaller `.hint`: share one baseline instead of centring. */
+	.toggle,
+	.segmented > button {
+		align-items: baseline;
 	}
 	.toggle[aria-pressed="true"] .hint {
 		color: inherit;
@@ -464,7 +472,7 @@
 	/* Phase switch heading the results: everything below it belongs to the chosen phase. */
 	.phase-tabs {
 		display: flex;
-		margin-top: 80px;
+		margin-top: 24px;
 		border-bottom: 2px solid var(--color-border-strong);
 	}
 	.phase-tabs > button {

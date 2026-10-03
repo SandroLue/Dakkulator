@@ -57,36 +57,27 @@ export function resolveUnitVsUnit(
 	const ctx = defaultContext(context);
 	const attackerAbilities = mineUnitAbilities(attacker);
 	const defenderAbilities = mineUnitAbilities(defender);
-
-	const selected = selectModifiers(options.modifiers, {
-		attacker,
-		defender,
-		attackerList: options.attackerList,
-		defenderList: options.defenderList,
-		phase: ctx.phase,
-	});
-	const modified = applyUserModifiers({
-		ctx: {
-			...ctx,
-			// `Stealth` always grants the benefit of cover against ranged attacks.
-			targetInCover: ctx.targetInCover || defenderAbilities.stealth,
-		},
-		profiles: grantAbilities(
-			buildAttackerProfiles(attacker, ctx.phase),
-			appliedToAll(ctx),
-		),
-		groups: buildDefenderProfiles(defender),
-		...selected,
-	});
-	const { groups } = modified;
-	const effectiveCtx = modified.ctx;
 	const targetModelCount = getUnitTotalModels(defender) || 1;
-	const profiles = pickBestProfiles(
-		modified.profiles,
-		groups,
-		targetModelCount,
-		effectiveCtx,
+
+	// "Shooting + Fight" resolves the shooting phase, then the fight phase, against
+	// the same unit; each phase keeps its own modifiers and context.
+	const phases = ctx.phase === "combined" ? ["shooting", "fight"] : [ctx.phase];
+	const parts = phases.map((phase) =>
+		preparePhase(attacker, defender, { ...ctx, phase }, options, {
+			stealth: defenderAbilities.stealth,
+			targetModelCount,
+		}),
 	);
+	// Every phase builds the same allocation groups, in the same order.
+	const { groups } = parts[0];
+	const attacks = parts.flatMap((part) =>
+		part.profiles.map((profile) => ({ profile, part })),
+	);
+	const alternativeAttacks = parts.flatMap((part) =>
+		(part.profiles.alternatives || []).map((profile) => ({ profile, part })),
+	);
+	const profiles = attacks.map((a) => a.profile);
+	profiles.alternatives = alternativeAttacks.map((a) => a.profile);
 
 	const empty = {
 		attackerName: attacker?.name,
@@ -97,7 +88,7 @@ export function resolveUnitVsUnit(
 		groups,
 		groupIndex: 0,
 		groupStreams: [],
-		appliedModifiers: modified.applied,
+		appliedModifiers: [...new Set(parts.flatMap((part) => part.applied))],
 		totals: {
 			attacks: 0,
 			declaredAttacks: 0,
@@ -127,12 +118,12 @@ export function resolveUnitVsUnit(
 		failedSaves: 0,
 		mortalWounds: 0,
 	};
-	const fullStreams = groups.map((base) =>
-		profiles.map((profile) =>
+	const fullStreams = groups.map((_, index) =>
+		attacks.map(({ profile, part }) =>
 			computeAttackStreams(
 				profile,
-				{ ...base, targetModelCount },
-				effectiveCtx,
+				{ ...part.groups[index], targetModelCount },
+				part.ctx,
 			),
 		),
 	);
@@ -176,14 +167,17 @@ export function resolveUnitVsUnit(
 	const pDestroyed = allocation.pDestroyed;
 
 	// Unchosen profiles, each resolved alone against a fresh first group; never totalled.
-	const firstGroup = { ...groups[0], targetModelCount };
-	const alternatives = (profiles.alternatives || []).map((profile) => ({
-		...computeAttackStreams(profile, firstGroup, effectiveCtx),
+	const alternatives = alternativeAttacks.map(({ profile, part }) => ({
+		...computeAttackStreams(
+			profile,
+			{ ...part.groups[0], targetModelCount },
+			part.ctx,
+		),
 		woundsLost: woundsLostAlone(
 			profile,
-			groups,
+			part.groups,
 			targetModelCount,
-			effectiveCtx,
+			part.ctx,
 		),
 		groupIndex: 0,
 	}));
@@ -224,6 +218,44 @@ export function resolveUnitVsUnit(
 			pointsReturnPer100:
 				attackerPoints > 0 ? (pointsRemoved / attackerPoints) * 100 : 0,
 		},
+	};
+}
+
+/**
+ * One phase's attacker profiles, defender groups and context, with the user
+ * modifiers for that phase applied and the best firing modes chosen.
+ */
+function preparePhase(attacker, defender, ctx, options, defenderState) {
+	const selected = selectModifiers(options.modifiers, {
+		attacker,
+		defender,
+		attackerList: options.attackerList,
+		defenderList: options.defenderList,
+		phase: ctx.phase,
+	});
+	const modified = applyUserModifiers({
+		ctx: {
+			...ctx,
+			// `Stealth` always grants the benefit of cover against ranged attacks.
+			targetInCover: ctx.targetInCover || defenderState.stealth,
+		},
+		profiles: grantAbilities(
+			buildAttackerProfiles(attacker, ctx.phase),
+			appliedToAll(ctx),
+		),
+		groups: buildDefenderProfiles(defender),
+		...selected,
+	});
+	return {
+		ctx: modified.ctx,
+		groups: modified.groups,
+		applied: modified.applied,
+		profiles: pickBestProfiles(
+			modified.profiles,
+			modified.groups,
+			defenderState.targetModelCount,
+			modified.ctx,
+		),
 	};
 }
 

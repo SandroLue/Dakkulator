@@ -71,13 +71,14 @@ const SUSTAINED_OPTIONS = [
 ];
 
 export function bestCaseContext() {
-	return defaultContext(
-		Object.fromEntries(
+	return defaultContext({
+		phase: "combined",
+		...Object.fromEntries(
 			TOGGLE_GROUPS.flatMap((group) => group.toggles)
 				.filter((t) => t.on)
 				.map((t) => [t.key, true]),
 		),
-	);
+	});
 }
 
 const MODIFIERS = [
@@ -96,26 +97,29 @@ const REROLLS = [
 	{ key: "rerollWounds", label: "Re-roll wounds" },
 ];
 
+const SHOOTING_ICON = (
+	<>
+		<circle cx="12" cy="12" r="8" />
+		<circle cx="12" cy="12" r="1.5" fill="currentColor" />
+		<path d="M12 1v5M12 18v5M1 12h5M18 12h5" />
+	</>
+);
+const FIGHT_ICON = (
+	<path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2M14.5 6.5 18 3h3v3l-3.5 3.5M5 14l4 4M7 17l-3 3M3 19l2 2" />
+);
+
 const PHASES = [
 	{
-		key: "shooting",
-		label: "Shooting phase",
-		icon: (
-			<>
-				<circle cx="12" cy="12" r="8" />
-				<circle cx="12" cy="12" r="1.5" fill="currentColor" />
-				<path d="M12 1v5M12 18v5M1 12h5M18 12h5" />
-			</>
-		),
+		key: "combined",
+		label: "Shooting + Fight",
+		icons: [SHOOTING_ICON, FIGHT_ICON],
 	},
-	{
-		key: "fight",
-		label: "Fight phase",
-		icon: (
-			<path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2M14.5 6.5 18 3h3v3l-3.5 3.5M5 14l4 4M7 17l-3 3M3 19l2 2" />
-		),
-	},
+	{ key: "shooting", label: "Shooting", icons: [SHOOTING_ICON] },
+	{ key: "fight", label: "Fight", icons: [FIGHT_ICON] },
 ];
+
+export const phaseLabel = (key) =>
+	PHASES.find((p) => p.key === key)?.label ?? key;
 
 export function PhaseTabs({ phase, onChange, controls }) {
 	return (
@@ -129,17 +133,21 @@ export function PhaseTabs({ phase, onChange, controls }) {
 					aria-controls={controls}
 					onClick={() => onChange(p.key)}
 				>
-					<svg
-						viewBox="0 0 24 24"
-						aria-hidden="true"
-						fill="none"
-						stroke="currentColor"
-						strokeWidth="2"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-					>
-						{p.icon}
-					</svg>
+					{p.icons.map((icon, index) => (
+						<svg
+							// biome-ignore lint/suspicious/noArrayIndexKey: fixed, static list
+							key={index}
+							viewBox="0 0 24 24"
+							aria-hidden="true"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+						>
+							{icon}
+						</svg>
+					))}
 					{p.label}
 				</button>
 			))}

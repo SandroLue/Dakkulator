@@ -12,12 +12,22 @@ const woundShare = (t) =>
 
 /**
  * `get` fills the cell; `share` colours it on a fixed 0–1 scale so the colour
- * means the same in every matchup (1 = `full`). ★ marks the best attacker
- * against each defender. `short` heads the comparison table.
+ * means the same in every matchup (1 = `full`). `short` heads the comparison
+ * table; `usesPoints` shows unit costs in the matrix.
  */
 export const METRICS = {
+	pDestroyed: {
+		label: "Chance to clear in one round",
+		short: "Chance to clear",
+		get: (t) => t.pDestroyed * 100,
+		digits: 0,
+		suffix: "%",
+		share: (t) => t.pDestroyed,
+		full: "certain kill",
+	},
 	pointsReturn: {
-		label: "Efficiency (% of own cost removed)",
+		usesPoints: true,
+		label: "Efficiency as percent of own cost destroyed",
 		short: "Efficiency",
 		get: (t) => t.pointsReturnPer100,
 		digits: 0,
@@ -29,7 +39,7 @@ export const METRICS = {
 			`${format(t.pointsRemoved ?? 0, 0)} / ${defender.cost?.points ?? 0} pts`,
 	},
 	woundsLost: {
-		label: "Wounds lost",
+		label: "Wounds dealt",
 		short: "Wounds lost",
 		get: (t) => t.woundsLost,
 		share: woundShare,
@@ -44,6 +54,7 @@ export const METRICS = {
 		full: "unit wiped",
 	},
 	pointsKilled: {
+		usesPoints: true,
 		label: "Points killed",
 		short: "Points killed",
 		get: (t) => t.pointsKilled,
@@ -53,7 +64,8 @@ export const METRICS = {
 		full: "unit wiped",
 	},
 	damagePer100Points: {
-		label: "Wounds lost / 100 pts",
+		usesPoints: true,
+		label: "Wounds dealt per 100 points spent",
 		short: "Wounds / 100 pts",
 		get: (t) => t.damagePer100Points,
 		digits: 1,
@@ -63,17 +75,8 @@ export const METRICS = {
 			(attacker.cost?.points || 1),
 		full: "own cost traded",
 	},
-	pDestroyed: {
-		label: "P(unit destroyed)",
-		short: "P(destroyed)",
-		get: (t) => t.pDestroyed * 100,
-		digits: 0,
-		suffix: "%",
-		share: (t) => t.pDestroyed,
-		full: "certain kill",
-	},
 	roundsToClear: {
-		label: "Rounds to clear",
+		label: "Rounds needed to clear the unit",
 		short: "Rounds to clear",
 		get: (t) => t.roundsToClear,
 		digits: 1,
@@ -83,8 +86,13 @@ export const METRICS = {
 	},
 };
 
-/** A metric's value for one pairing, formatted with its digits and suffix. */
+/** A metric value, formatted with its digits and suffix. */
+export function formatValue(key, value) {
+	const { digits = 2, suffix = "" } = METRICS[key];
+	return `${format(value, digits)}${suffix}`;
+}
+
+/** A metric's value for one pairing, formatted. */
 export function formatMetric(key, totals) {
-	const { get, digits = 2, suffix = "" } = METRICS[key];
-	return `${format(get(totals), digits)}${suffix}`;
+	return formatValue(key, METRICS[key].get(totals));
 }

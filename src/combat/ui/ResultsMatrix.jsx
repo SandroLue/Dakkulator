@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { getUnitTotalModels } from "../profiles";
 import { MetricSelect } from "./MetricSelect";
-import { METRICS, format } from "./metrics";
+import { METRICS, formatValue } from "./metrics";
 
 // Higher is better and never negative; also the sort score.
 function goodness(value, lowerIsBetter) {
@@ -10,10 +10,10 @@ function goodness(value, lowerIsBetter) {
 	return value > 0 && Number.isFinite(value) ? 1 / value : 0;
 }
 
-/** `grid[row][col]` = `{ value, score, share, best }`; `best` = top attacker in its column. */
+/** `grid[row][col]` = `{ value, score, share }`. */
 function buildGrid(matchup, metric) {
 	const { get, share, lowerIsBetter = false } = METRICS[metric];
-	const grid = matchup.rows.map((row) =>
+	return matchup.rows.map((row) =>
 		row.cells.map((cell, col) => {
 			const value = get(cell.totals);
 			return {
@@ -23,29 +23,18 @@ function buildGrid(matchup, metric) {
 			};
 		}),
 	);
-	const colBest = matchup.defenderUnits.map((_, col) =>
-		Math.max(0, ...grid.map((row) => row[col].score)),
-	);
-	return grid.map((row) =>
-		row.map((cell, col) => ({
-			...cell,
-			best: colBest[col] > 0 && cell.score === colBest[col],
-		})),
-	);
 }
 
 const byScoreDesc = (a, b) =>
 	a.score === b.score ? 0 : a.score < b.score ? 1 : -1;
 
-/** Neutral → yellow at 50% → Ork green at 100%. */
+/** Red at 0 → yellow at 50% → green at 100%. */
 function shareColor(share) {
-	if (!(share > 0)) return "transparent";
-	const t = Math.min(1, share);
-	const k = Math.max(0, t - 0.5) * 2;
-	return `hsla(${48 + 40 * k}, ${95 - 45 * k}%, 55%, ${0.08 + 0.57 * t})`;
+	if (Number.isNaN(share)) return "transparent";
+	const t = Math.max(0, Math.min(1, share));
+	return `hsla(${Math.round(110 * t)}, 50%, 50%, 0.4)`;
 }
 
-const LEGEND = `linear-gradient(90deg, ${shareColor(0.01)}, ${shareColor(0.5)}, ${shareColor(1)})`;
 const NAME_COLUMN_REM = 10;
 const CELL_REM = 6.5;
 const HEADER_BUTTON =
@@ -86,7 +75,15 @@ function HeaderTip({ tip }) {
 	);
 }
 
-function SortableHeader({ unit, active, onClick, arrow, placement, onTip }) {
+function SortableHeader({
+	unit,
+	active,
+	onClick,
+	arrow,
+	placement,
+	onTip,
+	showPoints,
+}) {
 	const show = (event) =>
 		onTip({
 			name: unit.name,
@@ -114,7 +111,7 @@ function SortableHeader({ unit, active, onClick, arrow, placement, onTip }) {
 				{active && `${arrow} `}
 				{unit.name}
 			</div>
-			<div className="hint">{unit.cost?.points ?? 0} pts</div>
+			{showPoints && <div className="hint">{unit.cost?.points ?? 0} pts</div>}
 		</button>
 	);
 }
@@ -138,7 +135,8 @@ export function ResultsMatrix({
 	const [rowSort, setRowSort] = useState(null);
 	// null | { by: attacker row index, desc }
 	const [colSort, setColSort] = useState(null);
-	const { digits = 2, suffix = "" } = METRICS[metric];
+	// Unit costs only matter to the points-based metrics.
+	const showPoints = Boolean(METRICS[metric].usesPoints);
 	const grid = useMemo(() => buildGrid(matchup, metric), [matchup, metric]);
 
 	const toggleSort = (by) => (current) =>
@@ -176,25 +174,20 @@ export function ResultsMatrix({
 
 	return (
 		<div className="panel overflow-hidden">
-			<div className="panel-header print-display-none text-sm">
-				<span className="panel-title">Results</span>
-				<span className="hint">
-					Click a cell for the breakdown, a name to sort by it.
-				</span>
-				<MetricSelect
-					value={metric}
-					onChange={onMetricChange}
-					className="ml-auto"
-				/>
-			</div>
-			<div className="print-display-none flex items-center gap-2 px-4 pt-3 text-xs text-muted">
-				<span>0</span>
-				<span
-					className="h-2 w-40 rounded-full border border-line"
-					style={{ background: LEGEND }}
-				/>
-				<span>{METRICS[metric].full}</span>
-				<span className="ml-2">★ best attacker vs this target</span>
+			<div className="print-display-none flex items-center gap-3 px-4 pt-3 text-sm">
+				<MetricSelect value={metric} onChange={onMetricChange} />
+				{(rowSort || colSort) && (
+					<button
+						type="button"
+						className="button-small ml-auto"
+						onClick={() => {
+							setRowSort(null);
+							setColSort(null);
+						}}
+					>
+						Reset sort
+					</button>
+				)}
 			</div>
 			<div className="overflow-x-auto p-4">
 				<table
@@ -214,25 +207,15 @@ export function ResultsMatrix({
 					</colgroup>
 					<thead>
 						<tr>
-							<th className="section-label border border-line bg-surface-muted p-0 text-left">
-								<button
-									type="button"
-									title="Reset sorting"
-									onClick={() => {
-										setRowSort(null);
-										setColSort(null);
-									}}
-									className={`${HEADER_BUTTON} section-label`}
-								>
-									Attacker \ Defender
-								</button>
-							</th>
+							{/* The pickers above already name the sides. */}
+							<th className="border border-line bg-surface-muted p-0" />
 							{columns.map(({ unit, index }) => (
 								<th
 									key={`${unit.name}-${index}`}
 									className="border border-line bg-surface-muted p-0 text-left"
 								>
 									<SortableHeader
+										showPoints={showPoints}
 										unit={unit}
 										active={rowSort?.by === index}
 										arrow={rowSort?.desc ? "▼" : "▲"}
@@ -249,6 +232,7 @@ export function ResultsMatrix({
 							<tr key={`${row.attacker.name}-${rowIndex}`}>
 								<th className="border border-line bg-surface-muted p-0 text-left">
 									<SortableHeader
+										showPoints={showPoints}
 										unit={row.attacker}
 										active={colSort?.by === rowIndex}
 										arrow={colSort?.desc ? "▶" : "◀"}
@@ -263,7 +247,7 @@ export function ResultsMatrix({
 									const isSelected =
 										selectedCell?.row === rowIndex &&
 										selectedCell?.col === colIndex;
-									const shown = `${format(value.value, digits)}${suffix}`;
+									const shown = formatValue(metric, value.value);
 									const detail = METRICS[metric].detail?.(
 										cell.totals,
 										row.attacker,
@@ -275,7 +259,7 @@ export function ResultsMatrix({
 										<td
 											key={`${cell.defenderName}-${colIndex}`}
 											style={{ backgroundColor: shareColor(value.share) }}
-											title={`${METRICS[metric].label}: ${shown}${detail ? ` (${detail} removed)` : ""} · ${Math.round(value.share * 100)}% of ${METRICS[metric].full}${value.best ? " · ★ best attacker vs this target" : ""}`}
+											title={`${METRICS[metric].label}: ${shown}${detail ? ` (${detail} removed)` : ""} · ${Math.round(value.share * 100)}% of ${METRICS[metric].full}`}
 											className={`h-px border p-0 hover:shadow-[inset_0_0_0_999px_#ffffff14] ${
 												isSelected
 													? "outline outline-2 -outline-offset-2 outline-ink"
@@ -289,10 +273,7 @@ export function ResultsMatrix({
 												}
 												className="block h-full w-full cursor-pointer rounded-none border-0 bg-transparent px-3 py-2.5 text-center font-normal"
 											>
-												<b className="text-base">
-													{value.best && "★ "}
-													{shown}
-												</b>
+												<b className="text-base">{shown}</b>
 											</button>
 										</td>
 									);

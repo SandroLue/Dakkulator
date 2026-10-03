@@ -13,7 +13,7 @@ const VERSION = 1;
 const MAX_HASH_LENGTH = 50000;
 const MAX_MODIFIERS = 100;
 const UNIT_KEY = /^\d{1,4}:\d{1,4}$/;
-const PHASES = ["shooting", "fight"];
+const PHASES = ["combined", "shooting", "fight"];
 
 function toBase64Url(text) {
 	let binary = "";

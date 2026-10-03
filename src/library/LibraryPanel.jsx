@@ -6,7 +6,40 @@ const dateFormat = new Intl.DateTimeFormat(undefined, {
 	year: "numeric",
 });
 
-export function UploadArea({ onFiles, busy, messages }) {
+/** A panel whose body folds away behind its header. */
+function CollapsiblePanel({ title, aside, defaultOpen = false, children }) {
+	const [open, setOpen] = useState(defaultOpen);
+	return (
+		<div className="panel flex min-w-0 flex-col overflow-hidden">
+			<button
+				type="button"
+				aria-expanded={open}
+				onClick={() => setOpen(!open)}
+				className={`panel-header w-full cursor-pointer rounded-none border-0 bg-transparent text-left font-normal hover:bg-surface-muted ${
+					open ? "" : "border-b-0"
+				}`}
+			>
+				<svg
+					viewBox="0 0 24 24"
+					aria-hidden="true"
+					className={`h-4 w-4 shrink-0 text-muted transition-transform ${open ? "rotate-90" : ""}`}
+					fill="none"
+					stroke="currentColor"
+					strokeWidth="2.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
+				>
+					<path d="m9 6 6 6-6 6" />
+				</svg>
+				<span className="panel-title">{title}</span>
+				{aside && <span className="hint ml-auto">{aside}</span>}
+			</button>
+			{open && children}
+		</div>
+	);
+}
+
+export function UploadArea({ onFiles, busy, messages, defaultOpen = false }) {
 	const inputRef = useRef(null);
 	const [dragging, setDragging] = useState(false);
 
@@ -26,10 +59,7 @@ export function UploadArea({ onFiles, busy, messages }) {
 	};
 
 	return (
-		<div className="panel flex min-w-0 flex-col">
-			<div className="panel-header">
-				<span className="panel-title">Add army lists</span>
-			</div>
+		<CollapsiblePanel title="Add army lists" defaultOpen={defaultOpen}>
 			<div className="flex flex-1 flex-col gap-3 p-4">
 				<label
 					htmlFor="roster-upload"
@@ -91,25 +121,22 @@ export function UploadArea({ onFiles, busy, messages }) {
 					</div>
 				))}
 			</div>
-		</div>
+		</CollapsiblePanel>
 	);
 }
 
-export function RosterTable({ entries, slots, onRemove }) {
+export function RosterTable({ entries, slots, slotLabel, onRemove }) {
 	const [confirmId, setConfirmId] = useState(null);
 	const usage = (id) =>
 		["A", "B"]
 			.filter((slot) => slots[slot] === id)
-			.map((slot) => `List ${slot}`);
+			.map((slot) => slotLabel(slot));
 
 	return (
-		<div className="panel flex min-w-0 flex-col overflow-hidden">
-			<div className="panel-header">
-				<span className="panel-title">Your army lists</span>
-				<span className="hint ml-auto">
-					{entries.length} saved in this browser
-				</span>
-			</div>
+		<CollapsiblePanel
+			title="Your army lists"
+			aside={`${entries.length} saved in this browser`}
+		>
 			{entries.length === 0 ? (
 				<div className="flex flex-1 items-center justify-center p-6 text-sm text-muted">
 					No lists yet — upload one to get started.
@@ -119,10 +146,11 @@ export function RosterTable({ entries, slots, onRemove }) {
 					<table className="w-full border-collapse text-sm">
 						<thead className="section-label sticky top-0 bg-surface-muted text-left">
 							<tr>
-								<th className="px-4 py-2 font-bold">List</th>
+								<th className="w-[40%] min-w-[10rem] px-4 py-2 font-bold">
+									List
+								</th>
 								<th className="px-3 py-2 font-bold">Faction</th>
 								<th className="px-3 py-2 text-right font-bold">Points</th>
-								<th className="px-3 py-2 text-right font-bold">Units</th>
 								<th className="px-3 py-2 font-bold">Added</th>
 								<th className="px-3 py-2 font-bold">In use</th>
 								<th className="px-4 py-2">
@@ -136,15 +164,14 @@ export function RosterTable({ entries, slots, onRemove }) {
 									key={entry.id}
 									className="border-t border-line transition-colors hover:bg-surface-muted"
 								>
-									<td className="px-4 py-2 font-semibold">{entry.name}</td>
+									<td className="min-w-[10rem] px-4 py-2 font-semibold">
+										{entry.name}
+									</td>
 									<td className="px-3 py-2 text-muted">
 										{entry.faction.replace(/^(Imperium|Chaos|Xenos) - /, "")}
 									</td>
 									<td className="px-3 py-2 text-right tabular-nums">
 										{entry.points}
-									</td>
-									<td className="px-3 py-2 text-right tabular-nums">
-										{entry.unitCount}
 									</td>
 									<td className="whitespace-nowrap px-3 py-2 text-muted">
 										{dateFormat.format(entry.addedAt)}
@@ -154,7 +181,7 @@ export function RosterTable({ entries, slots, onRemove }) {
 											{usage(entry.id).map((label) => (
 												<span
 													key={label}
-													className={`badge ${label === "List B" ? "bg-accent-soft text-accent" : ""}`}
+													className={`badge ${label === "Defender" ? "bg-accent-soft text-accent" : ""}`}
 												>
 													{label}
 												</span>
@@ -185,7 +212,7 @@ export function RosterTable({ entries, slots, onRemove }) {
 										) : (
 											<button
 												type="button"
-												className="button-small button-ghost"
+												className="button-small button-danger"
 												aria-label={`Delete ${entry.name}`}
 												onClick={() => setConfirmId(entry.id)}
 											>
@@ -199,19 +226,20 @@ export function RosterTable({ entries, slots, onRemove }) {
 					</table>
 				</div>
 			)}
-		</div>
+		</CollapsiblePanel>
 	);
 }
 
 export function SlotSelect({ slot, label, entries, value, onChange }) {
 	const id = `slot-${slot}`;
 	return (
-		<div className="flex min-w-0 flex-1 flex-col gap-1.5">
-			<label htmlFor={id} className="panel-title">
+		<div className="flex min-w-0 flex-1 items-center gap-3">
+			<label htmlFor={id} className="panel-title w-24 shrink-0">
 				{label}
 			</label>
 			<select
 				id={id}
+				className="min-w-0 flex-1"
 				value={value ?? ""}
 				onChange={(event) => onChange(event.target.value || null)}
 				disabled={!entries.length}

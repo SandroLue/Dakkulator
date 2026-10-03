@@ -363,7 +363,7 @@ round n + 1) and `medianRounds`.
 
 ```js
 {
-  phase: "shooting" | "fight",
+  phase: "shooting" | "fight" | "combined", // combined = shooting, then fight, vs one unit
   withinHalfRange: false,     // [RAPID FIRE], [MELTA]
   remainedStationary: false,  // [HEAVY]
   charged: false,             // [LANCE]

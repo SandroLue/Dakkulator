@@ -11,51 +11,49 @@ const unitSignature = (unit) =>
 		value instanceof Map || value instanceof Set ? [...value] : value,
 	);
 
-/** Lists the roster's units, keeping one of each set of identical copies. */
-export function listUnits(roster) {
-	const entries = [];
-	const bySignature = new Map();
-	(roster?.forces || []).forEach((force, forceIndex) => {
-		(force.units || []).forEach((unit, unitIndex) => {
-			const signature = unitSignature(unit);
-			const existing = bySignature.get(signature);
-			if (existing) {
-				existing.copies++;
-				return;
-			}
-			const entry = {
-				key: unitKey(forceIndex, unitIndex),
-				force: force.catalog || force.name,
-				role: unit.role || "NONE",
-				unit,
-				copies: 1,
-			};
-			bySignature.set(signature, entry);
-			entries.push(entry);
-		});
-	});
-
-	// Copies of a datasheet with different gear or size remain; number them so
-	// the attachment dropdowns can tell them apart.
+/** Gives entries that share a name a "#n" suffix so they can be told apart. */
+function numberLabels(entries, baseOf) {
 	const totals = new Map();
 	for (const entry of entries) {
-		totals.set(entry.unit.name, (totals.get(entry.unit.name) || 0) + 1);
+		const base = baseOf(entry);
+		totals.set(base, (totals.get(base) || 0) + 1);
 	}
 	const seen = new Map();
 	for (const entry of entries) {
-		const ordinal = (seen.get(entry.unit.name) || 0) + 1;
-		seen.set(entry.unit.name, ordinal);
-		entry.label =
-			totals.get(entry.unit.name) > 1
-				? `${entry.unit.name} #${ordinal}`
-				: entry.unit.name;
+		const base = baseOf(entry);
+		const ordinal = (seen.get(base) || 0) + 1;
+		seen.set(base, ordinal);
+		entry.label = totals.get(base) > 1 ? `${base} #${ordinal}` : base;
 	}
 	return entries;
 }
 
 /**
+ * Lists every unit in the roster, identical copies included, so each copy can
+ * take its own leader. `applyAttachments` groups identical units afterwards.
+ */
+export function listUnits(roster) {
+	const entries = [];
+	(roster?.forces || []).forEach((force, forceIndex) => {
+		(force.units || []).forEach((unit, unitIndex) => {
+			entries.push({
+				key: unitKey(forceIndex, unitIndex),
+				force: force.catalog || force.name,
+				role: unit.role || "NONE",
+				unit,
+				baseLabel: unit.name,
+			});
+		});
+	});
+	return numberLabels(entries, (entry) => entry.baseLabel);
+}
+
+/**
  * Replaces every led unit with the attached unit it forms and drops the leaders
- * that joined it, so the rest of the calculator sees one unit.
+ * that joined it, so the rest of the calculator sees one unit. Units that are
+ * then identical — e.g. two Custodian Guard squads, or two Custodian Guard
+ * squads each led by a Blade Champion — are shown once; `key` is the first
+ * copy's, `copies` counts them.
  */
 export function applyAttachments(entries, attachments = {}) {
 	const byKey = new Map(entries.map((entry) => [entry.key, entry]));
@@ -70,9 +68,8 @@ export function applyAttachments(entries, attachments = {}) {
 		leadersFor.get(bodyguardKey).push(leader);
 		attached.add(leaderKey);
 	}
-	if (!attached.size) return entries;
 
-	return entries
+	const formed = entries
 		.filter((entry) => !attached.has(entry.key))
 		.map((entry) => {
 			const leaders = leadersFor.get(entry.key);
@@ -83,9 +80,27 @@ export function applyAttachments(entries, attachments = {}) {
 					entry.unit,
 					leaders.map((leader) => leader.unit),
 				),
-				label: [entry.label, ...leaders.map((l) => l.label)].join(" + "),
+				baseLabel: [entry.unit.name, ...leaders.map((l) => l.unit.name)].join(
+					" + ",
+				),
 			};
 		});
+
+	const grouped = [];
+	const bySignature = new Map();
+	for (const entry of formed) {
+		const signature = `${entry.force}|${unitSignature(entry.unit)}`;
+		const existing = bySignature.get(signature);
+		if (existing) {
+			existing.copies++;
+			continue;
+		}
+		const group = { ...entry, copies: 1 };
+		bySignature.set(signature, group);
+		grouped.push(group);
+	}
+	// Copies with different gear or size stay apart; number those.
+	return numberLabels(grouped, (entry) => entry.baseLabel);
 }
 
 function AttachControls({ entries, attachments, onChange }) {
@@ -100,7 +115,7 @@ function AttachControls({ entries, attachments, onChange }) {
 	};
 
 	return (
-		<details className="border-b border-line px-4 py-2">
+		<details className="border-t border-line px-4 py-2">
 			<summary className="section-label cursor-pointer hover:text-ink">
 				Attach leaders ({Object.keys(attachments).length})
 			</summary>
@@ -119,7 +134,7 @@ function AttachControls({ entries, attachments, onChange }) {
 								value={attachments[leader.key] ?? ""}
 								onChange={(event) => setLeader(leader.key, event.target.value)}
 								disabled={!options.length}
-								className="max-w-[55%] text-xs"
+								className="w-[40%] shrink-0 text-xs"
 							>
 								<option value="">
 									{options.length ? "— on its own —" : "— no eligible unit —"}
@@ -177,10 +192,11 @@ export function UnitPicker({
 	onChange,
 	attachments = {},
 	onAttachmentsChange,
+	// Both pickers open together, so the caller owns this.
+	open = false,
+	onOpenChange,
 }) {
 	const [search, setSearch] = useState("");
-	// Every unit starts selected, so the list stays out of the way until needed.
-	const [open, setOpen] = useState(false);
 	const raw = useMemo(() => listUnits(roster), [roster]);
 	const entries = useMemo(
 		() => applyAttachments(raw, attachments),
@@ -206,6 +222,11 @@ export function UnitPicker({
 			GROUP_ORDER.indexOf(a.group) - GROUP_ORDER.indexOf(b.group),
 	);
 
+	// `selected` keeps the keys of attached leaders too; count the units as shown.
+	const selectedCount = entries.filter((entry) =>
+		selected.has(entry.key),
+	).length;
+
 	const toggle = (key) => {
 		const next = new Set(selected);
 		if (next.has(key)) next.delete(key);
@@ -215,15 +236,10 @@ export function UnitPicker({
 
 	return (
 		<div className="panel flex min-w-0 flex-1 flex-col overflow-hidden">
-			<div className="panel-header items-end">
-				<div className="min-w-0 flex-1">{header}</div>
+			<div className="panel-header flex-nowrap border-b-0">
+				<div className="flex min-w-0 flex-1">{header}</div>
 				{roster && (
-					<span className="flex items-center gap-2 pb-1">
-						<span className={`badge ${selected.size ? "" : "opacity-60"}`}>
-							{selected.size === entries.length
-								? `All ${entries.length} units`
-								: `${selected.size} of ${entries.length} units`}
-						</span>
+					<span className="flex shrink-0 items-center gap-2">
 						{open && (
 							<>
 								<button
@@ -248,7 +264,7 @@ export function UnitPicker({
 									type="button"
 									className="button-small button-ghost"
 									onClick={() => onChange(new Set())}
-									disabled={!selected.size}
+									disabled={!selectedCount}
 								>
 									Clear
 								</button>
@@ -258,37 +274,29 @@ export function UnitPicker({
 							type="button"
 							className="button-small"
 							aria-expanded={open}
-							onClick={() => setOpen(!open)}
+							onClick={() => onOpenChange?.(!open)}
 						>
 							{open ? "Done" : "Choose units"}
 						</button>
 					</span>
 				)}
 			</div>
-			{!roster ? (
-				<div className="px-4 py-10 text-center text-sm text-muted">
-					Choose an army list to pick its units.
-				</div>
-			) : (
-				<>
-					{onAttachmentsChange && (
-						<AttachControls
-							entries={raw}
-							attachments={attachments}
-							onChange={onAttachmentsChange}
-						/>
-					)}
-					{open && (
-						<UnitList
-							search={search}
-							onSearch={setSearch}
-							groups={groups}
-							empty={!filtered.length}
-							selected={selected}
-							onToggle={toggle}
-						/>
-					)}
-				</>
+			{roster && onAttachmentsChange && (
+				<AttachControls
+					entries={raw}
+					attachments={attachments}
+					onChange={onAttachmentsChange}
+				/>
+			)}
+			{roster && open && (
+				<UnitList
+					search={search}
+					onSearch={setSearch}
+					groups={groups}
+					empty={!filtered.length}
+					selected={selected}
+					onToggle={toggle}
+				/>
 			)}
 		</div>
 	);
@@ -297,7 +305,7 @@ export function UnitPicker({
 function UnitList({ search, onSearch, groups, empty, selected, onToggle }) {
 	return (
 		<>
-			<div className="border-b border-line px-4 py-3">
+			<div className="border-y border-line px-4 py-3">
 				<input
 					type="search"
 					value={search}

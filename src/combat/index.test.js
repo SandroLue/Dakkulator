@@ -58,6 +58,65 @@ describe("resolveUnitVsUnit", () => {
 		expect(result.totals.wounds).toBeCloseTo(6.6667, 3);
 	});
 
+	it("'Shooting + Fight' resolves shooting, then fighting, against one unit", () => {
+		const shoot = resolveUnitVsUnit(boltgunSquad, marineTarget, {
+			phase: "shooting",
+		});
+		const fight = resolveUnitVsUnit(boltgunSquad, marineTarget, {
+			phase: "fight",
+		});
+		const both = resolveUnitVsUnit(boltgunSquad, marineTarget, {
+			phase: "combined",
+		});
+		const names = (r) => r.weapons.map((w) => w.weaponName);
+		expect(names(both)).toEqual([...names(shoot), ...names(fight)]);
+		expect(both.totals.declaredAttacks).toBeCloseTo(50, 6);
+		expect(both.totals.hits).toBeCloseTo(
+			shoot.totals.hits + fight.totals.hits,
+			3,
+		);
+		expect(both.totals.woundsLost).toBeGreaterThan(fight.totals.woundsLost);
+		expect(both.totals.woundsLost).toBeLessThanOrEqual(
+			shoot.totals.woundsLost + fight.totals.woundsLost + 1e-9,
+		);
+		expect(both.totals.pDestroyed).toBeGreaterThanOrEqual(
+			Math.max(shoot.totals.pDestroyed, fight.totals.pDestroyed),
+		);
+	});
+
+	it("'Shooting + Fight' applies phase-specific modifiers to their phase only", () => {
+		const options = {
+			modifiers: [
+				createModifier({ list: "A", phase: "shooting", hitModifier: 1 }),
+			],
+			attackerList: "A",
+			defenderList: "B",
+		};
+		const shoot = resolveUnitVsUnit(
+			boltgunSquad,
+			marineTarget,
+			{ phase: "shooting" },
+			options,
+		);
+		const fight = resolveUnitVsUnit(
+			boltgunSquad,
+			marineTarget,
+			{ phase: "fight" },
+			options,
+		);
+		const both = resolveUnitVsUnit(
+			boltgunSquad,
+			marineTarget,
+			{ phase: "combined" },
+			options,
+		);
+		expect(both.totals.hits).toBeCloseTo(
+			shoot.totals.hits + fight.totals.hits,
+			3,
+		);
+		expect(both.appliedModifiers).toHaveLength(1);
+	});
+
 	it("resolves the fight phase with melee weapons", () => {
 		const result = resolveUnitVsUnit(boltgunSquad, marineTarget, {
 			phase: "fight",

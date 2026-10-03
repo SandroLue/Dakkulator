@@ -180,6 +180,11 @@ function compound(counts, unit) {
 	return out;
 }
 
+/** The FNP a weapon's stream was resolved against, else the group's. */
+export function streamFnp(sampling, groupFnp) {
+	return sampling?.fnp !== undefined ? sampling.fnp : groupFnp;
+}
+
 /**
  * One weapon's attack dice, resolved die by die against the group that is
  * current at that moment (§05.04 spill), exactly as the Monte-Carlo does.
@@ -197,7 +202,7 @@ function applyWeapon(v, layout, perGroup, fnps) {
 	);
 	const first = p.map((s, g) => (s.lethalHits ? s.saveFail : woundRoll[g]));
 	const losses = perGroup.map((streams, g) =>
-		lossDistribution(streams.damagePmf, fnps[g]),
+		lossDistribution(streams.damagePmf, streamFnp(streams.sampling, fnps[g])),
 	);
 	const extraHits = pmf(p[0].sustainedExpr ?? emptyExpr());
 
@@ -509,6 +514,8 @@ export function computeAttackStreams(profile, group, context = {}) {
 			sustainedExpr,
 			lethalHits: lethal,
 			devastatingWounds: devastating,
+			// Phase-specific defender modifiers can give each weapon its own FNP.
+			fnp: group.fnp ?? null,
 		},
 		detail: {
 			hitTarget: hit.target,

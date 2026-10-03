@@ -6,7 +6,7 @@ import { loadRosterFile, loadRosterUrl } from "./library/loadRoster";
 import { isFirstVisit, useRosterLibrary } from "./library/rosterLibrary";
 
 const roleLabel = (slot, reversed) =>
-	`List ${slot} — ${(slot === "A") !== reversed ? "attacker" : "defender"}`;
+	(slot === "A") !== reversed ? "Attacker" : "Defender";
 const EXAMPLES = [
 	{ slot: "A", source: "example:custodes", file: "Custodes.rosz" },
 	{ slot: "B", source: "example:tyranids", file: "Tyranids.rosz" },
@@ -90,11 +90,18 @@ function App() {
 			</div>
 
 			<div className="body">
-				<section className="print-display-none grid w-full gap-5 md:grid-cols-2">
-					<UploadArea onFiles={handleFiles} busy={busy} messages={messages} />
+				<section className="print-display-none grid w-full items-start gap-5 md:grid-cols-2">
+					<UploadArea
+						onFiles={handleFiles}
+						busy={busy}
+						messages={messages}
+						// Open for a first-time visitor, who has nothing else to do yet.
+						defaultOpen={library.entries.length === 0}
+					/>
 					<RosterTable
 						entries={library.entries}
 						slots={library.slots}
+						slotLabel={(slot) => roleLabel(slot, reversed)}
 						onRemove={library.remove}
 					/>
 				</section>
@@ -121,29 +128,14 @@ function App() {
 					<a href="https://www.newrecruit.eu/" target="_blank" rel="noreferrer">
 						New Recruit
 					</a>{" "}
-					and{" "}
+					{/* battlescribe.net lapsed and now hosts spam, so it is not linked. */}
+					and BattleScribe rosters. Roster parsing is based on{" "}
 					<a
-						href="https://www.battlescribe.net/"
-						target="_blank"
-						rel="noreferrer"
-					>
-						BattleScribe
-					</a>{" "}
-					rosters. Roster parsing is based on{" "}
-					<a
-						href="https://github.com/NilsUeter/fancyscribe"
+						href="https://nilsueter.github.io/fancyscribe/"
 						target="_blank"
 						rel="noreferrer"
 					>
 						FancyScribe
-					</a>{" "}
-					and{" "}
-					<a
-						href="https://rweyrauch.github.io/PrettyScribe"
-						target="_blank"
-						rel="noreferrer"
-					>
-						PrettyScribe
 					</a>
 					.
 				</footer>

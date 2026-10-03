@@ -47,10 +47,15 @@ export function simulate(
 ) {
 	const rng = mulberry32(seed);
 	const targets = streamGroups.map(({ group, streams }) => ({
-		streams,
+		// Each weapon carries the FNP it was resolved against (phase-specific modifiers).
+		streams: streams.map((stream) => ({
+			...stream,
+			fnpFail: fnpFailProbability(
+				stream.sampling?.fnp !== undefined ? stream.sampling.fnp : group.fnp,
+			),
+		})),
 		wounds: Math.max(1, group.wounds || 1),
 		count: Math.max(1, group.count || 1),
-		fnpFail: fnpFailProbability(group.fnp),
 	}));
 	const totalModels = targets.reduce((sum, t) => sum + t.count, 0);
 	const profileCount = targets[0]?.streams.length ?? 0;
@@ -70,11 +75,11 @@ export function simulate(
 
 		// Excess damage is lost (§05.04) and a critical wound can only ever
 		// damage one model (§24.10).
-		const applyDamage = (target, damageExpr) => {
-			const damage = sampleExpr(damageExpr, rng, 1);
+		const applyDamage = (target, stream) => {
+			const damage = sampleExpr(stream.damageExpr, rng, 1);
 			let woundsRemoved = 0;
 			for (let w = 0; w < damage; w++) {
-				if (rng() < target.fnpFail) woundsRemoved++;
+				if (rng() < stream.fnpFail) woundsRemoved++;
 			}
 			const applied = Math.min(woundsRemoved, remaining);
 			if (round === 0) lost += applied;
@@ -91,17 +96,18 @@ export function simulate(
 
 		const resolveHit = (profile, autoWound) => {
 			const target = targets[groupIndex];
-			const { sampling: p, damageExpr } = target.streams[profile];
+			const stream = target.streams[profile];
+			const p = stream.sampling;
 			if (!autoWound) {
 				const roll = rng();
 				const isCrit = roll < p.critWound;
 				if (!isCrit && roll >= p.wound) return;
 				if (isCrit && p.devastatingWounds) {
-					applyDamage(target, damageExpr);
+					applyDamage(target, stream);
 					return;
 				}
 			}
-			if (rng() < p.saveFail) applyDamage(target, damageExpr);
+			if (rng() < p.saveFail) applyDamage(target, stream);
 		};
 
 		for (; round < rounds && alive > 0; round++) {
