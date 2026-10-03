@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { abilityApplies, parseWeaponAbilities } from "./weaponKeywords";
+import {
+	abilityApplies,
+	abilityLabels,
+	parseWeaponAbilities,
+} from "./weaponKeywords";
 
 const parse = (s) => parseWeaponAbilities(s);
 
@@ -125,5 +129,19 @@ describe("abilityApplies", () => {
 	it("applies unconditionally when unrestricted", () => {
 		const plain = parse("[LETHAL HITS]");
 		expect(abilityApplies(plain, "lethalHits", new Set())).toBe(true);
+	});
+});
+
+describe("abilityLabels", () => {
+	it("lists recognised abilities with their values and restrictions", () => {
+		const flags = parse(
+			"[SUSTAINED HITS D3], [LETHAL HITS: VEHICLE], Anti-Infantry 4+, Devastating Wounds, Frobnicate",
+		);
+		expect(abilityLabels(flags)).toEqual([
+			"SUSTAINED HITS D3",
+			"ANTI-INFANTRY 4+",
+			"DEVASTATING WOUNDS",
+			"LETHAL HITS: VEHICLE",
+		]);
 	});
 });

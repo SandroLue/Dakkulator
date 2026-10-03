@@ -1,4 +1,8 @@
-import { applyUserModifiers, selectModifiers } from "./modifiers";
+import {
+	applyUserModifiers,
+	grantAbilities,
+	selectModifiers,
+} from "./modifiers";
 import {
 	buildAttackerProfiles,
 	buildDefenderProfiles,
@@ -67,7 +71,10 @@ export function resolveUnitVsUnit(
 			// `Stealth` always grants the benefit of cover against ranged attacks.
 			targetInCover: ctx.targetInCover || defenderAbilities.stealth,
 		},
-		profiles: buildAttackerProfiles(attacker, ctx.phase),
+		profiles: grantAbilities(
+			buildAttackerProfiles(attacker, ctx.phase),
+			appliedToAll(ctx),
+		),
 		groups: buildDefenderProfiles(defender),
 		...selected,
 	});
@@ -218,6 +225,16 @@ export function resolveUnitVsUnit(
 				attackerPoints > 0 ? (pointsRemoved / attackerPoints) * 100 : 0,
 		},
 	};
+}
+
+/** The "apply to all" context options as weapon-ability strings. */
+function appliedToAll(ctx) {
+	const sustained = Math.max(0, Math.min(3, Math.trunc(ctx.allSustainedHits)));
+	return [
+		ctx.allLethalHits && "[LETHAL HITS]",
+		ctx.allDevastatingWounds && "[DEVASTATING WOUNDS]",
+		sustained > 0 && `[SUSTAINED HITS ${sustained}]`,
+	].filter(Boolean);
 }
 
 /** Wounds one profile removes from the whole unit when it attacks alone. */

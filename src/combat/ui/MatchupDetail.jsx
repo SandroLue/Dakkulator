@@ -9,6 +9,7 @@ import {
 	XAxis,
 	YAxis,
 } from "recharts";
+import { abilityLabels } from "../weaponKeywords";
 import { AXIS, GRID, TOOLTIP, axisLabel, percent } from "./charts";
 import { useSimulation } from "./useSimulation";
 
@@ -24,16 +25,53 @@ const describeGroup = (group) =>
 			} W${group.wounds}${group.fnp ? ` · FNP ${group.fnp}+` : ""}`
 		: "—";
 
+/** The weapon's abilities; granted ones (modifiers, "apply to all") are marked. */
+function WeaponAbilities({ weapon }) {
+	if (!weapon.abilities) return null;
+	const own = new Set(abilityLabels(weapon.baseAbilities ?? weapon.abilities));
+	const labels = abilityLabels(weapon.abilities);
+	const unknown = weapon.abilities.unknown ?? [];
+	if (!labels.length && !unknown.length) return null;
+	return (
+		<div className="mt-1 flex flex-wrap gap-1 not-italic">
+			{labels.map((label) =>
+				own.has(label) ? (
+					<span key={label} className="ability-tag">
+						{label}
+					</span>
+				) : (
+					<span
+						key={label}
+						className="ability-tag ability-tag-granted"
+						title="Granted by a modifier or “Apply to all”"
+					>
+						+ {label}
+					</span>
+				),
+			)}
+			{unknown.map((token) => (
+				<span
+					key={token}
+					className="ability-tag ability-tag-unknown"
+					title="Not recognised — ignored in the maths"
+				>
+					{token.toUpperCase()}
+				</span>
+			))}
+		</div>
+	);
+}
+
 function weaponLabel(w) {
 	const profile = String(w.weaponName ?? "").replace(/^[➤▸▶>*\s]+/, "");
 	const selection = w.selectionName;
-	if (!selection || profile.toLowerCase().startsWith(selection.toLowerCase())) {
-		return profile || selection;
-	}
+	const showSelection =
+		selection && !profile.toLowerCase().startsWith(selection.toLowerCase());
 	return (
 		<>
-			{profile}
-			<div className="text-xs text-muted">{selection}</div>
+			{profile || selection}
+			{showSelection && <div className="text-xs text-muted">{selection}</div>}
+			<WeaponAbilities weapon={w} />
 		</>
 	);
 }

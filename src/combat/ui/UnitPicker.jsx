@@ -179,6 +179,8 @@ export function UnitPicker({
 	onAttachmentsChange,
 }) {
 	const [search, setSearch] = useState("");
+	// Every unit starts selected, so the list stays out of the way until needed.
+	const [open, setOpen] = useState(false);
 	const raw = useMemo(() => listUnits(roster), [roster]);
 	const entries = useMemo(
 		() => applyAttachments(raw, attachments),
@@ -218,30 +220,47 @@ export function UnitPicker({
 				{roster && (
 					<span className="flex items-center gap-2 pb-1">
 						<span className={`badge ${selected.size ? "" : "opacity-60"}`}>
-							{selected.size} selected
+							{selected.size === entries.length
+								? `All ${entries.length} units`
+								: `${selected.size} of ${entries.length} units`}
 						</span>
+						{open && (
+							<>
+								<button
+									type="button"
+									className="button-small button-ghost"
+									title={
+										search ? "Select every unit matching the search" : undefined
+									}
+									onClick={() =>
+										onChange(
+											new Set([
+												...selected,
+												...filtered.map((entry) => entry.key),
+											]),
+										)
+									}
+									disabled={filtered.every((entry) => selected.has(entry.key))}
+								>
+									All
+								</button>
+								<button
+									type="button"
+									className="button-small button-ghost"
+									onClick={() => onChange(new Set())}
+									disabled={!selected.size}
+								>
+									Clear
+								</button>
+							</>
+						)}
 						<button
 							type="button"
-							className="button-small button-ghost"
-							title={
-								search ? "Select every unit matching the search" : undefined
-							}
-							onClick={() =>
-								onChange(
-									new Set([...selected, ...filtered.map((entry) => entry.key)]),
-								)
-							}
-							disabled={filtered.every((entry) => selected.has(entry.key))}
+							className="button-small"
+							aria-expanded={open}
+							onClick={() => setOpen(!open)}
 						>
-							All
-						</button>
-						<button
-							type="button"
-							className="button-small button-ghost"
-							onClick={() => onChange(new Set())}
-							disabled={!selected.size}
-						>
-							Clear
+							{open ? "Done" : "Choose units"}
 						</button>
 					</span>
 				)}
@@ -252,16 +271,6 @@ export function UnitPicker({
 				</div>
 			) : (
 				<>
-					<div className="border-b border-line px-4 py-3">
-						<input
-							type="search"
-							value={search}
-							placeholder="Search units…"
-							aria-label="Search units"
-							onChange={(e) => setSearch(e.target.value)}
-							className="w-full"
-						/>
-					</div>
 					{onAttachmentsChange && (
 						<AttachControls
 							entries={raw}
@@ -269,58 +278,83 @@ export function UnitPicker({
 							onChange={onAttachmentsChange}
 						/>
 					)}
-					<div className="max-h-96 overflow-y-auto pb-2">
-						{groups.map(([group, { entries: groupEntries }]) => (
-							<div key={group}>
-								<div className="section-label sticky top-0 z-10 border-b border-line bg-surface-muted px-4 py-1.5">
-									{group}
-								</div>
-								<div className="flex flex-col gap-1 px-2 py-1.5">
-									{groupEntries.map((entry) => {
-										const on = selected.has(entry.key);
-										return (
-											<button
-												type="button"
-												key={entry.key}
-												aria-pressed={on}
-												onClick={() => toggle(entry.key)}
-												className="pick text-sm"
-											>
-												<span className="min-w-0 flex-1">
-													<span className="flex items-center gap-1.5">
-														<span
-															className={`truncate ${on ? "font-bold text-primary" : "font-medium"}`}
-														>
-															{entry.label}
-														</span>
-														{entry.copies > 1 && (
-															<span
-																className="badge shrink-0"
-																title={`${entry.copies} identical units in this list — shown once`}
-															>
-																{entry.copies} in list
-															</span>
-														)}
-													</span>
-													<span className="hint block">
-														{summarise(entry.unit)}
-													</span>
-												</span>
-												<span className="hint shrink-0 tabular-nums">
-													{entry.unit.cost?.points ?? 0} pts
-												</span>
-											</button>
-										);
-									})}
-								</div>
-							</div>
-						))}
-						{!filtered.length && (
-							<div className="px-4 py-6 text-sm text-muted">No units.</div>
-						)}
-					</div>
+					{open && (
+						<UnitList
+							search={search}
+							onSearch={setSearch}
+							groups={groups}
+							empty={!filtered.length}
+							selected={selected}
+							onToggle={toggle}
+						/>
+					)}
 				</>
 			)}
 		</div>
+	);
+}
+
+function UnitList({ search, onSearch, groups, empty, selected, onToggle }) {
+	return (
+		<>
+			<div className="border-b border-line px-4 py-3">
+				<input
+					type="search"
+					value={search}
+					placeholder="Search units…"
+					aria-label="Search units"
+					onChange={(e) => onSearch(e.target.value)}
+					className="w-full"
+				/>
+			</div>
+			<div className="max-h-96 overflow-y-auto pb-2">
+				{groups.map(([group, { entries: groupEntries }]) => (
+					<div key={group}>
+						<div className="section-label sticky top-0 z-10 border-b border-line bg-surface-muted px-4 py-1.5">
+							{group}
+						</div>
+						<div className="flex flex-col gap-1 px-2 py-1.5">
+							{groupEntries.map((entry) => {
+								const on = selected.has(entry.key);
+								return (
+									<button
+										type="button"
+										key={entry.key}
+										aria-pressed={on}
+										onClick={() => onToggle(entry.key)}
+										className="pick text-sm"
+									>
+										<span className="min-w-0 flex-1">
+											<span className="flex items-center gap-1.5">
+												<span
+													className={`truncate ${on ? "font-bold text-primary" : "font-medium"}`}
+												>
+													{entry.label}
+												</span>
+												{entry.copies > 1 && (
+													<span
+														className="badge shrink-0"
+														title={`${entry.copies} identical units in this list — shown once`}
+													>
+														{entry.copies} in list
+													</span>
+												)}
+											</span>
+											<span className="hint block">
+												{summarise(entry.unit)}
+											</span>
+										</span>
+										<span className="hint shrink-0 tabular-nums">
+											{entry.unit.cost?.points ?? 0} pts
+										</span>
+									</button>
+								);
+							})}
+						</div>
+					</div>
+				))}
+				{empty && <div className="px-4 py-6 text-sm text-muted">No units.</div>}
+			</div>
+		</>
 	);
 }

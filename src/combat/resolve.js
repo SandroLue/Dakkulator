@@ -29,6 +29,10 @@ export function defaultContext(overrides = {}) {
 		rerollHits: "none",
 		rerollWounds: "none",
 		useLethalHits: true,
+		// "Apply to all": abilities granted to every attacking weapon.
+		allLethalHits: false,
+		allDevastatingWounds: false,
+		allSustainedHits: 0,
 		attackerDamaged: false,
 		...overrides,
 	};
@@ -472,6 +476,9 @@ export function computeAttackStreams(profile, group, context = {}) {
 		selectionName: profile.selectionName,
 		carrierName: profile.carrierName,
 		groupName: group.name,
+		abilities,
+		// The weapon's own abilities, before any were granted.
+		baseAbilities: profile.baseAbilities ?? abilities,
 		attacks,
 		hits: totalHits,
 		critHits,

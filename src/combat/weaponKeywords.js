@@ -199,6 +199,35 @@ export function parseWeaponAbilities(input) {
 }
 
 /**
+ * The recognised abilities as display labels, e.g. `SUSTAINED HITS D3` or
+ * `LETHAL HITS: VEHICLE`. Unrecognised tokens are not included.
+ */
+export function abilityLabels(flags) {
+	const restricted = (key, label) => {
+		const keywords = flags.restrictions?.[key];
+		return keywords ? `${label}: ${keywords.join(", ")}` : label;
+	};
+	const labels = [];
+	for (const { key, label } of NUMERIC_ABILITIES) {
+		if (flags[key] > 0) {
+			labels.push(
+				restricted(
+					key,
+					`${label} ${String(flags.raw?.[key] ?? flags[key]).toUpperCase()}`,
+				),
+			);
+		}
+	}
+	for (const { keyword, threshold } of flags.anti) {
+		labels.push(`ANTI-${keyword} ${threshold}+`);
+	}
+	for (const { key, label } of FLAG_ABILITIES) {
+		if (flags[key]) labels.push(restricted(key, label));
+	}
+	return labels;
+}
+
+/**
  * §24.01 — an ability printed with a keyword list only applies when the target
  * has one of those keywords.
  */

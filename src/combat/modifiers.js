@@ -188,6 +188,26 @@ export function mergeAbilities(base, extra) {
 	return merged;
 }
 
+/**
+ * Grants ability strings, e.g. `"[LETHAL HITS]"`, to every profile.
+ * `baseAbilities` keeps the weapon's own, so the UI can tell granted ones apart.
+ */
+export function grantAbilities(profiles, texts) {
+	const granted = texts
+		.map((text) => text.trim())
+		.filter(Boolean)
+		.map(parseWeaponAbilities);
+	if (!granted.length) return profiles;
+	const grant = (profile) => ({
+		...profile,
+		baseAbilities: profile.baseAbilities ?? profile.abilities,
+		abilities: granted.reduce(mergeAbilities, profile.abilities),
+	});
+	const next = profiles.map(grant);
+	next.alternatives = (profiles.alternatives || []).map(grant);
+	return next;
+}
+
 function total(modifiers, role, key) {
 	if (!NUMERIC_EFFECTS[role].includes(key)) return 0;
 	return modifiers.reduce((sum, m) => sum + (m[key] || 0), 0);
@@ -233,22 +253,21 @@ export function applyUserModifiers({
 
 	const strength = both("strengthModifier");
 	const attacks = both("attacksModifier");
-	const granted = attacking
-		.map((m) => m.weaponAbilities.trim())
-		.filter(Boolean)
-		.map(parseWeaponAbilities);
-	let nextProfiles = profiles;
-	if (strength || attacks || granted.length) {
+	let nextProfiles = grantAbilities(
+		profiles,
+		attacking.map((m) => m.weaponAbilities),
+	);
+	if (strength || attacks) {
 		const modify = (profile) => ({
 			...profile,
 			strength: Math.max(1, profile.strength + strength),
 			attacksExpr: attacks
 				? addFlat(profile.attacksExpr, attacks)
 				: profile.attacksExpr,
-			abilities: granted.reduce(mergeAbilities, profile.abilities),
 		});
-		nextProfiles = profiles.map(modify);
-		nextProfiles.alternatives = (profiles.alternatives || []).map(modify);
+		const alternatives = nextProfiles.alternatives || [];
+		nextProfiles = nextProfiles.map(modify);
+		nextProfiles.alternatives = alternatives.map(modify);
 	}
 
 	// A modifier on one member of an attached unit protects only that member's models.

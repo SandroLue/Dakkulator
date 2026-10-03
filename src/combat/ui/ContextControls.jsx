@@ -25,7 +25,6 @@ const TOGGLE_GROUPS = [
 				on: true,
 			},
 			{ key: "plungingFire", label: "Plunging fire", hint: "+1 BS", on: true },
-			{ key: "useLethalHits", label: "Use [LETHAL HITS]", on: true },
 		],
 	},
 	{
@@ -48,8 +47,27 @@ const TOGGLE_GROUPS = [
 				hint: "hits on 4+ instead",
 				requires: "indirect",
 			},
+			// §24.23 — [LETHAL HITS] is optional; pressed means the context key is off.
+			{
+				key: "useLethalHits",
+				label: "Opt out of [LETHAL HITS]",
+				hint: "critical hits roll to wound",
+				invert: true,
+			},
 		],
 	},
+];
+
+const APPLY_TO_ALL = [
+	{ key: "allLethalHits", label: "[LETHAL HITS]" },
+	{ key: "allDevastatingWounds", label: "[DEVASTATING WOUNDS]" },
+];
+
+const SUSTAINED_OPTIONS = [
+	[0, "Off"],
+	[1, "1"],
+	[2, "2"],
+	[3, "3"],
 ];
 
 export function bestCaseContext() {
@@ -149,8 +167,12 @@ export function ContextControls({ ctx, onChange }) {
 									.map((toggle) => (
 										<Toggle
 											key={toggle.key}
-											pressed={ctx[toggle.key]}
-											onChange={(value) => set(toggle.key, value)}
+											pressed={
+												toggle.invert ? !ctx[toggle.key] : ctx[toggle.key]
+											}
+											onChange={(value) =>
+												set(toggle.key, toggle.invert ? !value : value)
+											}
 										>
 											{toggle.label}
 											{toggle.hint && (
@@ -161,6 +183,35 @@ export function ContextControls({ ctx, onChange }) {
 							</div>
 						</div>
 					))}
+				</div>
+
+				<div className="flex flex-col gap-2">
+					<span className="section-label">
+						Apply to all{" "}
+						<span className="hint normal-case tracking-normal">
+							— every attacking weapon gains these
+						</span>
+					</span>
+					<div className="flex flex-wrap items-center gap-2">
+						{APPLY_TO_ALL.map((toggle) => (
+							<Toggle
+								key={toggle.key}
+								pressed={ctx[toggle.key]}
+								onChange={(value) => set(toggle.key, value)}
+							>
+								{toggle.label}
+							</Toggle>
+						))}
+						<div className="flex items-center gap-2">
+							<span className="font-semibold">[SUSTAINED HITS]</span>
+							<Segmented
+								label="Sustained Hits for all weapons"
+								value={ctx.allSustainedHits ?? 0}
+								options={SUSTAINED_OPTIONS}
+								onChange={(value) => set("allSustainedHits", value)}
+							/>
+						</div>
+					</div>
 				</div>
 
 				<div className="flex flex-col gap-2">

@@ -379,7 +379,10 @@ round n + 1) and `medianRounds`.
   ignoreHitModifiers: false,  // drop detrimental hit modifiers
   rerollHits: "none" | "ones" | "all",
   rerollWounds: "none" | "ones" | "all",
-  useLethalHits: true,        // [LETHAL HITS] is optional
+  useLethalHits: true,        // [LETHAL HITS] is optional; UI: "Opt out of [LETHAL HITS]"
+  allLethalHits: false,       // "Apply to all": every attacking weapon gains [LETHAL HITS]
+  allDevastatingWounds: false,//   … [DEVASTATING WOUNDS]
+  allSustainedHits: 0,        //   … [SUSTAINED HITS 1–3]; 0 = off
   attackerDamaged: false,     // -1 to hit from Damaged
 }
 ```
@@ -396,7 +399,9 @@ round n + 1) and `medianRounds`.
 It returns boolean flags, numeric values (`rapidFire`, `sustainedHits`, `blast`,
 `cleave`, `melta`), `anti: [{ keyword, threshold }]`, `restrictions`, the `raw`
 strings of random values, `duplicated`, and `unknown` tokens, which the UI
-surfaces as warnings.
+surfaces as warnings. `abilityLabels(flags)` turns the flags back into labels;
+the breakdown table lists them under each weapon, marking abilities granted by
+modifiers or "Apply to all" (`profile.baseAbilities` keeps the weapon's own).
 
 `mineUnitAbilities(unit)` reads `Feel No Pain X+` (a qualified "… against …"
 Feel No Pain is not applied), `Damaged: X-Y wounds remaining`, `Stealth`,

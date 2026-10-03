@@ -347,6 +347,28 @@
 		color: var(--primary-color);
 	}
 
+	/* A weapon ability in the breakdown table. */
+	.ability-tag {
+		display: inline-flex;
+		align-items: center;
+		border: 1px solid var(--color-border-strong);
+		border-radius: 4px;
+		padding: 0 5px;
+		font-size: 0.68rem;
+		font-weight: 600;
+		letter-spacing: 0.02em;
+		white-space: nowrap;
+		color: var(--color-muted);
+	}
+	.ability-tag-granted {
+		border-color: var(--primary-color);
+		color: var(--primary-color);
+	}
+	.ability-tag-unknown {
+		border-style: dashed;
+		opacity: 0.7;
+	}
+
 	.button-primary {
 		background-color: var(--primary-color);
 		border-color: var(--primary-color);

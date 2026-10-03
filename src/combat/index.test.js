@@ -27,6 +27,37 @@ describe("resolveUnitVsUnit", () => {
 		expect(result.totals.pointsReturnPer100).toBeCloseTo(11.111, 2);
 	});
 
+	it("grants the 'apply to all' abilities to every weapon", () => {
+		const lethal = resolveUnitVsUnit(boltgunSquad, marineTarget, {
+			allLethalHits: true,
+		});
+		const critHits = 20 / 6;
+		expect(lethal.totals.wounds).toBeCloseTo(
+			(13.3333 - critHits) * 0.5 + critHits,
+			3,
+		);
+		expect(lethal.weapons[0].abilities.lethalHits).toBe(true);
+		expect(lethal.weapons[0].baseAbilities.lethalHits).toBe(false);
+
+		const sustained = resolveUnitVsUnit(boltgunSquad, marineTarget, {
+			allSustainedHits: 2,
+		});
+		expect(sustained.totals.hits).toBeCloseTo(13.3333 + 2 * critHits, 3);
+
+		const devastating = resolveUnitVsUnit(boltgunSquad, marineTarget, {
+			allDevastatingWounds: true,
+		});
+		expect(devastating.totals.mortalWounds).toBeCloseTo(13.3333 / 6, 3);
+	});
+
+	it("opting out of [LETHAL HITS] overrides 'apply to all'", () => {
+		const result = resolveUnitVsUnit(boltgunSquad, marineTarget, {
+			allLethalHits: true,
+			useLethalHits: false,
+		});
+		expect(result.totals.wounds).toBeCloseTo(6.6667, 3);
+	});
+
 	it("resolves the fight phase with melee weapons", () => {
 		const result = resolveUnitVsUnit(boltgunSquad, marineTarget, {
 			phase: "fight",
