@@ -38,6 +38,9 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
+        env:
+          # PostHog project key (public by design); analytics stay off when unset.
+          VITE_POSTHOG_KEY: ${{ vars.POSTHOG_KEY }}
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact
