@@ -207,6 +207,8 @@ function buildProfile(unit, model, stats, weapon, isMelee, attackingModels) {
 	return {
 		id: `${unit.name}|${model?.name ?? ""}|${weapon.name}`,
 		unitName: unit.name,
+		// In an attached unit: the leader or bodyguard unit this weapon belongs to.
+		sourceUnitName: stats?.attachedUnitName ?? unit.name,
 		weaponName: weapon.name,
 		selectionName: weapon.selectionName || weapon.name,
 		carrierName: model?.name ?? unit.name,

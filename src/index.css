@@ -54,6 +54,10 @@
 		--size-20: 20px;
 		--size-24: 24px;
 		--size-32: 32px;
+
+		/* Results matrix column widths. */
+		--matrix-name: 10rem;
+		--matrix-cell: 6.5rem;
 	}
 
 	* {
@@ -91,6 +95,12 @@
 		padding: 5px 9px;
 		font: inherit;
 		transition: border-color 0.15s;
+	}
+	/* Too-long options end in "…" instead of a letter cut in half. */
+	select {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 	input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):hover,
 	select:hover,
@@ -282,6 +292,14 @@
 			--size-20: 8px;
 			--size-24: 12px;
 			--size-32: 16px;
+		}
+	}
+
+	/* Phones: narrower matrix columns, so more defenders fit next to the names. */
+	@media screen and (max-width: 640px) {
+		:root {
+			--matrix-name: 7.5rem;
+			--matrix-cell: 4.75rem;
 		}
 	}
 
@@ -492,6 +510,22 @@
 	.phase-tabs > button svg {
 		width: 0.9em;
 		height: 0.9em;
+	}
+	/* Phones: the tabs must fit the screen, or they widen the whole page. */
+	@media screen and (max-width: 640px) {
+		.phase-tabs {
+			overflow-x: auto;
+			scrollbar-width: none;
+		}
+		.phase-tabs > button {
+			flex: 1 0 auto;
+			padding: 0.4em 0.6em 0.3em;
+			font-size: 1.2rem;
+			white-space: nowrap;
+		}
+		.phase-tabs > button svg {
+			display: none;
+		}
 	}
 	.phase-tabs > button:hover {
 		color: var(--color-text);

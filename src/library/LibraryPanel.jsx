@@ -15,7 +15,7 @@ function CollapsiblePanel({ title, aside, defaultOpen = false, children }) {
 				type="button"
 				aria-expanded={open}
 				onClick={() => setOpen(!open)}
-				className={`panel-header w-full cursor-pointer rounded-none border-0 bg-transparent text-left font-normal hover:bg-surface-muted ${
+				className={`panel-header w-full cursor-pointer justify-start rounded-none border-0 bg-transparent text-left font-normal hover:bg-surface-muted ${
 					open ? "" : "border-b-0"
 				}`}
 			>
@@ -39,6 +39,12 @@ function CollapsiblePanel({ title, aside, defaultOpen = false, children }) {
 	);
 }
 
+/** Both library panels share one body height (about 6 list rows), so they line up. */
+const BODY_HEIGHT = "h-[19.5rem]";
+
+/** "Imperium - Adeptus Astartes - Ultramarines" → "Ultramarines". */
+const subfaction = (faction) => faction.split(" - ").at(-1);
+
 export function UploadArea({ onFiles, busy, messages, defaultOpen = false }) {
 	const inputRef = useRef(null);
 	const [dragging, setDragging] = useState(false);
@@ -60,7 +66,7 @@ export function UploadArea({ onFiles, busy, messages, defaultOpen = false }) {
 
 	return (
 		<CollapsiblePanel title="Add army lists" defaultOpen={defaultOpen}>
-			<div className="flex flex-1 flex-col gap-3 p-4">
+			<div className={`flex ${BODY_HEIGHT} flex-col gap-3 overflow-auto p-4`}>
 				<label
 					htmlFor="roster-upload"
 					onDragEnter={(event) => {
@@ -138,11 +144,13 @@ export function RosterTable({ entries, slots, slotLabel, onRemove }) {
 			aside={`${entries.length} saved in this browser`}
 		>
 			{entries.length === 0 ? (
-				<div className="flex flex-1 items-center justify-center p-6 text-sm text-muted">
+				<div
+					className={`flex ${BODY_HEIGHT} items-center justify-center p-6 text-sm text-muted`}
+				>
 					No lists yet — upload one to get started.
 				</div>
 			) : (
-				<div className="max-h-[300px] flex-1 overflow-auto">
+				<div className={`${BODY_HEIGHT} overflow-auto`}>
 					<table className="w-full border-collapse text-sm">
 						<thead className="section-label sticky top-0 bg-surface-muted text-left">
 							<tr>
@@ -164,11 +172,18 @@ export function RosterTable({ entries, slots, slotLabel, onRemove }) {
 									key={entry.id}
 									className="border-t border-line transition-colors hover:bg-surface-muted"
 								>
-									<td className="min-w-[10rem] px-4 py-2 font-semibold">
+									{/* max-w-0 lets the column width decide, so long names truncate. */}
+									<td
+										className="max-w-0 truncate px-4 py-2 font-semibold"
+										title={entry.name}
+									>
 										{entry.name}
 									</td>
-									<td className="px-3 py-2 text-muted">
-										{entry.faction.replace(/^(Imperium|Chaos|Xenos) - /, "")}
+									<td
+										className="whitespace-nowrap px-3 py-2 text-muted"
+										title={entry.faction}
+									>
+										{subfaction(entry.faction)}
 									</td>
 									<td className="px-3 py-2 text-right tabular-nums">
 										{entry.points}

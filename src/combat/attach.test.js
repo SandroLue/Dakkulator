@@ -58,3 +58,19 @@ describe("attachLeaders", () => {
 		expect(attachLeaders(boltgunSquad, [])).toBe(boltgunSquad);
 	});
 });
+
+describe("weapon sources in an attached unit", () => {
+	it("names the unit each weapon belongs to", () => {
+		const unit = attachLeaders(boltgunSquad, [captain]);
+		const sources = Object.fromEntries(
+			buildAttackerProfiles(unit, "shooting").map((p) => [
+				p.weaponName,
+				p.sourceUnitName,
+			]),
+		);
+		expect(sources).toMatchObject({
+			Boltgun: "Intercessor Squad",
+			"Plasma pistol": "Captain",
+		});
+	});
+});

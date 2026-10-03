@@ -480,6 +480,9 @@ export function computeAttackStreams(profile, group, context = {}) {
 		weaponName: profile.weaponName,
 		selectionName: profile.selectionName,
 		carrierName: profile.carrierName,
+		sourceUnitName: profile.sourceUnitName,
+		// Tells the phases apart when shooting and fighting are resolved together.
+		isMelee: Boolean(profile.isMelee),
 		groupName: group.name,
 		abilities,
 		// The weapon's own abilities, before any were granted.

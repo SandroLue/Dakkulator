@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import {
 	Bar,
 	BarChart,
@@ -76,6 +77,12 @@ function weaponLabel(w) {
 	return (
 		<>
 			{profile || selection}
+			{/* Only set for attached units, where weapons come from several units. */}
+			{w.showSource && (
+				<div className="text-xs font-semibold text-accent">
+					{w.sourceUnitName}
+				</div>
+			)}
 			{showSelection && <div className="text-xs text-muted">{selection}</div>}
 			<WeaponAbilities weapon={w} />
 		</>
@@ -132,80 +139,31 @@ function WeaponRow({ weapon, groups, multiGroup, muted = false }) {
 	);
 }
 
-/** Explains why the columns don't simply multiply down from the attacks. */
-function HowToRead() {
-	return (
-		<div className="group relative">
-			<button
-				type="button"
-				aria-label="How to read this table"
-				aria-describedby="breakdown-help"
-				className="button-small flex h-7 w-7 items-center justify-center rounded-full p-0"
-			>
-				<svg
-					viewBox="0 0 24 24"
-					aria-hidden="true"
-					className="h-4 w-4"
-					fill="none"
-					stroke="currentColor"
-					strokeWidth="2.2"
-					strokeLinecap="round"
-				>
-					<circle cx="12" cy="12" r="9" />
-					<path d="M12 11v5M12 7.5v.01" />
-				</svg>
-			</button>
-			<div
-				id="breakdown-help"
-				role="tooltip"
-				className="absolute right-0 top-full z-50 mt-2 hidden w-96 max-w-[90vw] flex-col gap-2 rounded-lg border border-line-strong bg-surface-raised px-4 py-3 text-sm shadow-lg shadow-black/40 group-focus-within:flex group-hover:flex"
-			>
-				<div className="font-bold">How to read this table</div>
-				<p>
-					Every number is an <b>average</b> over all possible dice rolls, so
-					fractions are normal.
-				</p>
-				<p>
-					<b>Attacks</b> is the weapon's full number of attacks. <b>Hits</b> and
-					the columns after it only count dice rolled while the target is still
-					alive: once the unit is likely wiped out, the remaining attacks do
-					nothing. That's why hits can be lower than attacks × the hit chance.
-				</p>
-				<p>
-					<b>Hits</b> include [SUSTAINED HITS] extra hits. <b>Wounds</b> are
-					successful wound rolls, including [LETHAL HITS]. <b>Mortal</b> is the
-					part of those wounds that became mortal wounds through [DEVASTATING
-					WOUNDS] and skips the save.
-				</p>
-				<p>
-					<b>Damage</b> is what the unsaved and mortal wounds inflict.{" "}
-					<b>Wounds lost</b> is what the target actually loses after damage
-					beyond one model is wasted and Feel No Pain. With several weapons,
-					each row shows what that weapon adds on top of the ones above it. The
-					total matches the results matrix.
-				</p>
-			</div>
-		</div>
-	);
-}
-
 const weaponName = (w) => String(w.weaponName ?? "").replace(/^[➤▸▶>*\s]+/, "");
 
-/** The pairing's result in one plain sentence, before any tables. */
+/** The pairing's result in plain sentences, one statement per line, before any tables. */
 function summarise(pairing) {
 	const groups = pairing.groups || [];
 	const t = pairing.totals;
 	const wounds = groups.reduce((sum, g) => sum + g.count * g.wounds, 0);
 	const models = groups.reduce((sum, g) => sum + g.count, 0);
 	if (!(t.woundsLost >= 0.05)) {
-		return `Barely damages ${pairing.defenderName}: ${format(t.woundsLost, 1)} of ${wounds} wounds per round.`;
+		return [
+			`Barely damages ${pairing.defenderName}: ${format(t.woundsLost, 1)} of ${wounds} wounds per round.`,
+		];
 	}
 
-	// The weapon that removes the most, when there is more than one.
+	// The weapon that removes the most, when there is more than one. With
+	// shooting and fighting combined, say which phase it is used in.
+	const combined = pairing.phase === "combined";
 	const byWeapon = new Map();
 	for (const w of pairing.weapons) {
 		const name = weaponName(w);
-		byWeapon.set(name, (byWeapon.get(name) || 0) + (w.woundsLost || 0));
+		const label =
+			combined && name
+				? `${name} in the ${w.isMelee ? "Fight" : "Shooting"} phase`
+				: name;
+		byWeapon.set(label, (byWeapon.get(label) || 0) + (w.woundsLost || 0));
 	}
 	const [top] = [...byWeapon.entries()].sort((a, b) => b[1] - a[1]);
 	const mostly = byWeapon.size > 1 && top ? `, mostly with the ${top[0]}` : "";
@@ -215,10 +173,12 @@ function summarise(pairing) {
 		models > 1
 			? `Kills ${format(t.modelsSlain, 1)} of ${models} models per round (${share}% of its wounds)`
 			: `Removes ${format(t.woundsLost, 1)} of ${wounds} wounds per round (${share}%)`;
-	const rounds = Number.isFinite(t.roundsToClear)
-		? `; about ${format(t.roundsToClear, 1)} rounds to clear on average`
-		: "";
-	return `${removed}${mostly}. Clears it in one round ${Math.round(t.pDestroyed * 100)}% of the time${rounds}.`;
+	return [
+		`${removed}${mostly}.`,
+		`Clears it in one round ${Math.round(t.pDestroyed * 100)}% of the time.`,
+		Number.isFinite(t.roundsToClear) &&
+			`About ${format(t.roundsToClear, 1)} rounds to clear on average.`,
+	].filter(Boolean);
 }
 
 export function MatchupDetail({ pairing, rowCells = [] }) {
@@ -239,6 +199,19 @@ export function MatchupDetail({ pairing, rowCells = [] }) {
 	}
 
 	const groups = pairing.groups || [];
+	// A leader and its bodyguard: name the unit behind each weapon.
+	const sources = new Set(
+		[...pairing.weapons, ...(pairing.alternatives || [])].map(
+			(w) => w.sourceUnitName,
+		),
+	);
+	// Shooting + Fight: shooting weapons first, then fight, each under a divider.
+	const combined = pairing.phase === "combined";
+	const weaponRows = combined
+		? [...pairing.weapons].sort((a, b) => Number(a.isMelee) - Number(b.isMelee))
+		: pairing.weapons;
+	const withSource = (weapon) =>
+		sources.size > 1 ? { ...weapon, showSource: true } : weapon;
 	const multiGroup =
 		new Set(pairing.weapons.map((w) => w.groupIndex ?? 0)).size > 1;
 	const chartData = simulation?.histogram;
@@ -274,7 +247,11 @@ export function MatchupDetail({ pairing, rowCells = [] }) {
 					</div>
 				</div>
 			</div>
-			<p className="text-base">{summarise(pairing)}</p>
+			<div className="flex flex-col text-base">
+				{summarise(pairing).map((line) => (
+					<p key={line}>{line}</p>
+				))}
+			</div>
 			{pairing.appliedModifiers?.length > 0 && (
 				<div className="flex flex-wrap items-center gap-1.5 text-xs">
 					<span className="text-muted">Modifiers applied:</span>
@@ -291,9 +268,6 @@ export function MatchupDetail({ pairing, rowCells = [] }) {
 				<summary className="section-label cursor-pointer py-1 hover:text-ink">
 					Show breakdown
 				</summary>
-				<div className="flex justify-end pb-2 print-display-none">
-					<HowToRead />
-				</div>
 				<div className="overflow-x-auto">
 					<table className="w-full border-collapse text-sm">
 						<thead>
@@ -314,13 +288,34 @@ export function MatchupDetail({ pairing, rowCells = [] }) {
 							</tr>
 						</thead>
 						<tbody>
-							{pairing.weapons.map((weapon, index) => (
-								<WeaponRow
-									key={`${weapon.weaponName}-${index}`}
-									weapon={weapon}
-									groups={groups}
-									multiGroup={multiGroup}
-								/>
+							{weaponRows.map((weapon, index) => (
+								<Fragment key={`${weapon.weaponName}-${index}`}>
+									{combined &&
+										weapon.isMelee !== weaponRows[index - 1]?.isMelee && (
+											<>
+												{/* A small gap sets each phase apart from what is above it. */}
+												<tr>
+													<td
+														colSpan={COLUMNS.length + (multiGroup ? 1 : 0)}
+														className="h-2 border-0 p-0"
+													/>
+												</tr>
+												<tr>
+													<td
+														colSpan={COLUMNS.length + (multiGroup ? 1 : 0)}
+														className="section-label border border-line bg-surface-muted px-3 py-1.5"
+													>
+														{weapon.isMelee ? "Fight phase" : "Shooting phase"}
+													</td>
+												</tr>
+											</>
+										)}
+									<WeaponRow
+										weapon={withSource(weapon)}
+										groups={groups}
+										multiGroup={multiGroup}
+									/>
+								</Fragment>
 							))}
 							<tr>
 								<td className="border border-line px-3 py-2">Total</td>
@@ -353,7 +348,7 @@ export function MatchupDetail({ pairing, rowCells = [] }) {
 							{pairing.alternatives?.map((weapon, index) => (
 								<WeaponRow
 									key={`alt-${weapon.weaponName}-${index}`}
-									weapon={weapon}
+									weapon={withSource(weapon)}
 									groups={groups}
 									multiGroup={multiGroup}
 									muted
@@ -445,9 +440,7 @@ export function MatchupDetail({ pairing, rowCells = [] }) {
 				</div>
 				{roundsData.length > 1 && (
 					<div className="flex flex-col gap-1">
-						<div className="section-label">
-							Expected rounds to clear — {pairing.attackerName} vs each target
-						</div>
+						<div className="section-label">Expected rounds to clear</div>
 						<div style={{ height: Math.max(120, roundsData.length * 28 + 40) }}>
 							<ResponsiveContainer width="100%" height="100%">
 								<BarChart

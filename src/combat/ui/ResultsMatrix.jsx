@@ -54,8 +54,9 @@ function shareColors(share) {
 	};
 }
 
-const NAME_COLUMN_REM = 10;
-const CELL_REM = 6.5;
+// Column widths come from CSS (`--matrix-name`, `--matrix-cell`), narrower on phones.
+const NAME_COLUMN = "var(--matrix-name)";
+const CELL = "var(--matrix-cell)";
 const HEADER_BUTTON =
 	"block w-full cursor-pointer rounded-none border-0 bg-transparent px-3 py-2 text-left font-normal hover:bg-[#ffffff14] focus-visible:-outline-offset-2";
 
@@ -208,110 +209,112 @@ export function ResultsMatrix({
 					</button>
 				)}
 			</div>
-			<div className="overflow-x-auto p-4">
-				<table
-					className="table-fixed border-collapse text-sm"
-					style={{
-						width: `${NAME_COLUMN_REM + matchup.defenderUnits.length * CELL_REM}rem`,
-					}}
-				>
-					<colgroup>
-						<col style={{ width: `${NAME_COLUMN_REM}rem` }} />
-						{columns.map(({ unit, index }) => (
-							<col
-								key={`${unit.name}-${index}`}
-								style={{ width: `${CELL_REM}rem` }}
-							/>
-						))}
-					</colgroup>
-					<thead>
-						<tr>
-							{/* The pickers above already name the sides. */}
-							<th className="sticky left-0 z-20 border border-line bg-surface-muted p-0" />
+			{/* Padding outside the scroll box: inside it, cells would scroll past the sticky names.
+			    The names cast a shadow, so columns visibly slide underneath them. */}
+			<div className="p-4">
+				<div className="overflow-x-auto">
+					<table
+						// Separate borders move with the sticky cells; collapsed ones stay behind and leave gaps.
+						className="table-fixed border-separate border-spacing-0 text-sm"
+						style={{
+							width: `calc(${NAME_COLUMN} + ${matchup.defenderUnits.length} * ${CELL})`,
+						}}
+					>
+						<colgroup>
+							<col style={{ width: NAME_COLUMN }} />
 							{columns.map(({ unit, index }) => (
-								<th
-									key={`${unit.name}-${index}`}
-									className="border border-line bg-surface-muted p-0 text-left"
-								>
-									<SortableHeader
-										showPoints={showPoints}
-										unit={unit}
-										active={rowSort?.by === index}
-										arrow={rowSort?.desc ? "▼" : "▲"}
-										placement="below"
-										onTip={setTip}
-										onClick={() => setRowSort(toggleSort(index))}
-									/>
-								</th>
+								<col key={`${unit.name}-${index}`} style={{ width: CELL }} />
 							))}
-						</tr>
-					</thead>
-					<tbody>
-						{rows.map(({ row, index: rowIndex }) => (
-							<tr key={`${row.attacker.name}-${rowIndex}`}>
-								{/* Sticky, so attacker names stay visible while scrolling sideways. */}
-								<th className="sticky left-0 z-10 border border-line bg-surface-muted p-0 text-left">
-									<SortableHeader
-										showPoints={showPoints}
-										unit={row.attacker}
-										active={colSort?.by === rowIndex}
-										arrow={colSort?.desc ? "▶" : "◀"}
-										placement="right"
-										onTip={setTip}
-										onClick={() => setColSort(toggleSort(rowIndex))}
-									/>
-								</th>
-								{columns.map(({ index: colIndex }) => {
-									const cell = row.cells[colIndex];
-									const value = grid[rowIndex][colIndex];
-									const isSelected =
-										selectedCell?.row === rowIndex &&
-										selectedCell?.col === colIndex;
-									const shown = value.unarmed
-										? "—"
-										: formatValue(metric, value.value);
-									const detail = METRICS[metric].detail?.(
-										cell.totals,
-										row.attacker,
-										matchup.defenderUnits[colIndex],
-									);
-									return (
-										// `h-px` lets the button fill the row, which the name column can make taller;
-										// the hover shade sits on the cell for the same reason.
-										<td
-											key={`${cell.defenderName}-${colIndex}`}
-											style={shareColors(value.share)}
-											title={
-												value.unarmed
-													? "No weapons in this phase"
-													: `${METRICS[metric].label}: ${shown}${detail ? ` (${detail} removed)` : ""} · ${Math.round(value.share * 100)}% of ${METRICS[metric].full}`
-											}
-											className={`h-px border p-0 hover:shadow-[inset_0_0_0_999px_#ffffff14] ${
-												isSelected
-													? "outline outline-2 -outline-offset-2 outline-ink"
-													: ""
-											} border-line`}
-										>
-											<button
-												type="button"
-												onClick={() =>
-													onSelectCell({ row: rowIndex, col: colIndex })
-												}
-												className="block h-full w-full cursor-pointer rounded-none border-0 bg-transparent px-3 py-2.5 text-center font-normal text-inherit focus-visible:-outline-offset-2"
-											>
-												<b
-													className={`text-base ${value.unarmed ? "font-normal text-muted" : ""}`}
-												>
-													{shown}
-												</b>
-											</button>
-										</td>
-									);
-								})}
+						</colgroup>
+						<thead>
+							<tr>
+								{/* The pickers above already name the sides. */}
+								<th className="sticky left-0 z-20 border border-line bg-surface-muted p-0 shadow-[6px_0_8px_-4px_#000c]" />
+								{columns.map(({ unit, index }) => (
+									<th
+										key={`${unit.name}-${index}`}
+										className="border-y border-r border-line bg-surface-muted p-0 text-left"
+									>
+										<SortableHeader
+											showPoints={showPoints}
+											unit={unit}
+											active={rowSort?.by === index}
+											arrow={rowSort?.desc ? "▼" : "▲"}
+											placement="below"
+											onTip={setTip}
+											onClick={() => setRowSort(toggleSort(index))}
+										/>
+									</th>
+								))}
 							</tr>
-						))}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							{rows.map(({ row, index: rowIndex }) => (
+								<tr key={`${row.attacker.name}-${rowIndex}`}>
+									{/* Sticky, so attacker names stay visible while scrolling sideways. */}
+									<th className="sticky left-0 z-10 border-x border-b border-line bg-surface-muted p-0 text-left shadow-[6px_0_8px_-4px_#000c]">
+										<SortableHeader
+											showPoints={showPoints}
+											unit={row.attacker}
+											active={colSort?.by === rowIndex}
+											arrow={colSort?.desc ? "▶" : "◀"}
+											placement="right"
+											onTip={setTip}
+											onClick={() => setColSort(toggleSort(rowIndex))}
+										/>
+									</th>
+									{columns.map(({ index: colIndex }) => {
+										const cell = row.cells[colIndex];
+										const value = grid[rowIndex][colIndex];
+										const isSelected =
+											selectedCell?.row === rowIndex &&
+											selectedCell?.col === colIndex;
+										const shown = value.unarmed
+											? "—"
+											: formatValue(metric, value.value);
+										const detail = METRICS[metric].detail?.(
+											cell.totals,
+											row.attacker,
+											matchup.defenderUnits[colIndex],
+										);
+										return (
+											// `h-px` lets the button fill the row, which the name column can make taller;
+											// the hover shade sits on the cell for the same reason.
+											<td
+												key={`${cell.defenderName}-${colIndex}`}
+												style={shareColors(value.share)}
+												title={
+													value.unarmed
+														? "No weapons in this phase"
+														: `${METRICS[metric].label}: ${shown}${detail ? ` (${detail} removed)` : ""} · ${Math.round(value.share * 100)}% of ${METRICS[metric].full}`
+												}
+												className={`h-px border-b border-r p-0 hover:shadow-[inset_0_0_0_999px_#ffffff14] ${
+													isSelected
+														? "outline outline-2 -outline-offset-2 outline-ink"
+														: ""
+												} border-line`}
+											>
+												<button
+													type="button"
+													onClick={() =>
+														onSelectCell({ row: rowIndex, col: colIndex })
+													}
+													className="block h-full w-full cursor-pointer rounded-none border-0 bg-transparent px-3 py-2.5 text-center font-normal text-inherit focus-visible:-outline-offset-2"
+												>
+													<b
+														className={`text-base ${value.unarmed ? "font-normal text-muted" : ""}`}
+													>
+														{shown}
+													</b>
+												</button>
+											</td>
+										);
+									})}
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
 			</div>
 			<HeaderTip tip={tip} />
 		</div>
