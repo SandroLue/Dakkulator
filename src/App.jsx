@@ -7,9 +7,12 @@ import { isFirstVisit, useRosterLibrary } from "./library/rosterLibrary";
 
 const roleLabel = (slot, reversed) =>
 	(slot === "A") !== reversed ? "Attacker" : "Defender";
+// Loaded on a first visit; the ones with a `slot` start as attacker and defender.
 const EXAMPLES = [
 	{ slot: "A", source: "example:custodes", file: "Custodes.rosz" },
 	{ slot: "B", source: "example:tyranids", file: "Tyranids.rosz" },
+	{ source: "example:space-marines", file: "Space Marine.rosz" },
+	{ source: "example:necrons", file: "Necron.rosz" },
 ];
 const STORAGE_FULL =
 	"The browser's storage is full — delete a list and try again.";
@@ -32,7 +35,7 @@ async function loadExamples(library) {
 				errors.push(message(STORAGE_FULL, true));
 				break;
 			}
-			library.assign(example.slot, entry.id);
+			if (example.slot) library.assign(example.slot, entry.id);
 		} catch (error) {
 			errors.push(message(error.message, true));
 		}
