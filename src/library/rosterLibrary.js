@@ -139,10 +139,38 @@ function assign(slot, id) {
 	write(SLOT_KEYS[slot], id || null);
 }
 
-/** Puts a freshly added list into the first empty slot, if any. */
-function assignIfEmpty(id) {
-	const slot = SLOTS.find((s) => !currentSlot(s));
-	if (slot) assign(slot, id);
+/** Example lists are placeholders: an upload may take their slot. */
+const isExample = (entry) => String(entry?.source ?? "").startsWith("example:");
+
+/**
+ * The slot a freshly uploaded list takes over: the first, in `order`, that is
+ * empty or still holds an example. When both hold the user's own lists, the new
+ * one becomes the first in `order` (the attacker), so an upload is always active.
+ */
+export function slotForUpload(entries, slots, order = SLOTS) {
+	const free = (slot) => {
+		const current = entries.find((entry) => entry.id === slots[slot]);
+		return !current || isExample(current);
+	};
+	return order.find(free) ?? order[0];
+}
+
+/** @returns the slot the uploaded list was put in */
+function assignUpload(id, order = SLOTS) {
+	const slot = slotForUpload(
+		currentEntries().filter((entry) => entry.id !== id),
+		{ A: currentSlot("A"), B: currentSlot("B") },
+		order,
+	);
+	assign(slot, id);
+	return slot;
+}
+
+/** Gives a list a slot; a list that held the other slot swaps with the one here. */
+function assignRole(slot, id) {
+	const other = slot === "A" ? "B" : "A";
+	if (currentSlot(other) === id) assign(other, currentSlot(slot));
+	assign(slot, id);
 }
 
 const readLibrary = () => localStorage.getItem(LIBRARY_KEY);
@@ -168,6 +196,7 @@ export function useRosterLibrary() {
 		add,
 		remove,
 		assign,
-		assignIfEmpty,
+		assignUpload,
+		assignRole,
 	};
 }

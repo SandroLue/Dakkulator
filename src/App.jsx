@@ -48,6 +48,11 @@ function App() {
 	const [busy, setBusy] = useState(false);
 	const [messages, setMessages] = useState([]);
 	const [reversed, setReversed] = useState(false);
+	// "Add army lists" and "Your army lists" open and close together. They start
+	// open for a first-time visitor, who has nothing else to do yet.
+	const [libraryOpen, setLibraryOpen] = useState(
+		() => library.entries.length === 0,
+	);
 
 	useEffect(() => {
 		if (examplesRequested || !isFirstVisit()) return;
@@ -70,8 +75,8 @@ function App() {
 					next.push(message(`${file.name}: ${STORAGE_FULL}`, true));
 					continue;
 				}
-				library.assignIfEmpty(entry.id);
-				next.push(message(`Added “${roster.name}”.`));
+				// Takes an empty slot or an example's, attacker first; otherwise the attacker's.
+				library.assignUpload(entry.id, reversed ? ["B", "A"] : ["A", "B"]);
 				track("user_uploaded_roster", {
 					roster_faction: roster.forces[0].catalog,
 					roster_type: roster.gameType,
@@ -98,14 +103,17 @@ function App() {
 						onFiles={handleFiles}
 						busy={busy}
 						messages={messages}
-						// Open for a first-time visitor, who has nothing else to do yet.
-						defaultOpen={library.entries.length === 0}
+						open={libraryOpen}
+						onOpenChange={setLibraryOpen}
 					/>
 					<RosterTable
 						entries={library.entries}
 						slots={library.slots}
 						slotLabel={(slot) => roleLabel(slot, reversed)}
+						onAssign={library.assignRole}
 						onRemove={library.remove}
+						open={libraryOpen}
+						onOpenChange={setLibraryOpen}
 					/>
 				</section>
 

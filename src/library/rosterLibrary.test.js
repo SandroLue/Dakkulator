@@ -5,6 +5,7 @@ import {
 	describeEntry,
 	migrateLegacyStorage,
 	parseLibrary,
+	slotForUpload,
 } from "./rosterLibrary";
 
 function memoryStorage(initial = {}) {
@@ -89,5 +90,38 @@ describe("describeEntry", () => {
 			faction: "Xenos - Tyranids",
 			points: 1995,
 		});
+	});
+});
+
+describe("slotForUpload", () => {
+	const entries = [
+		{ id: "ex1", source: "example:custodes" },
+		{ id: "ex2", source: "example:tyranids" },
+		{ id: "own1", source: "upload" },
+		{ id: "own2", source: "upload" },
+	];
+
+	it("takes over the attacker's example first, then the defender's", () => {
+		expect(slotForUpload(entries, { A: "ex1", B: "ex2" })).toBe("A");
+		expect(slotForUpload(entries, { A: "own1", B: "ex2" })).toBe("B");
+	});
+
+	it("becomes the attacker when both sides hold the user's own lists", () => {
+		expect(slotForUpload(entries, { A: "own1", B: "own2" })).toBe("A");
+		// With the roles swapped, the attacker is slot B.
+		expect(slotForUpload(entries, { A: "own1", B: "own2" }, ["B", "A"])).toBe(
+			"B",
+		);
+	});
+
+	it("fills an empty slot, or one whose list was deleted", () => {
+		expect(slotForUpload(entries, { A: "own1", B: null })).toBe("B");
+		expect(slotForUpload(entries, { A: "gone", B: "own1" })).toBe("A");
+	});
+
+	it("follows the given order when attacker and defender are swapped", () => {
+		expect(slotForUpload(entries, { A: "ex1", B: "ex2" }, ["B", "A"])).toBe(
+			"B",
+		);
 	});
 });

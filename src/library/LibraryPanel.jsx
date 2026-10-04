@@ -6,15 +6,14 @@ const dateFormat = new Intl.DateTimeFormat(undefined, {
 	year: "numeric",
 });
 
-/** A panel whose body folds away behind its header. */
-function CollapsiblePanel({ title, aside, defaultOpen = false, children }) {
-	const [open, setOpen] = useState(defaultOpen);
+/** A panel whose body folds away behind its header; the caller owns `open`. */
+function CollapsiblePanel({ title, aside, open, onOpenChange, children }) {
 	return (
 		<div className="panel flex min-w-0 flex-col overflow-hidden">
 			<button
 				type="button"
 				aria-expanded={open}
-				onClick={() => setOpen(!open)}
+				onClick={() => onOpenChange?.(!open)}
 				className={`panel-header w-full cursor-pointer justify-start rounded-none border-0 bg-transparent text-left font-normal hover:bg-surface-muted ${
 					open ? "" : "border-b-0"
 				}`}
@@ -42,10 +41,26 @@ function CollapsiblePanel({ title, aside, defaultOpen = false, children }) {
 /** Both library panels share one body height (about 6 list rows), so they line up. */
 const BODY_HEIGHT = "h-[19.5rem]";
 
+/** The lists loaded on a first visit, as opposed to the user's own uploads. */
+const isExample = (entry) => String(entry.source ?? "").startsWith("example:");
+
 /** "Imperium - Adeptus Astartes - Ultramarines" → "Ultramarines". */
 const subfaction = (faction) => faction.split(" - ").at(-1);
 
-export function UploadArea({ onFiles, busy, messages, defaultOpen = false }) {
+/** The two slots, attacker first (the swap button decides which slot that is). */
+const roleSlots = (slotLabel) =>
+	["A", "B"].sort(
+		(a, b) =>
+			Number(slotLabel(b) === "Attacker") - Number(slotLabel(a) === "Attacker"),
+	);
+
+export function UploadArea({
+	onFiles,
+	busy,
+	messages,
+	open = false,
+	onOpenChange,
+}) {
 	const inputRef = useRef(null);
 	const [dragging, setDragging] = useState(false);
 
@@ -65,7 +80,11 @@ export function UploadArea({ onFiles, busy, messages, defaultOpen = false }) {
 	};
 
 	return (
-		<CollapsiblePanel title="Add army lists" defaultOpen={defaultOpen}>
+		<CollapsiblePanel
+			title="Add army lists"
+			open={open}
+			onOpenChange={onOpenChange}
+		>
 			<div className={`flex ${BODY_HEIGHT} flex-col gap-3 overflow-auto p-4`}>
 				<label
 					htmlFor="roster-upload"
@@ -131,17 +150,21 @@ export function UploadArea({ onFiles, busy, messages, defaultOpen = false }) {
 	);
 }
 
-export function RosterTable({ entries, slots, slotLabel, onRemove }) {
-	const [confirmId, setConfirmId] = useState(null);
-	const usage = (id) =>
-		["A", "B"]
-			.filter((slot) => slots[slot] === id)
-			.map((slot) => slotLabel(slot));
-
+export function RosterTable({
+	entries,
+	slots,
+	slotLabel,
+	onAssign,
+	onRemove,
+	open = false,
+	onOpenChange,
+}) {
 	return (
 		<CollapsiblePanel
 			title="Your army lists"
 			aside={`${entries.length} saved in this browser`}
+			open={open}
+			onOpenChange={onOpenChange}
 		>
 			{entries.length === 0 ? (
 				<div
@@ -154,13 +177,10 @@ export function RosterTable({ entries, slots, slotLabel, onRemove }) {
 					<table className="w-full border-collapse text-sm">
 						<thead className="section-label sticky top-0 bg-surface-muted text-left">
 							<tr>
-								<th className="w-[40%] min-w-[10rem] px-4 py-2 font-bold">
-									List
-								</th>
-								<th className="px-3 py-2 font-bold">Faction</th>
+								{/* The list column takes what the others leave, so actions never scroll away. */}
+								<th className="w-full px-4 py-2 font-bold">List</th>
 								<th className="px-3 py-2 text-right font-bold">Points</th>
-								<th className="px-3 py-2 font-bold">Added</th>
-								<th className="px-3 py-2 font-bold">In use</th>
+								<th className="px-3 py-2 font-bold">Use as</th>
 								<th className="px-4 py-2">
 									<span className="sr-only">Actions</span>
 								</th>
@@ -173,67 +193,71 @@ export function RosterTable({ entries, slots, slotLabel, onRemove }) {
 									className="border-t border-line transition-colors hover:bg-surface-muted"
 								>
 									{/* max-w-0 lets the column width decide, so long names truncate. */}
-									<td
-										className="max-w-0 truncate px-4 py-2 font-semibold"
-										title={entry.name}
-									>
-										{entry.name}
-									</td>
-									<td
-										className="whitespace-nowrap px-3 py-2 text-muted"
-										title={entry.faction}
-									>
-										{subfaction(entry.faction)}
+									<td className="max-w-0 px-4 py-2">
+										<div className="truncate font-semibold" title={entry.name}>
+											{entry.name}
+										</div>
+										{/* Faction and date tell look-alike lists apart. */}
+										<div
+											className="truncate text-xs text-muted"
+											title={entry.faction}
+										>
+											{subfaction(entry.faction)} ·{" "}
+											{isExample(entry)
+												? "Example"
+												: dateFormat.format(entry.addedAt)}
+										</div>
 									</td>
 									<td className="px-3 py-2 text-right tabular-nums">
 										{entry.points}
 									</td>
-									<td className="whitespace-nowrap px-3 py-2 text-muted">
-										{dateFormat.format(entry.addedAt)}
-									</td>
-									<td className="px-3 py-2">
+									<td className="whitespace-nowrap px-3 py-2">
 										<span className="inline-flex gap-1">
-											{usage(entry.id).map((label) => (
-												<span
-													key={label}
-													className={`badge ${label === "Defender" ? "bg-accent-soft text-accent" : ""}`}
-												>
-													{label}
-												</span>
-											))}
+											{/* The list's role is a badge; the other role is one click away. */}
+											{roleSlots(slotLabel).map((slot) => {
+												const label = slotLabel(slot);
+												return slots[slot] === entry.id ? (
+													<span
+														key={slot}
+														className={`badge ${label === "Defender" ? "bg-accent-soft text-accent" : ""}`}
+													>
+														{label}
+													</span>
+												) : (
+													<button
+														type="button"
+														key={slot}
+														className="button-small rounded-full py-0 text-xs text-muted"
+														title={`Use ${entry.name} as the ${label.toLowerCase()}`}
+														onClick={() => onAssign?.(slot, entry.id)}
+													>
+														{label}
+													</button>
+												);
+											})}
 										</span>
 									</td>
 									<td className="whitespace-nowrap px-4 py-2 text-right">
-										{confirmId === entry.id ? (
-											<span className="inline-flex gap-1">
-												<button
-													type="button"
-													className="button-small button-danger"
-													onClick={() => {
-														onRemove(entry.id);
-														setConfirmId(null);
-													}}
-												>
-													Delete
-												</button>
-												<button
-													type="button"
-													className="button-small"
-													onClick={() => setConfirmId(null)}
-												>
-													Cancel
-												</button>
-											</span>
-										) : (
-											<button
-												type="button"
-												className="button-small button-danger"
-												aria-label={`Delete ${entry.name}`}
-												onClick={() => setConfirmId(entry.id)}
+										<button
+											type="button"
+											className="button-small button-danger px-1.5"
+											aria-label={`Delete ${entry.name}`}
+											title="Delete this list"
+											onClick={() => onRemove(entry.id)}
+										>
+											<svg
+												viewBox="0 0 24 24"
+												aria-hidden="true"
+												className="h-4 w-4"
+												fill="none"
+												stroke="currentColor"
+												strokeWidth="2"
+												strokeLinecap="round"
+												strokeLinejoin="round"
 											>
-												Delete
-											</button>
-										)}
+												<path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-12M9 7V4h6v3" />
+											</svg>
+										</button>
 									</td>
 								</tr>
 							))}
