@@ -24,7 +24,9 @@ const TOGGLE_GROUPS = [
 				hint: "[LANCE]",
 				on: true,
 			},
-			{ key: "plungingFire", label: "Plunging fire", hint: "+1 BS", on: true },
+			// Off by default: it needs tall terrain, and it would hide other bonuses
+			// like [HEAVY] once a weapon already hits on 2+.
+			{ key: "plungingFire", label: "Plunging fire", hint: "+1 BS" },
 		],
 	},
 	{

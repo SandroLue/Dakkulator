@@ -108,10 +108,19 @@ function sumWeapons(weapons) {
 	return total;
 }
 
+// `[label, accessor, hint]`; the hint is the header's tooltip.
 const COLUMNS = [
 	["Weapon", weaponLabel],
-	["Attacks", (w) => format(w.declaredAttacks ?? w.attacks)],
-	["Hits", (w) => format(w.hits)],
+	[
+		"Attacks",
+		(w) => format(w.declaredAttacks ?? w.attacks),
+		"Every attack the weapon makes, as on its datasheet.",
+	],
+	[
+		"Hits",
+		(w) => format(w.hits),
+		"Counts only attacks resolved while the target is still alive. Attacks that would land after the unit is destroyed are left out, so a weapon that always hits, like [TORRENT], can show fewer hits than attacks.",
+	],
 	["Wounds", (w) => format(w.wounds)],
 	["Mortal", (w) => format(w.mortalWounds)],
 	["Failed saves", (w) => format(w.failedSaves)],
@@ -169,12 +178,12 @@ function summarise(pairing) {
 	const mostly = byWeapon.size > 1 && top ? `, mostly with the ${top[0]}` : "";
 
 	const share = Math.round((t.woundsLost / (wounds || 1)) * 100);
-	const removed =
-		models > 1
-			? `Kills ${format(t.modelsSlain, 1)} of ${models} models per round (${share}% of its wounds)`
-			: `Removes ${format(t.woundsLost, 1)} of ${wounds} wounds per round (${share}%)`;
+	// Wounds and models are separate measures: overkill is lost, and an average
+	// of 1.2 models' worth of wounds can still kill fewer models on average.
 	return [
-		`${removed}${mostly}.`,
+		`Removes ${format(t.woundsLost, 1)} of ${wounds} wounds per round (${share}%)${mostly}.`,
+		models > 1 &&
+			`On average ${format(t.modelsSlain, 1)} of ${models} models die per round.`,
 		`Clears it in one round ${Math.round(t.pDestroyed * 100)}% of the time.`,
 		Number.isFinite(t.roundsToClear) &&
 			`About ${format(t.roundsToClear, 1)} rounds to clear on average.`,
@@ -272,12 +281,20 @@ export function MatchupDetail({ pairing, rowCells = [] }) {
 					<table className="w-full border-collapse text-sm">
 						<thead>
 							<tr>
-								{COLUMNS.map(([label]) => (
+								{COLUMNS.map(([label, , hint]) => (
 									<th
 										key={label}
+										title={hint}
 										className="section-label border border-line bg-surface-muted px-3 py-2 text-left"
 									>
-										{label}
+										{/* A dotted underline marks headers that explain themselves on hover. */}
+										{hint ? (
+											<span className="cursor-help underline decoration-dotted underline-offset-4">
+												{label}
+											</span>
+										) : (
+											label
+										)}
 									</th>
 								))}
 								{multiGroup && (
