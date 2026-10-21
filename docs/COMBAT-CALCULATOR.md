@@ -212,6 +212,7 @@ Plunging Fire (§22.05) improves BS by 1.
 - `Feel No Pain X+` (§24.12) is rolled **per wound** that would be lost. A
   Feel No Pain "against mortal wounds" (`mortalFnp`) covers the mortal wounds
   of `[DEVASTATING WOUNDS]` only; those use the better of both thresholds.
+  One "against psychic attacks" (`psychicFnp`) counts for `[PSYCHIC]` weapons only.
 - Damage rules from abilities, in this order (`applyDamageRules`): "re-roll the
   Damage roll" re-rolls a random roll below the average once; "halve the Damage"
   rounds up, minimum 1; "change the Damage to 1" sets it to 1. The defender's two

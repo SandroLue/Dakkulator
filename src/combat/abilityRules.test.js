@@ -665,12 +665,11 @@ describe("matchAbility: enemy debuffs, weapons and Feel No Pain", () => {
 	});
 
 	it("reads Feel No Pain against mortal wounds and psychic attacks", () => {
-		const results = matchAbility(
-			'While a friendly Infantry unit is within 6" of this model, models in that unit have the Feel No Pain 5+ ability against mortal wounds and psychic attacks.',
-		);
-		expect(results.map((r) => r.modifier)).toEqual([
-			expect.objectContaining({ role: "defending", mortalFnp: 5 }),
-			expect.objectContaining({ fnp: 5, weaponFilter: "PSYCHIC" }),
-		]);
+		// One modifier, so the ability shows as one card.
+		expect(
+			one(
+				'While a friendly Infantry unit is within 6" of this model, models in that unit have the Feel No Pain 5+ ability against mortal wounds and psychic attacks.',
+			).modifier,
+		).toMatchObject({ role: "defending", mortalFnp: 5, psychicFnp: 5 });
 	});
 });

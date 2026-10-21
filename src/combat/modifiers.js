@@ -92,6 +92,8 @@ export function normalizeModifier(raw = {}) {
 		weaponFilter: typeof raw.weaponFilter === "string" ? raw.weaponFilter : "",
 		// Feel No Pain against mortal wounds only ([DEVASTATING WOUNDS]).
 		mortalFnp: toThreshold(raw.mortalFnp),
+		// Feel No Pain against psychic attacks ([PSYCHIC] weapons) only.
+		psychicFnp: toThreshold(raw.psychicFnp),
 		// Which of the list's own units it is for, by keyword ("TERMAGANTS"),
 		// and which are left out ("MONSTER, VEHICLE").
 		unitKeywords: typeof raw.unitKeywords === "string" ? raw.unitKeywords : "",
@@ -196,6 +198,10 @@ function opponentMatches(modifier, opponent) {
 	const excluded = parseKeywords(modifier.excludeVsKeywords);
 	return !excluded.some((k) => keywords.has(k));
 }
+
+const isPsychic = (profile) =>
+	Boolean(profile.abilities?.psychic) ||
+	/\bpsychic\b/i.test(profile.weaponKeywords ?? "");
 
 /** Whether a weapon profile is one a "weaponFilter" names, by name or keyword. */
 function weaponMatches(modifier, profile) {
@@ -372,7 +378,15 @@ const STRENGTH_VS_TOUGHNESS = {
  * The modifiers whose Strength-vs-Toughness condition holds for one weapon
  * against one model group, folded into that pairing's inputs.
  */
-export function applyConditional(profile, group, ctx) {
+export function applyConditional(profile, target, ctx) {
+	// "Feel No Pain against psychic attacks" counts for [PSYCHIC] weapons only.
+	const group =
+		target.psychicFnp && isPsychic(profile)
+			? {
+					...target,
+					fnp: Math.min(target.fnp || 7, target.psychicFnp),
+				}
+			: target;
 	const pending = ctx.conditional;
 	if (!pending) return { profile, group, ctx };
 	const holds = (m) =>
@@ -401,6 +415,7 @@ export function applyConditional(profile, group, ctx) {
 function modifyGroup(group, attacking, defending) {
 	let fnp = group.fnp || 7;
 	let mortalFnp = group.mortalFnp || 7;
+	let psychicFnp = group.psychicFnp || 7;
 	let invuln = group.invuln ? parseSkill(group.invuln, 7) : 7;
 	let apModifier = 0;
 	let damageModifier = 0;
@@ -414,6 +429,7 @@ function modifyGroup(group, attacking, defending) {
 		if (!covers(m, group)) continue;
 		if (m.fnp) fnp = Math.min(fnp, m.fnp);
 		if (m.mortalFnp) mortalFnp = Math.min(mortalFnp, m.mortalFnp);
+		if (m.psychicFnp) psychicFnp = Math.min(psychicFnp, m.psychicFnp);
 		if (m.invuln) invuln = Math.min(invuln, m.invuln);
 		apModifier += m.apModifier || 0;
 		damageModifier += m.damageModifier || 0;
@@ -428,6 +444,7 @@ function modifyGroup(group, attacking, defending) {
 		...group,
 		fnp: fnp < 7 ? fnp : group.fnp,
 		mortalFnp: mortalFnp < 7 ? mortalFnp : (group.mortalFnp ?? null),
+		psychicFnp: psychicFnp < 7 ? psychicFnp : (group.psychicFnp ?? null),
 		invuln: invuln < 7 ? `${invuln}+` : group.invuln,
 		apModifier: (group.apModifier || 0) + apModifier,
 		damageModifier: (group.damageModifier || 0) + damageModifier,
@@ -585,6 +602,8 @@ function describeEffects(raw) {
 		if (m.fnp) effects.push(`Feel No Pain ${m.fnp}+`);
 		if (m.mortalFnp)
 			effects.push(`Feel No Pain ${m.mortalFnp}+ vs mortal wounds`);
+		if (m.psychicFnp)
+			effects.push(`Feel No Pain ${m.psychicFnp}+ vs psychic attacks`);
 		if (m.invuln) effects.push(`${m.invuln}+ invulnerable`);
 		if (m.cover) effects.push("benefit of cover");
 		if (m.halveDamage) effects.push("halve damage");

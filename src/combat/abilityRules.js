@@ -304,7 +304,7 @@ function effects(s) {
 	if (fnp) {
 		const against = fnp[2] ?? "";
 		if (/mortal wounds?/.test(against)) e.mortalFnp = Number(fnp[1]);
-		if (/psychic attacks?/.test(against)) e.fnpVsPsychic = Number(fnp[1]);
+		if (/psychic attacks?/.test(against)) e.psychicFnp = Number(fnp[1]);
 		if (!against) e.fnp = Number(fnp[1]);
 	}
 
@@ -339,7 +339,7 @@ const DEFENDING_ONLY = new Set([
 	"damageToOne",
 	"fnp",
 	"mortalFnp",
-	"fnpVsPsychic",
+	"psychicFnp",
 	// Only meaningful for an enemy unit (see ENEMY_EFFECTS).
 	"denyCover",
 ]);
@@ -358,7 +358,7 @@ const DEFENDING_EFFECTS = new Set([
 	"woundsChange",
 	"fnp",
 	"mortalFnp",
-	"fnpVsPsychic",
+	"psychicFnp",
 ]);
 
 /**
@@ -433,7 +433,7 @@ const STAT_EFFECTS = new Set([
 	"woundsChange",
 	"fnp",
 	"mortalFnp",
-	"fnpVsPsychic",
+	"psychicFnp",
 	"cover",
 	"denyCover",
 ]);
@@ -784,13 +784,10 @@ export function matchAbility(text) {
 					(who.role === "attacking"
 						? !DEFENDING_ONLY.has(key)
 						: DEFENDING_EFFECTS.has(key)) &&
-					(key !== "fnp" || handsOn) &&
-					key !== "fnpVsPsychic",
+					(key !== "fnp" || handsOn),
 			),
 		);
-		// "against psychic attacks": a separate modifier for [PSYCHIC] weapons.
-		const vsPsychic = who.role === "defending" ? found.fnpVsPsychic : null;
-		if (!Object.keys(allowed).length && !vsPsychic) continue;
+		if (!Object.keys(allowed).length) continue;
 
 		// What is left once the subject and the target keywords are read.
 		let rest = who.text ? sentence.replace(who.text, " ") : sentence;
@@ -814,37 +811,29 @@ export function matchAbility(text) {
 				? before
 				: "";
 
-		const modifier = {
-			role: who.role,
-			phase: who.phase,
-			vsKeywords: (target?.keywords ?? []).join(", "),
-			...(aura ? auraUnits : {}),
-			...(picked ? selected : {}),
-			...(who.unitKeywords ? { unitKeywords: who.unitKeywords } : {}),
-			...(who.excludeUnitKeywords
-				? { excludeUnitKeywords: who.excludeUnitKeywords }
-				: {}),
-			...base,
-			// "the bearer", "this model": not the unit a leader joins.
-			...(!isLeading && ownModels(who.text) ? { ownModelsOnly: true } : {}),
-		};
-		const result = {
+		results.push({
 			option,
 			// "list": an aura or army rule, for every unit of the list rather than its owner.
 			scope: aura || picked || who.scope === "list" ? "list" : "unit",
+			modifier: {
+				role: who.role,
+				phase: who.phase,
+				vsKeywords: (target?.keywords ?? []).join(", "),
+				...(aura ? auraUnits : {}),
+				...(picked ? selected : {}),
+				...(who.unitKeywords ? { unitKeywords: who.unitKeywords } : {}),
+				...(who.excludeUnitKeywords
+					? { excludeUnitKeywords: who.excludeUnitKeywords }
+					: {}),
+				...base,
+				// "the bearer", "this model": not the unit a leader joins.
+				...(!isLeading && ownModels(who.text) ? { ownModelsOnly: true } : {}),
+				...allowed,
+			},
 			conditional: reasons.length > 0,
 			reasons,
 			sentence: raw,
-		};
-		if (Object.keys(allowed).length) {
-			results.push({ ...result, modifier: { ...modifier, ...allowed } });
-		}
-		if (vsPsychic) {
-			results.push({
-				...result,
-				modifier: { ...modifier, fnp: vsPsychic, weaponFilter: "PSYCHIC" },
-			});
-		}
+		});
 	}
 	return results;
 }

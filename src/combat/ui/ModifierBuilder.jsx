@@ -437,6 +437,7 @@ function ModifierEditor({
 						{thresholdField("fnp", "FNP", THRESHOLDS)}
 						{thresholdField("invuln", "Invulnerable", THRESHOLDS)}
 						{thresholdField("mortalFnp", "FNP vs mortal wounds", THRESHOLDS)}
+						{thresholdField("psychicFnp", "FNP vs psychic attacks", THRESHOLDS)}
 						<div className="col-span-2 flex flex-wrap gap-2 sm:col-span-4 lg:col-span-5">
 							{[
 								["cover", "Benefit of cover"],

@@ -617,6 +617,23 @@ describe("weapon filters, mortal-wound Feel No Pain and debuffs", () => {
 		expect(mortal).toBeGreaterThan(all);
 	});
 
+	it("applies Feel No Pain against psychic attacks to [PSYCHIC] weapons only", () => {
+		const shooter = withWeapons();
+		const lost = (modifiers) =>
+			byWeapon(resolve(shooter, marineTarget, modifiers));
+		const hood = createModifier({
+			role: "defending",
+			list: "B",
+			psychicFnp: 4,
+		});
+		const plain = lost([]);
+		const hooded = lost([hood]);
+		expect(hooded["Psychic lash"].woundsLost).toBeLessThan(
+			plain["Psychic lash"].woundsLost,
+		);
+		expect(hooded.Boltgun.woundsLost).toBeCloseTo(plain.Boltgun.woundsLost, 9);
+	});
+
 	it("lets a defender weaken the attacking weapons and skip some attackers", () => {
 		const weakened = resolve(boltgunSquad, marineTarget, [
 			createModifier({ role: "defending", list: "B", strengthModifier: -1 }),
