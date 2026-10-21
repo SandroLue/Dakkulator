@@ -2,6 +2,8 @@ import { useState } from "react";
 import {
 	EFFECT_LABELS,
 	NUMERIC_EFFECTS,
+	STAT_EFFECTS,
+	STRENGTH_VS_TOUGHNESS_LABEL,
 	createModifier,
 	describeModifier,
 	modifierLabel,
@@ -233,7 +235,7 @@ function ModifierEditor({
 						<option value="any">Both armies</option>
 					</select>
 				</Field>
-				<Field label="Unit" hint="a leader covers its attached unit">
+				<Field label="Unit">
 					<select
 						value={modifier.unitName}
 						onChange={(e) => set("unitName", e.target.value)}
@@ -245,6 +247,16 @@ function ModifierEditor({
 							</option>
 						))}
 					</select>
+					{modifier.unitName && (
+						<Toggle
+							pressed={modifier.ownModelsOnly}
+							onChange={(value) => set("ownModelsOnly", value)}
+							title="On: only this unit's own models, not the unit it leads or joins"
+							className="mt-1 self-start"
+						>
+							Only its own models
+						</Toggle>
+					)}
 				</Field>
 				<Field label="Applies when the unit is" group>
 					<Segmented
@@ -269,7 +281,7 @@ function ModifierEditor({
 						onChange={(value) => set("phase", value)}
 					/>
 				</Field>
-				<Field label="Only vs keywords" hint="any of the chosen" group>
+				<Field label="Only vs keywords" group>
 					<ChipSelect
 						selected={parseKeywords(modifier.vsKeywords)}
 						options={opponentKeywords}
@@ -280,6 +292,27 @@ function ModifierEditor({
 								? "+ another keyword…"
 								: "Every unit — add keyword…"
 						}
+					/>
+				</Field>
+				<Field label="Not vs keywords" group>
+					<ChipSelect
+						selected={parseKeywords(modifier.excludeVsKeywords)}
+						options={opponentKeywords}
+						onChange={(next) => set("excludeVsKeywords", next.join(", "))}
+						label="Not vs keywords"
+						placeholder={
+							modifier.excludeVsKeywords.trim()
+								? "+ another keyword…"
+								: "Add keyword…"
+						}
+					/>
+				</Field>
+				<Field label="Only weapons named or with">
+					<input
+						type="text"
+						value={modifier.weaponFilter}
+						placeholder="e.g. Solitaire, PSYCHIC, TORRENT"
+						onChange={(e) => set("weaponFilter", e.target.value)}
 					/>
 				</Field>
 				{[
@@ -298,6 +331,19 @@ function ModifierEditor({
 						/>
 					</Field>
 				))}
+				<Field label="Only if Strength vs Toughness" group>
+					<Segmented
+						label="Only if Strength vs Toughness"
+						value={modifier.strengthVsToughness}
+						options={[
+							["", "Always"],
+							...Object.entries(STRENGTH_VS_TOUGHNESS_LABEL).map(
+								([mode, sign]) => [mode, `S ${sign} T`],
+							),
+						]}
+						onChange={(value) => set("strengthVsToughness", value)}
+					/>
+				</Field>
 			</div>
 
 			<div className="flex flex-col gap-3 border-t border-line pt-4">
@@ -305,6 +351,8 @@ function ModifierEditor({
 				<div className="hint">
 					From the attacker's point of view: on a defensive modifier, −1 Hit
 					roll makes the unit harder to hit and −1 AP worsens incoming AP.
+					Toughness, Save and Wounds change the attacked models: +1 Save is a
+					better save.
 				</div>
 				<div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4 lg:grid-cols-7">
 					{NUMERIC_EFFECTS[modifier.role].map((key) => (
@@ -314,6 +362,21 @@ function ModifierEditor({
 								onChange={(e) => set(key, Number(e.target.value))}
 							>
 								{(ROLL_EFFECTS.has(key) ? ROLL_STEPS : STEPS).map((step) => (
+									<option key={step} value={step}>
+										{step > 0 ? `+${step}` : step}
+									</option>
+								))}
+							</select>
+						</Field>
+					))}
+					{/* The attacked models' own characteristics: the target's, or this unit's. */}
+					{Object.entries(STAT_EFFECTS).map(([key, label]) => (
+						<Field key={key} label={attacking ? `Target ${label}` : label}>
+							<select
+								value={modifier[key]}
+								onChange={(e) => set(key, Number(e.target.value))}
+							>
+								{STEPS.map((step) => (
 									<option key={step} value={step}>
 										{step > 0 ? `+${step}` : step}
 									</option>
@@ -371,8 +434,9 @@ function ModifierEditor({
 					</div>
 				) : (
 					<div className="grid grid-cols-2 items-end gap-x-6 gap-y-4 sm:grid-cols-4 lg:grid-cols-7">
-						{thresholdField("fnp", "Feel No Pain", THRESHOLDS)}
+						{thresholdField("fnp", "FNP", THRESHOLDS)}
 						{thresholdField("invuln", "Invulnerable", THRESHOLDS)}
+						{thresholdField("mortalFnp", "FNP vs mortal wounds", THRESHOLDS)}
 						<div className="col-span-2 flex flex-wrap gap-2 sm:col-span-4 lg:col-span-5">
 							{[
 								["cover", "Benefit of cover"],

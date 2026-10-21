@@ -32,7 +32,7 @@ import { METRICS } from "./metrics";
 
 const MODIFIER_KEY = "modifiersByArmy";
 const LEGACY_MODIFIER_KEY = "modifiers";
-const DEFAULT_METRIC = "pDestroyed";
+const DEFAULT_METRIC = "pointsReturn";
 
 /**
  * One side's unit selection and leader attachments, remembered per army list.

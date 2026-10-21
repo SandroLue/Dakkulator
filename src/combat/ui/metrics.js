@@ -16,17 +16,10 @@ const woundShare = (t) =>
  * costs in the matrix.
  */
 export const METRICS = {
-	pDestroyed: {
-		label: "Chance to clear in one round",
-		get: (t) => t.pDestroyed * 100,
-		digits: 0,
-		suffix: "%",
-		share: (t) => t.pDestroyed,
-		full: "certain kill",
-	},
 	pointsReturn: {
 		usesPoints: true,
-		label: "Efficiency as percent of own cost destroyed",
+		// Percent of its own cost the attacker destroys.
+		label: "Efficiency",
 		get: (t) => t.pointsReturnPer100,
 		digits: 0,
 		suffix: "%",
@@ -35,6 +28,14 @@ export const METRICS = {
 		// Points' worth of the target removed, out of the target's cost.
 		detail: (t, _attacker, defender) =>
 			`${format(t.pointsRemoved ?? 0, 0)} / ${defender.cost?.points ?? 0} pts`,
+	},
+	pDestroyed: {
+		label: "Clear in one round",
+		get: (t) => t.pDestroyed * 100,
+		digits: 0,
+		suffix: "%",
+		share: (t) => t.pDestroyed,
+		full: "certain kill",
 	},
 	woundsLost: {
 		label: "Wounds dealt",
@@ -60,7 +61,7 @@ export const METRICS = {
 	},
 	damagePer100Points: {
 		usesPoints: true,
-		label: "Wounds dealt per 100 points spent",
+		label: "Damage per 100 points",
 		get: (t) => t.damagePer100Points,
 		digits: 1,
 		// Points' worth of wounds dealt, relative to the attacker's own cost.
@@ -70,7 +71,7 @@ export const METRICS = {
 		full: "own cost traded",
 	},
 	roundsToClear: {
-		label: "Rounds needed to clear the unit",
+		label: "Rounds to clear",
 		get: (t) => t.roundsToClear,
 		digits: 1,
 		lowerIsBetter: true,

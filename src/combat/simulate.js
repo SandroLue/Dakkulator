@@ -1,4 +1,11 @@
-import { fnpFailProbability } from "./probability";
+import { fnpFailProbability, parseSkill } from "./probability";
+
+/** The better (lower) of two Feel No Pain thresholds; null is none. */
+function betterFnp(a, b) {
+	const value = (x) => (x ? parseSkill(x, 7) : 7);
+	const best = Math.min(value(a), value(b));
+	return best < 7 ? best : null;
+}
 
 /**
  * Monte-Carlo replay of the attack sequence, used for the quantities the exact
@@ -48,12 +55,18 @@ export function simulate(
 	const rng = mulberry32(seed);
 	const targets = streamGroups.map(({ group, streams }) => ({
 		// Each weapon carries the FNP it was resolved against (phase-specific modifiers).
-		streams: streams.map((stream) => ({
-			...stream,
-			fnpFail: fnpFailProbability(
-				stream.sampling?.fnp !== undefined ? stream.sampling.fnp : group.fnp,
-			),
-		})),
+		streams: streams.map((stream) => {
+			const fnp =
+				stream.sampling?.fnp !== undefined ? stream.sampling.fnp : group.fnp;
+			return {
+				...stream,
+				fnpFail: fnpFailProbability(fnp),
+				// [DEVASTATING WOUNDS] mortal wounds may face a better Feel No Pain.
+				mortalFnpFail: fnpFailProbability(
+					betterFnp(fnp, stream.sampling?.mortalFnp),
+				),
+			};
+		}),
 		wounds: Math.max(1, group.wounds || 1),
 		count: Math.max(1, group.count || 1),
 	}));
@@ -87,11 +100,12 @@ export function simulate(
 			return damage;
 		};
 
-		const applyDamage = (target, stream) => {
+		const applyDamage = (target, stream, mortal = false) => {
 			const damage = rollDamage(stream);
+			const fnpFail = mortal ? stream.mortalFnpFail : stream.fnpFail;
 			let woundsRemoved = 0;
 			for (let w = 0; w < damage; w++) {
-				if (rng() < stream.fnpFail) woundsRemoved++;
+				if (rng() < fnpFail) woundsRemoved++;
 			}
 			const applied = Math.min(woundsRemoved, remaining);
 			if (round === 0) lost += applied;
@@ -115,7 +129,7 @@ export function simulate(
 				const isCrit = roll < p.critWound;
 				if (!isCrit && roll >= p.wound) return;
 				if (isCrit && p.devastatingWounds) {
-					applyDamage(target, stream);
+					applyDamage(target, stream, true);
 					return;
 				}
 			}

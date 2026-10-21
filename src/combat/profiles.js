@@ -212,6 +212,8 @@ function buildProfile(unit, model, stats, weapon, isMelee, attackingModels) {
 		// In an attached unit: the leader or bodyguard unit this weapon belongs to.
 		sourceUnitName: stats?.attachedUnitName ?? unit.name,
 		weaponName: weapon.name,
+		// The keyword line as printed, for modifiers limited to e.g. "PSYCHIC" weapons.
+		weaponKeywords: String(weapon.type ?? ""),
 		selectionName: weapon.selectionName || weapon.name,
 		carrierName: model?.name ?? unit.name,
 		isMelee,

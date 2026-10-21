@@ -184,6 +184,7 @@ describe("user modifiers in the resolver", () => {
 				role: "defending",
 				list: "B",
 				unitName: "Captain",
+				ownModelsOnly: true,
 				invuln: 2,
 			}),
 		]);
@@ -273,7 +274,9 @@ describe("user modifiers in the resolver", () => {
 		const plain = lost([]);
 		// On the Captain only: the Intercessors in front still take full damage.
 		expect(
-			lost([createModifier({ ...shield, unitName: "Captain" })]),
+			lost([
+				createModifier({ ...shield, unitName: "Captain", ownModelsOnly: true }),
+			]),
 		).toBeCloseTo(plain, 1);
 		// On the whole unit: every model takes 1 instead of 2.
 		expect(lost([createModifier(shield)])).toBeCloseTo(plain / 2, 1);
@@ -457,5 +460,177 @@ describe("critical, damage and keyword modifiers", () => {
 		expect(
 			describeModifier({ role: "defending", halveDamage: true }),
 		).toContain("halve damage");
+	});
+});
+
+describe("modifiers for one member of an attached unit", () => {
+	const attached = () =>
+		attachLeaders(structuredClone(boltgunSquad), [structuredClone(captain)]);
+	const bySource = (result) =>
+		Object.fromEntries(result.weapons.map((w) => [w.sourceUnitName, w]));
+
+	it("gives the bearer's attacks only to the bearer", () => {
+		const own = bySource(
+			resolve(attached(), marineTarget, [
+				createModifier({
+					unitName: "Captain",
+					ownModelsOnly: true,
+					critHitOn: 5,
+					strengthModifier: 1,
+				}),
+			]),
+		);
+		const plain = bySource(resolve(attached(), marineTarget, []));
+		expect(own.Captain.critHits).toBeGreaterThan(plain.Captain.critHits);
+		expect(own["Intercessor Squad"].critHits).toBeCloseTo(
+			plain["Intercessor Squad"].critHits,
+			6,
+		);
+		expect(own["Intercessor Squad"].detail.woundTarget).toBe(
+			plain["Intercessor Squad"].detail.woundTarget,
+		);
+	});
+
+	it("gives a leader's unit-wide ability to the whole unit", () => {
+		const result = bySource(
+			resolve(attached(), marineTarget, [
+				createModifier({ unitName: "Captain", hitModifier: 1 }),
+			]),
+		);
+		expect(result.Captain.detail.hitTarget).toBe(
+			result["Intercessor Squad"].detail.hitTarget,
+		);
+		expect(result["Intercessor Squad"].detail.hitTarget).toBe(2);
+	});
+});
+
+describe("characteristic changes and Strength-vs-Toughness conditions", () => {
+	const detail = (modifiers) =>
+		resolve(boltgunSquad, marineTarget, modifiers).weapons[0].detail;
+	const defending = (fields) =>
+		createModifier({ role: "defending", list: "B", ...fields });
+
+	it("changes the defender's own Toughness, Save and Wounds", () => {
+		// Boltgun S4 vs T4 wounds on 4+; T5 on 5+.
+		expect(detail([defending({ toughnessChange: 1 })]).woundTarget).toBe(5);
+		// Sv3+ vs AP0 saves on 3+; improved by 1 on 2+, never better.
+		expect(detail([defending({ saveChange: 1 })]).saveTarget).toBe(2);
+		expect(detail([defending({ saveChange: 3 })]).saveTarget).toBe(2);
+		const tougher = resolve(boltgunSquad, marineTarget, [
+			defending({ woundsChange: 1 }),
+		]);
+		expect(tougher.groups[0].wounds).toBe(3);
+	});
+
+	it("lets an attacker change the target's characteristics", () => {
+		expect(detail([createModifier({ toughnessChange: -1 })]).woundTarget).toBe(
+			3,
+		);
+		expect(detail([createModifier({ saveChange: -1 })]).saveTarget).toBe(4);
+	});
+
+	it("applies only when the attack's Strength beats the Toughness", () => {
+		const shield = defending({ woundModifier: -1, strengthVsToughness: "gt" });
+		// S4 vs T4: not greater, so no penalty.
+		expect(detail([shield]).woundTarget).toBe(4);
+		// S5 vs T4 wounds on 3+, then -1.
+		expect(
+			detail([shield, createModifier({ strengthModifier: 1 })]).woundTarget,
+		).toBe(4);
+		// T5 after the defender's own +1 T: S5 is no longer greater.
+		expect(
+			detail([
+				shield,
+				defending({ toughnessChange: 1 }),
+				createModifier({ strengthModifier: 1 }),
+			]).woundTarget,
+		).toBe(4);
+		expect(
+			detail([createModifier({ woundModifier: 1, strengthVsToughness: "lte" })])
+				.woundTarget,
+		).toBe(3);
+	});
+
+	it("describes them", () => {
+		expect(
+			describeModifier({
+				role: "defending",
+				woundModifier: -1,
+				strengthVsToughness: "gt",
+			}),
+		).toBe("-1 Wound roll — when defending, if S > T");
+		expect(describeModifier({ toughnessChange: -1 })).toContain(
+			"-1 target Toughness",
+		);
+	});
+});
+
+describe("weapon filters, mortal-wound Feel No Pain and debuffs", () => {
+	const withWeapons = () => {
+		const shooter = structuredClone(boltgunSquad);
+		const [bolter] = shooter.models[0].rangedWeapons;
+		shooter.models[0].rangedWeapons.push({
+			...bolter,
+			name: "Psychic lash",
+			type: "Psychic",
+		});
+		return shooter;
+	};
+	const byWeapon = (result) =>
+		Object.fromEntries(result.weapons.map((w) => [w.weaponName, w]));
+
+	it("limits a modifier to weapons by name or keyword", () => {
+		const shooter = withWeapons();
+		const named = byWeapon(
+			resolve(shooter, marineTarget, [
+				createModifier({ hitModifier: 1, weaponFilter: "LASH" }),
+			]),
+		);
+		expect(named["Psychic lash"].detail.hitTarget).toBe(2);
+		expect(named.Boltgun.detail.hitTarget).toBe(3);
+		const defended = byWeapon(
+			resolve(shooter, marineTarget, [
+				createModifier({
+					role: "defending",
+					list: "B",
+					woundModifier: -1,
+					weaponFilter: "PSYCHIC",
+				}),
+			]),
+		);
+		expect(defended["Psychic lash"].detail.woundTarget).toBe(5);
+		expect(defended.Boltgun.detail.woundTarget).toBe(4);
+	});
+
+	it("applies Feel No Pain against mortal wounds to [DEVASTATING WOUNDS] only", () => {
+		const shooter = structuredClone(boltgunSquad);
+		for (const w of shooter.models[0].rangedWeapons) {
+			w.type = "Devastating Wounds";
+		}
+		const lost = (modifiers) =>
+			resolve(shooter, marineTarget, modifiers).totals.woundsLost;
+		const defending = { role: "defending", list: "B" };
+		const plain = lost([]);
+		const mortal = lost([createModifier({ ...defending, mortalFnp: 4 })]);
+		const all = lost([createModifier({ ...defending, fnp: 4 })]);
+		expect(mortal).toBeLessThan(plain);
+		expect(mortal).toBeGreaterThan(all);
+	});
+
+	it("lets a defender weaken the attacking weapons and skip some attackers", () => {
+		const weakened = resolve(boltgunSquad, marineTarget, [
+			createModifier({ role: "defending", list: "B", strengthModifier: -1 }),
+		]);
+		// S3 vs T4 wounds on 5+.
+		expect(weakened.weapons[0].detail.woundTarget).toBe(5);
+		const excluded = resolve(boltgunSquad, marineTarget, [
+			createModifier({
+				role: "defending",
+				list: "B",
+				hitModifier: -1,
+				excludeVsKeywords: "INFANTRY",
+			}),
+		]);
+		expect(excluded.weapons[0].detail.hitTarget).toBe(3);
 	});
 });

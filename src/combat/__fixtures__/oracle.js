@@ -12,7 +12,8 @@
  *   psychic · ignoresCover · cover · sustained "0"|"2"|"D3" · lethal · blast (X per 5)
  *   strength · toughness · woundModifier · anti (threshold vs the target) · twinLinked
  *   rerollWounds · devastating · save 3 (7 = none) · invuln (null = none) · ap (magnitude)
- *   damage "D3" · fnp (null = none) · wounds · count
+ *   damage "D3" · fnp (null = none) · mortalFnp (Feel No Pain against mortal
+ *   wounds only, on top of fnp) · wounds · count
  *   critHitOn 5 · critWoundOn 5 (critical on that unmodified roll and up)
  *   rerollDamage (re-roll a damage roll below average) · halveDamage · damageToOne
  */
@@ -159,7 +160,7 @@ function damageOutcomes(sc) {
 }
 
 /** §05.04 + §24.12: wounds one damaging attack takes off, before the cap. */
-function lossOutcomes(sc) {
+function lossOutcomes(sc, fnp = sc.fnp) {
 	const out = new Map();
 	for (const { value: damage, p } of damageOutcomes(sc)) {
 		let lost = new Map([[0, 1]]);
@@ -167,7 +168,7 @@ function lossOutcomes(sc) {
 			const next = new Map();
 			for (const [n, q] of lost) {
 				for (const face of FACES) {
-					const ignored = sc.fnp && face >= sc.fnp;
+					const ignored = fnp && face >= fnp;
 					const key = ignored ? n : n + 1;
 					next.set(key, (next.get(key) || 0) + q / 6);
 				}
@@ -218,6 +219,13 @@ export function oracle(input) {
 	const woundRolls = woundOutcomes(sc);
 	const fail = saveFails(sc);
 	const losses = lossOutcomes(sc);
+	// [DEVASTATING WOUNDS] mortal wounds: the better of both Feel No Pains.
+	const mortalLosses = lossOutcomes(
+		sc,
+		Math.min(sc.fnp ?? 7, sc.mortalFnp ?? 7) < 7
+			? Math.min(sc.fnp ?? 7, sc.mortalFnp ?? 7)
+			: null,
+	);
 	const sustained = rollOutcomes(sc.sustained ?? "0");
 
 	const expected = {
@@ -242,7 +250,7 @@ export function oracle(input) {
 			if (result === "crit" && sc.devastating) {
 				// §24.10: the sequence ends; mortal wounds can damage one model only.
 				expected.mortalWounds += weight * p;
-				out = mix(out, inflict(states, sc, losses), p);
+				out = mix(out, inflict(states, sc, mortalLosses), p);
 				continue;
 			}
 			out = mix(out, savedOrNot(states, weight * p), p);

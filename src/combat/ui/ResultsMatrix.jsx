@@ -131,7 +131,13 @@ function SortableHeader({
 				{active && `${arrow} `}
 				{unit.name}
 			</div>
-			{showPoints && <div className="hint">{unit.cost?.points ?? 0} pts</div>}
+			{/* Hidden rather than left out, so every view keeps the same cell size. */}
+			<div
+				className={`hint ${showPoints ? "" : "invisible"}`}
+				aria-hidden={!showPoints}
+			>
+				{unit.cost?.points ?? 0} pts
+			</div>
 		</button>
 	);
 }

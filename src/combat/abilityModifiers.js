@@ -31,9 +31,9 @@ export function abilityModifiers(roster, slot) {
 			if (HANDLED_ELSEWHERE.test(name)) continue;
 			for (const result of matchAbility(text)) {
 				if (result.reasons.includes("that unit")) continue;
-				const choice = result.reasons.some((r) =>
-					r.startsWith("earlier: select"),
-				);
+				// "select one of the following": one of several options, so off.
+				// Picking a target ("select one enemy unit") is no such choice.
+				const choice = result.reasons.includes("earlier: choice");
 				const label =
 					choice && result.option ? `${name} – ${title(result.option)}` : name;
 				const key = `${label}|${JSON.stringify(result.modifier)}`;
@@ -52,7 +52,8 @@ export function abilityModifiers(roster, slot) {
 		const listWide =
 			result.scope === "list" ||
 			(unitNames.size > 1 && owners.size === unitNames.size) ||
-			(choice && owners.size > 1);
+			// …but "this model" picks for itself, model by model.
+			(choice && owners.size > 1 && !result.modifier.ownModelsOnly);
 		for (const unitName of listWide ? [""] : owners) {
 			modifiers.push(
 				createModifier({
@@ -60,7 +61,8 @@ export function abilityModifiers(roster, slot) {
 					name,
 					list: slot,
 					unitName,
-					enabled: !choice,
+					// A target picked during the game is the user's call, like a choice.
+					enabled: !choice && !result.reasons.includes("selected target"),
 				}),
 			);
 		}

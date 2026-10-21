@@ -23,8 +23,9 @@ function standardErrors(sim) {
 	const variance = Math.max(0, square - sim.meanWoundsLost ** 2);
 	const p = sim.pDestroyed;
 	return {
-		woundsLost: Math.sqrt(variance / sim.trials),
-		// Floor at one trial's worth so p = 0 or 1 still gets a tolerance.
+		// Both floored at one trial's worth, so an outcome no trial happened to
+		// show (a sure kill, a sure miss) still gets a tolerance.
+		woundsLost: Math.sqrt(Math.max(variance, 1 / sim.trials) / sim.trials),
 		pDestroyed: Math.sqrt(Math.max(p * (1 - p), 1 / sim.trials) / sim.trials),
 	};
 }

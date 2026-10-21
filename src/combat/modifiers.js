@@ -15,6 +15,12 @@ const LISTS = ["A", "B", "any"];
 const ROLES = ["attacking", "defending"];
 export const PHASES = ["any", "shooting", "fight"];
 export const REROLL_MODES = ["none", "ones", "all"];
+export const STRENGTH_VS_TOUGHNESS_MODES = ["", "gt", "gte", "lt", "lte"];
+export const STAT_EFFECTS = {
+	toughnessChange: "Toughness",
+	saveChange: "Save",
+	woundsChange: "Wounds",
+};
 
 /** Numeric effects, always from the attack's point of view (+1 helps the attacker). */
 export const NUMERIC_EFFECTS = {
@@ -27,7 +33,15 @@ export const NUMERIC_EFFECTS = {
 		"attacksModifier",
 		"damageModifier",
 	],
-	defending: ["hitModifier", "woundModifier", "apModifier", "damageModifier"],
+	// A defensive modifier can also weaken the attacking weapons (-1 S, -1 A).
+	defending: [
+		"hitModifier",
+		"woundModifier",
+		"apModifier",
+		"damageModifier",
+		"strengthModifier",
+		"attacksModifier",
+	],
 };
 
 export const EFFECT_LABELS = {
@@ -64,9 +78,20 @@ export function normalizeModifier(raw = {}) {
 		enabled: raw.enabled !== false,
 		list: pick(raw.list, LISTS, "A"),
 		unitName: typeof raw.unitName === "string" ? raw.unitName : "",
+		// In an attached unit, only the named member's own models ("the bearer",
+		// "this model"), not the whole unit it leads or joins.
+		ownModelsOnly: raw.ownModelsOnly === true,
 		role: pick(raw.role, ROLES, "attacking"),
 		phase: pick(raw.phase, PHASES, "any"),
 		vsKeywords: typeof raw.vsKeywords === "string" ? raw.vsKeywords : "",
+		// …and not against these ("an enemy unit (excluding MONSTERS)").
+		excludeVsKeywords:
+			typeof raw.excludeVsKeywords === "string" ? raw.excludeVsKeywords : "",
+		// Only the attacking weapons named so or with that keyword: "Solitaire",
+		// "TORRENT", "PSYCHIC" (a psychic attack).
+		weaponFilter: typeof raw.weaponFilter === "string" ? raw.weaponFilter : "",
+		// Feel No Pain against mortal wounds only ([DEVASTATING WOUNDS]).
+		mortalFnp: toThreshold(raw.mortalFnp),
 		// Which of the list's own units it is for, by keyword ("TERMAGANTS"),
 		// and which are left out ("MONSTER, VEHICLE").
 		unitKeywords: typeof raw.unitKeywords === "string" ? raw.unitKeywords : "",
@@ -90,6 +115,18 @@ export function normalizeModifier(raw = {}) {
 		// Incoming attacks: "halve the Damage" (rounding up), "change the Damage to 1".
 		halveDamage: raw.halveDamage === true,
 		damageToOne: raw.damageToOne === true,
+		// The attacked models' own characteristics, natural signs: +1 T is T+1 and
+		// +1 Save is a better save. A defensive modifier changes its own unit, an
+		// attacking one the target ("subtract 1 from the Toughness of that unit").
+		toughnessChange: toInt(raw.toughnessChange),
+		saveChange: toInt(raw.saveChange),
+		woundsChange: toInt(raw.woundsChange),
+		// Only for attacks whose Strength compares so to the target's Toughness.
+		strengthVsToughness: pick(
+			raw.strengthVsToughness,
+			STRENGTH_VS_TOUGHNESS_MODES,
+			"",
+		),
 	};
 	for (const key of NUMERIC_EFFECTS.attacking) modifier[key] = toInt(raw[key]);
 	return modifier;
@@ -153,10 +190,20 @@ function belongsTo(modifier, unit, list) {
 }
 
 function opponentMatches(modifier, opponent) {
-	const required = parseKeywords(modifier.vsKeywords);
-	if (!required.length) return true;
 	const keywords = keywordSet(opponent);
-	return required.some((keyword) => keywords.has(keyword));
+	const required = parseKeywords(modifier.vsKeywords);
+	if (required.length && !required.some((k) => keywords.has(k))) return false;
+	const excluded = parseKeywords(modifier.excludeVsKeywords);
+	return !excluded.some((k) => keywords.has(k));
+}
+
+/** Whether a weapon profile is one a "weaponFilter" names, by name or keyword. */
+function weaponMatches(modifier, profile) {
+	const wanted = parseKeywords(modifier.weaponFilter);
+	if (!wanted.length) return true;
+	const text =
+		`${profile.weaponName ?? ""} ${profile.weaponKeywords ?? ""}`.toUpperCase();
+	return wanted.some((w) => text.includes(w));
 }
 
 /** The enabled modifiers that affect one attacker → defender pairing. */
@@ -241,6 +288,9 @@ export function grantAbilities(profiles, texts) {
 	return next;
 }
 
+const statTotal = (modifiers, key) =>
+	modifiers.reduce((sum, m) => sum + (m[key] || 0), 0);
+
 function total(modifiers, role, key) {
 	if (!NUMERIC_EFFECTS[role].includes(key)) return 0;
 	return modifiers.reduce((sum, m) => sum + (m[key] || 0), 0);
@@ -260,6 +310,166 @@ export function applyUserModifiers({
 	if (!attacking.length && !defending.length) {
 		return { ctx, profiles, groups, applied: [] };
 	}
+	// "Attacks with a S greater than this unit's T": decided per weapon and
+	// model group while resolving (`applyConditional`).
+	const conditional = (m) =>
+		m.strengthVsToughness !== "" || m.weaponFilter.trim() !== "";
+	const always = (list) => list.filter((m) => !conditional(m));
+	const attackingNow = always(attacking);
+	const defendingNow = always(defending);
+	// "Each time the bearer makes an attack": only that member's own weapons.
+	const shared = attackingNow.filter((m) => !ownOnly(m));
+	const own = attackingNow.filter(ownOnly);
+
+	const nextCtx = attackerContext(ctx, shared, defendingNow);
+	const pending = {
+		attacking: attacking.filter(conditional),
+		defending: defending.filter(conditional),
+	};
+	if (pending.attacking.length || pending.defending.length) {
+		nextCtx.conditional = pending;
+	}
+	// A defender's -1 S / -1 A weakens every weapon attacking it.
+	let nextProfiles = modifyProfiles(profiles, [...shared, ...defendingNow]);
+	if (own.length) {
+		const forMember = (profile) => {
+			const mods = own.filter((m) => m.unitName === profile.sourceUnitName);
+			if (!mods.length) return profile;
+			return {
+				...modifyProfiles([profile], mods)[0],
+				context: attackerContext(nextCtx, mods, []),
+			};
+		};
+		const alternatives = nextProfiles.alternatives || [];
+		nextProfiles = nextProfiles.map(forMember);
+		nextProfiles.alternatives = alternatives.map(forMember);
+	}
+
+	return {
+		ctx: nextCtx,
+		profiles: nextProfiles,
+		groups: groups.map((group) =>
+			modifyGroup(group, attackingNow, defendingNow),
+		),
+		applied: [...attacking, ...defending].map(modifierLabel),
+	};
+}
+
+const ownOnly = (m) => m.ownModelsOnly && m.unitName;
+
+// A modifier on one member of an attached unit protects only that member's
+// models when it says so ("attacks allocated to this model").
+const covers = (m, group) => !ownOnly(m) || group.unitName === m.unitName;
+
+const STRENGTH_VS_TOUGHNESS = {
+	gt: (s, t) => s > t,
+	gte: (s, t) => s >= t,
+	lt: (s, t) => s < t,
+	lte: (s, t) => s <= t,
+};
+
+/**
+ * The modifiers whose Strength-vs-Toughness condition holds for one weapon
+ * against one model group, folded into that pairing's inputs.
+ */
+export function applyConditional(profile, group, ctx) {
+	const pending = ctx.conditional;
+	if (!pending) return { profile, group, ctx };
+	const holds = (m) =>
+		weaponMatches(m, profile) &&
+		(!m.strengthVsToughness ||
+			STRENGTH_VS_TOUGHNESS[m.strengthVsToughness](
+				profile.strength,
+				group.toughness,
+			));
+	const attacking = pending.attacking.filter(
+		(m) => holds(m) && (!ownOnly(m) || m.unitName === profile.sourceUnitName),
+	);
+	const defending = pending.defending.filter(
+		(m) => holds(m) && covers(m, group),
+	);
+	if (!attacking.length && !defending.length) return { profile, group, ctx };
+	return {
+		profile: modifyProfiles([profile], [...attacking, ...defending])[0],
+		// Its stat changes do not feed back into the condition that enabled it.
+		group: modifyGroup(group, attacking, defending),
+		ctx: attackerContext(ctx, attacking, defending),
+	};
+}
+
+/** Save, Toughness, Wounds and the per-model defensive effects of one model group. */
+function modifyGroup(group, attacking, defending) {
+	let fnp = group.fnp || 7;
+	let mortalFnp = group.mortalFnp || 7;
+	let invuln = group.invuln ? parseSkill(group.invuln, 7) : 7;
+	let apModifier = 0;
+	let damageModifier = 0;
+	let halveDamage = Boolean(group.halveDamage);
+	let damageToOne = Boolean(group.damageToOne);
+	// An attacker's stat effects change the target's models ("Afflicted: -1 T").
+	let toughness = statTotal(attacking, "toughnessChange");
+	let save = statTotal(attacking, "saveChange");
+	let wounds = statTotal(attacking, "woundsChange");
+	for (const m of defending) {
+		if (!covers(m, group)) continue;
+		if (m.fnp) fnp = Math.min(fnp, m.fnp);
+		if (m.mortalFnp) mortalFnp = Math.min(mortalFnp, m.mortalFnp);
+		if (m.invuln) invuln = Math.min(invuln, m.invuln);
+		apModifier += m.apModifier || 0;
+		damageModifier += m.damageModifier || 0;
+		halveDamage ||= m.halveDamage;
+		damageToOne ||= m.damageToOne;
+		toughness += m.toughnessChange || 0;
+		save += m.saveChange || 0;
+		wounds += m.woundsChange || 0;
+	}
+	const baseSave = parseSkill(group.save, 7);
+	return {
+		...group,
+		fnp: fnp < 7 ? fnp : group.fnp,
+		mortalFnp: mortalFnp < 7 ? mortalFnp : (group.mortalFnp ?? null),
+		invuln: invuln < 7 ? `${invuln}+` : group.invuln,
+		apModifier: (group.apModifier || 0) + apModifier,
+		damageModifier: (group.damageModifier || 0) + damageModifier,
+		halveDamage,
+		damageToOne,
+		toughness: Math.max(1, (group.toughness || 4) + toughness),
+		// "Improve the Save by 1" lowers the number; never better than 2+ (no save stays none).
+		save:
+			save && baseSave < 7
+				? `${Math.min(7, Math.max(2, baseSave - save))}+`
+				: group.save,
+		wounds: Math.max(1, (group.wounds || 1) + wounds),
+	};
+}
+
+/** Granted abilities, and Strength and Attacks from either side's modifiers. */
+function modifyProfiles(profiles, attacking) {
+	const strength = total(attacking, "attacking", "strengthModifier");
+	const attacks = total(attacking, "attacking", "attacksModifier");
+	let next = grantAbilities(
+		profiles,
+		attacking
+			.filter((m) => m.role !== "defending")
+			.map((m) => m.weaponAbilities),
+	);
+	if (strength || attacks) {
+		const modify = (profile) => ({
+			...profile,
+			strength: Math.max(1, profile.strength + strength),
+			attacksExpr: attacks
+				? addFlat(profile.attacksExpr, attacks)
+				: profile.attacksExpr,
+		});
+		const alternatives = next.alternatives || [];
+		next = next.map(modify);
+		next.alternatives = alternatives.map(modify);
+	}
+	return next;
+}
+
+/** The resolver context with the modifiers' roll, re-roll and critical effects. */
+function attackerContext(ctx, attacking, defending) {
 	const both = (key) =>
 		total(attacking, "attacking", key) + total(defending, "defending", key);
 	// The positive contributions alone, so "ignore modifiers" can drop just the negatives.
@@ -269,7 +479,7 @@ export function applyUserModifiers({
 			...defending.filter(() => NUMERIC_EFFECTS.defending.includes(key)),
 		].reduce((sum, m) => sum + Math.max(m[key] || 0, 0), 0);
 
-	const nextCtx = {
+	return {
 		...ctx,
 		skillModifier: (ctx.skillModifier || 0) + both("skillModifier"),
 		hitModifier: (ctx.hitModifier || 0) + both("hitModifier"),
@@ -317,66 +527,16 @@ export function applyUserModifiers({
 			Boolean(ctx.rerollDamage) || attacking.some((m) => m.rerollDamage),
 		targetInCover: Boolean(ctx.targetInCover) || defending.some((m) => m.cover),
 	};
-
-	const strength = both("strengthModifier");
-	const attacks = both("attacksModifier");
-	let nextProfiles = grantAbilities(
-		profiles,
-		attacking.map((m) => m.weaponAbilities),
-	);
-	if (strength || attacks) {
-		const modify = (profile) => ({
-			...profile,
-			strength: Math.max(1, profile.strength + strength),
-			attacksExpr: attacks
-				? addFlat(profile.attacksExpr, attacks)
-				: profile.attacksExpr,
-		});
-		const alternatives = nextProfiles.alternatives || [];
-		nextProfiles = nextProfiles.map(modify);
-		nextProfiles.alternatives = alternatives.map(modify);
-	}
-
-	// A modifier on one member of an attached unit protects only that member's models.
-	const covers = (m, group) => !m.unitName || group.unitName === m.unitName;
-	const nextGroups = groups.map((group) => {
-		let fnp = group.fnp || 7;
-		let invuln = group.invuln ? parseSkill(group.invuln, 7) : 7;
-		// "Attacks allocated to this model have -1 D" protects that model only.
-		let apModifier = 0;
-		let damageModifier = 0;
-		let halveDamage = Boolean(group.halveDamage);
-		let damageToOne = Boolean(group.damageToOne);
-		for (const m of defending) {
-			if (!covers(m, group)) continue;
-			if (m.fnp) fnp = Math.min(fnp, m.fnp);
-			if (m.invuln) invuln = Math.min(invuln, m.invuln);
-			apModifier += m.apModifier || 0;
-			damageModifier += m.damageModifier || 0;
-			halveDamage ||= m.halveDamage;
-			damageToOne ||= m.damageToOne;
-		}
-		return {
-			...group,
-			fnp: fnp < 7 ? fnp : group.fnp,
-			invuln: invuln < 7 ? `${invuln}+` : group.invuln,
-			apModifier: (group.apModifier || 0) + apModifier,
-			damageModifier: (group.damageModifier || 0) + damageModifier,
-			halveDamage,
-			damageToOne,
-		};
-	});
-
-	return {
-		ctx: nextCtx,
-		profiles: nextProfiles,
-		groups: nextGroups,
-		applied: [...attacking, ...defending].map(modifierLabel),
-	};
 }
 
 const signed = (n) => (n > 0 ? `+${n}` : `${n}`);
 const REROLL_LABEL = { ones: "1s", all: "all" };
+export const STRENGTH_VS_TOUGHNESS_LABEL = {
+	gt: ">",
+	gte: "≥",
+	lt: "<",
+	lte: "≤",
+};
 
 /** One-line summary for the modifier list. */
 export function describeModifier(raw) {
@@ -387,6 +547,13 @@ export function describeModifier(raw) {
 		parseKeywords(m.vsKeywords).length
 			? `vs ${parseKeywords(m.vsKeywords).join(" / ")}`
 			: null,
+		parseKeywords(m.excludeVsKeywords).length
+			? `not vs ${parseKeywords(m.excludeVsKeywords).join(" / ")}`
+			: null,
+		m.strengthVsToughness
+			? `if S ${STRENGTH_VS_TOUGHNESS_LABEL[m.strengthVsToughness]} T`
+			: null,
+		m.weaponFilter.trim() ? `${m.weaponFilter.trim()} weapons only` : null,
 	].filter(Boolean);
 
 	return `${describeEffects(m)} — ${conditions.join(", ")}`;
@@ -416,10 +583,18 @@ function describeEffects(raw) {
 		if (m.rerollDamage) effects.push("re-roll damage");
 	} else {
 		if (m.fnp) effects.push(`Feel No Pain ${m.fnp}+`);
+		if (m.mortalFnp)
+			effects.push(`Feel No Pain ${m.mortalFnp}+ vs mortal wounds`);
 		if (m.invuln) effects.push(`${m.invuln}+ invulnerable`);
 		if (m.cover) effects.push("benefit of cover");
 		if (m.halveDamage) effects.push("halve damage");
 		if (m.damageToOne) effects.push("damage becomes 1");
+	}
+	// Characteristics of the models being attacked: the target's, or the unit's own.
+	for (const [key, label] of Object.entries(STAT_EFFECTS)) {
+		if (!m[key]) continue;
+		const whose = m.role === "attacking" ? "target " : "";
+		effects.push(`${signed(m[key])} ${whose}${label}`);
 	}
 	return effects.join(", ") || "no effect";
 }

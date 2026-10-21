@@ -209,7 +209,9 @@ Plunging Fire (§22.05) improves BS by 1.
 
 - A failed save makes the selected model lose **D** wounds.
 - Excess damage on a destroyed model is **lost**.
-- `Feel No Pain X+` (§24.12) is rolled **per wound** that would be lost.
+- `Feel No Pain X+` (§24.12) is rolled **per wound** that would be lost. A
+  Feel No Pain "against mortal wounds" (`mortalFnp`) covers the mortal wounds
+  of `[DEVASTATING WOUNDS]` only; those use the better of both thresholds.
 - Damage rules from abilities, in this order (`applyDamageRules`): "re-roll the
   Damage roll" re-rolls a random roll below the average once; "halve the Damage"
   rounds up, minimum 1; "change the Damage to 1" sets it to 1. The defender's two
@@ -443,7 +445,9 @@ and resolves the leader's allocation group last.
 Each effect is a plain-JSON modifier:
 
 - **Scope:** list A / B / both, optionally one unit (a leader's name covers its
-  attached unit), or the list's units "with" / "not with" keywords (a phrase
+  attached unit, unless "only its own models" is set — then only that member's
+  weapons, or its own allocation group when defending; abilities worded "the
+  bearer" / "this model" get this flag), or the list's units "with" / "not with" keywords (a phrase
   such as `ADEPTUS CUSTODES INFANTRY` matches when every word is among the unit's
   keywords); role (attacking / defending); phase; "only vs keywords".
 - **Effects:** BS/WS, hit, wound (±1 in the editor), AP, Strength, Attacks,
@@ -451,6 +455,21 @@ Each effect is a plain-JSON modifier:
   granted weapon abilities in datasheet syntax; ignore negative hit or wound
   modifiers; defensively Feel No Pain, invulnerable save, benefit of cover,
   halve damage, damage becomes 1.
+- **Characteristics of the attacked models:** Toughness, Save (+1 = better,
+  never better than 2+) and Wounds, with their natural signs. On a defending
+  modifier they change the unit's own models; on an attacking one, the target's
+  ("subtract 1 from the Toughness of that unit").
+- **Strength vs Toughness condition** (`S > T`, `≥`, `<`, `≤`): such modifiers
+  are not folded into the shared context; `applyConditional` checks each weapon
+  profile's Strength against each allocation group's Toughness (after the
+  unconditional changes) inside `computeAttackStreams`, and applies the
+  modifier to that pairing only.
+- **Weapon filter** (`weaponFilter`): only weapons whose name or keyword line
+  contains one of the given words ("Solitaire", "PSYCHIC", "TORRENT"). Checked
+  per weapon like the condition above, for attacking and defending modifiers.
+- **Not vs keywords** (`excludeVsKeywords`): never against opponents with them.
+- A defending modifier can also lower the attacking weapons' Strength and
+  Attacks, for debuffs on the enemy's attacks.
 
 Roll modifiers from every source share the ±1 cap. A modifier for a unit the
 list no longer contains stays stored but is hidden.
@@ -462,7 +481,11 @@ with regex rules (a recognised subject such as "each time this unit makes an
 attack", "each time an attack targets an INFANTRY unit from your army", or an
 aura, plus a recognised effect). Each match becomes a modifier the user can
 edit or delete. Choices ("select one of …") become one modifier per option,
-switched off; everything else is on. Auras and army-wide rules apply to the
+switched off; effects for a target picked during the game ("attacks that
+target that enemy unit") are also off; everything else, conditional or once
+per battle, is on. Effects on an enemy unit (one picked, in an enemy "aura",
+Afflicted, Suppressed, …) become modifiers for your own list: weakened enemy
+attacks a defending one, help against that unit (−1 T, no cover) an attacking one. Auras and army-wide rules apply to the
 whole list, limited by the keywords they name. Reset brings back the generated
 set. `node scripts/abilityCoverage.mjs` measures the rules against a local copy
 of the BSData corpus (`scripts/.corpus/`, not committed). Modifiers are built in

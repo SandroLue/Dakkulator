@@ -1,7 +1,9 @@
 import { addFlat, emptyExpr, mean, parseDiceExpr, pmf } from "./diceExpr";
+import { applyConditional } from "./modifiers";
 import {
 	fnpFailProbability,
 	hitProbability,
+	parseSkill,
 	saveProbability,
 	woundProbability,
 } from "./probability";
@@ -123,20 +125,26 @@ function afterLoss(layout, s, lost) {
  * Resolves one hit against whichever group is current: it becomes a damaging
  * event with `chance[group]`, which then costs wounds per `losses[group]`.
  */
-function applyHit(v, layout, chance, losses) {
+function applyHit(v, layout, branches) {
 	const out = new Float64Array(layout.size);
 	out[layout.destroyed] = v[layout.destroyed];
 	for (let s = 0; s < layout.destroyed; s++) {
 		const p = v[s];
 		if (!p) continue;
 		const g = layout.groupOf[s];
-		const q = chance[g];
-		out[s] += p * (1 - q);
-		if (!q) continue;
-		const loss = losses[g];
-		for (let l = 0; l < loss.length; l++) {
-			if (loss[l]) out[afterLoss(layout, s, l)] += p * q * loss[l];
+		// Each branch inflicts damage with its own chance and loss distribution,
+		// e.g. mortal wounds from [DEVASTATING WOUNDS] under their own Feel No Pain.
+		let missed = 1;
+		for (const { chance, losses } of branches) {
+			const q = chance[g];
+			if (!q) continue;
+			missed -= q;
+			const loss = losses[g];
+			for (let l = 0; l < loss.length; l++) {
+				if (loss[l]) out[afterLoss(layout, s, l)] += p * q * loss[l];
+			}
 		}
+		out[s] += p * missed;
 	}
 	return out;
 }
@@ -185,6 +193,13 @@ function streamFnp(sampling, groupFnp) {
 	return sampling?.fnp !== undefined ? sampling.fnp : groupFnp;
 }
 
+/** The better (lower) of two Feel No Pain thresholds; null is none. */
+export function betterFnp(a, b) {
+	const value = (x) => (x ? parseSkill(x, 7) : 7);
+	const best = Math.min(value(a), value(b));
+	return best < 7 ? best : null;
+}
+
 /**
  * One weapon's attack dice, resolved die by die against the group that is
  * current at that moment (§05.04 spill), exactly as the Monte-Carlo does.
@@ -195,15 +210,46 @@ function streamFnp(sampling, groupFnp) {
 function applyWeapon(v, layout, perGroup, fnps) {
 	const groupCount = layout.groups.length;
 	const p = perGroup.map((streams) => streams.sampling);
-	const woundRoll = p.map((s) =>
-		s.devastatingWounds
-			? s.critWound + (s.wound - s.critWound) * s.saveFail
-			: s.wound * s.saveFail,
-	);
-	const first = p.map((s, g) => (s.lethalHits ? s.saveFail : woundRoll[g]));
 	const losses = perGroup.map((streams, g) =>
 		lossDistribution(streams.damagePmf, streamFnp(streams.sampling, fnps[g])),
 	);
+	// Mortal wounds may face a better Feel No Pain ("against mortal wounds").
+	const mortalLosses = perGroup.map((streams, g) =>
+		lossDistribution(
+			streams.damagePmf,
+			betterFnp(
+				streamFnp(streams.sampling, fnps[g]),
+				streams.sampling.mortalFnp,
+			),
+		),
+	);
+	const woundRoll = [
+		{
+			chance: p.map((s) =>
+				s.devastatingWounds
+					? (s.wound - s.critWound) * s.saveFail
+					: s.wound * s.saveFail,
+			),
+			losses,
+		},
+		{
+			chance: p.map((s) => (s.devastatingWounds ? s.critWound : 0)),
+			losses: mortalLosses,
+		},
+	];
+	// A critical hit with [LETHAL HITS] wounds automatically: no critical wound.
+	const first = [
+		{
+			chance: p.map((s, g) =>
+				s.lethalHits ? s.saveFail : woundRoll[0].chance[g],
+			),
+			losses,
+		},
+		{
+			chance: p.map((s, g) => (s.lethalHits ? 0 : woundRoll[1].chance[g])),
+			losses: mortalLosses,
+		},
+	];
 	const extraHits = pmf(p[0].sustainedExpr ?? emptyExpr());
 
 	const die = (state) => {
@@ -218,12 +264,12 @@ function applyWeapon(v, layout, perGroup, fnps) {
 			normal[s] = state[s] * (hit - critHit);
 			crit[s] = state[s] * critHit;
 		}
-		const afterNormal = applyHit(normal, layout, woundRoll, losses);
-		let afterCrit = applyHit(crit, layout, first, losses);
+		const afterNormal = applyHit(normal, layout, woundRoll);
+		let afterCrit = applyHit(crit, layout, first);
 		for (let x = 0; x < extraHits.length; x++) {
 			if (extraHits[x]) addScaled(out, afterCrit, extraHits[x]);
 			if (x < extraHits.length - 1)
-				afterCrit = applyHit(afterCrit, layout, woundRoll, losses);
+				afterCrit = applyHit(afterCrit, layout, woundRoll);
 		}
 		return addScaled(out, afterNormal, 1);
 	};
@@ -434,8 +480,14 @@ export function applyDamageRules(dist, { rerollBelow, halve, toOne } = {}) {
  * Split out so several weapons can be allocated against a single shared group
  * state — otherwise each weapon would start against a full-health model.
  */
-export function computeAttackStreams(profile, group, context = {}) {
-	const ctx = defaultContext(context);
+export function computeAttackStreams(weapon, target, context = {}) {
+	// A member of an attached unit may carry its own modifiers ("the bearer"),
+	// and some only apply for this weapon's Strength against this group's Toughness.
+	const { profile, group, ctx } = applyConditional(
+		weapon,
+		target,
+		defaultContext(weapon.context ?? context),
+	);
 	const abilities = profile.abilities;
 	const keywords = group.keywords || new Set();
 
@@ -570,6 +622,8 @@ export function computeAttackStreams(profile, group, context = {}) {
 			devastatingWounds: devastating,
 			// Phase-specific defender modifiers can give each weapon its own FNP.
 			fnp: group.fnp ?? null,
+			// "Feel No Pain against mortal wounds": [DEVASTATING WOUNDS] damage only.
+			mortalFnp: group.mortalFnp ?? null,
 			damageRules,
 		},
 		detail: {

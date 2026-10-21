@@ -33,6 +33,31 @@ const describeGroup = (group) =>
 		: "—";
 
 /** The weapon's abilities; granted ones (modifiers, "apply to all") are marked. */
+// Room for the 130px axis column at the axis font size.
+const NAME_CHARS = 18;
+
+/** A unit name on one line, cut to fit; the full name shows on hover. */
+function NameTick({ x, y, payload }) {
+	const name = String(payload?.value ?? "");
+	const short =
+		name.length > NAME_CHARS
+			? `${name.slice(0, NAME_CHARS - 1).trimEnd()}…`
+			: name;
+	return (
+		<text
+			x={x}
+			y={y}
+			dy="0.35em"
+			textAnchor="end"
+			fill="var(--color-muted)"
+			fontSize={12}
+		>
+			<title>{name}</title>
+			{short}
+		</text>
+	);
+}
+
 function WeaponAbilities({ weapon }) {
 	if (!weapon.abilities) return null;
 	const own = new Set(abilityLabels(weapon.baseAbilities ?? weapon.abilities));
@@ -479,6 +504,7 @@ export function MatchupDetail({ pairing, rowCells = [] }) {
 										width={130}
 										interval={0}
 										{...AXIS}
+										tick={<NameTick />}
 									/>
 									<Tooltip
 										{...TOOLTIP}
