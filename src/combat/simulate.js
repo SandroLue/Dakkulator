@@ -75,8 +75,20 @@ export function simulate(
 
 		// Excess damage is lost (§05.04) and a critical wound can only ever
 		// damage one model (§24.10).
+		// Same order as `applyDamageRules`: re-roll a low roll, halve, then "becomes 1".
+		const rollDamage = (stream) => {
+			const rules = stream.sampling?.damageRules ?? {};
+			let damage = sampleExpr(stream.damageExpr, rng, 1);
+			if (rules.rerollBelow != null && damage < rules.rerollBelow) {
+				damage = sampleExpr(stream.damageExpr, rng, 1);
+			}
+			if (rules.halve) damage = Math.max(1, Math.ceil(damage / 2));
+			if (rules.toOne) damage = 1;
+			return damage;
+		};
+
 		const applyDamage = (target, stream) => {
-			const damage = sampleExpr(stream.damageExpr, rng, 1);
+			const damage = rollDamage(stream);
 			let woundsRemoved = 0;
 			for (let w = 0; w < damage; w++) {
 				if (rng() < stream.fnpFail) woundsRemoved++;

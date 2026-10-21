@@ -13,6 +13,8 @@
  *   strength · toughness · woundModifier · anti (threshold vs the target) · twinLinked
  *   rerollWounds · devastating · save 3 (7 = none) · invuln (null = none) · ap (magnitude)
  *   damage "D3" · fnp (null = none) · wounds · count
+ *   critHitOn 5 · critWoundOn 5 (critical on that unmodified roll and up)
+ *   rerollDamage (re-roll a damage roll below average) · halveDamage · damageToOne
  */
 
 const FACES = [1, 2, 3, 4, 5, 6];
@@ -71,12 +73,15 @@ export function hitOutcomes(sc) {
 
 	const indirect = sc.indirect && sc.indirect !== "none";
 	let skillModifier = sc.skillModifier || 0;
-	if ((sc.cover || indirect) && !sc.ignoresCover) skillModifier -= 1;
+	let cover = (sc.cover || indirect) && !sc.ignoresCover ? -1 : 0;
 	let rollModifier = sc.hitModifier || 0;
 	if (sc.psychic) {
+		// Each modifier is ignored on its own: cover's -1 goes, a +1 BS stays.
 		skillModifier = Math.max(0, skillModifier);
+		cover = 0;
 		rollModifier = Math.max(0, rollModifier);
 	}
+	skillModifier += cover;
 	// "Improve BS by 1" lowers the number; BS is bounded to 1+..7+.
 	const bs = clamp((sc.skill ?? 4) - skillModifier, 1, 7);
 	const modifier = clamp(rollModifier, -1, 1);
@@ -85,7 +90,7 @@ export function hitOutcomes(sc) {
 	const judge = (face) => {
 		if (indirect && face < failsBelow) return "fail";
 		if (face === 1) return "fail";
-		if (face === 6) return "crit";
+		if (face >= (sc.critHitOn ?? 6)) return "crit";
 		return face + modifier >= bs ? "hit" : "fail";
 	};
 	return withReroll(judge, indirect ? "none" : sc.rerollHits || "none");
@@ -101,7 +106,7 @@ export function woundOutcomes(sc) {
 	else if (s === t) required = 4;
 	else if (2 * s <= t) required = 6;
 	const modifier = clamp(sc.woundModifier || 0, -1, 1);
-	const critFrom = sc.anti ?? 6;
+	const critFrom = Math.min(sc.anti ?? 6, sc.critWoundOn ?? 6);
 
 	const judge = (face) => {
 		if (face === 1) return "fail";
@@ -126,10 +131,37 @@ export function saveFails(sc) {
 	return fails;
 }
 
+/**
+ * The damage one attack deals: a roll below average is re-rolled once, then
+ * halved (rounding up) and/or set to 1, as the scenario says.
+ */
+function damageOutcomes(sc) {
+	const text = sc.damage ?? "1";
+	const rolled = rollOutcomes(text, 1);
+	let outcomes = rolled;
+	if (sc.rerollDamage && /D/i.test(text)) {
+		const average = rolled.reduce((sum, o) => sum + o.value * o.p, 0);
+		outcomes = rolled.flatMap((first) =>
+			first.value < average
+				? rolled.map((second) => ({
+						value: second.value,
+						p: first.p * second.p,
+					}))
+				: [first],
+		);
+	}
+	return outcomes.map(({ value, p }) => {
+		let damage = value;
+		if (sc.halveDamage) damage = Math.max(1, Math.ceil(damage / 2));
+		if (sc.damageToOne) damage = 1;
+		return { value: damage, p };
+	});
+}
+
 /** §05.04 + §24.12: wounds one damaging attack takes off, before the cap. */
 function lossOutcomes(sc) {
 	const out = new Map();
-	for (const { value: damage, p } of rollOutcomes(sc.damage ?? "1", 1)) {
+	for (const { value: damage, p } of damageOutcomes(sc)) {
 		let lost = new Map([[0, 1]]);
 		for (let w = 0; w < damage; w++) {
 			const next = new Map();

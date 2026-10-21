@@ -166,6 +166,13 @@ function assignUpload(id, order = SLOTS) {
 	return slot;
 }
 
+/** Swaps the attacker's and the defender's list. */
+function swapSlots() {
+	const a = currentSlot("A");
+	assign("A", currentSlot("B"));
+	assign("B", a);
+}
+
 /** Gives a list a slot; a list that held the other slot swaps with the one here. */
 function assignRole(slot, id) {
 	const other = slot === "A" ? "B" : "A";
@@ -198,5 +205,6 @@ export function useRosterLibrary() {
 		assign,
 		assignUpload,
 		assignRole,
+		swapSlots,
 	};
 }

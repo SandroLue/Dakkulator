@@ -153,6 +153,11 @@ $$P(\text{hit}) = \frac{7 - \mathrm{clamp}\big(\mathrm{BS}_{\text{eff}} - m_{\te
 
 `[TORRENT]`: $P(\text{hit}) = 1$, $P(\text{crit hit}) = 0$ (no roll, so no critical hit).
 
+"Critical hits on N+" replaces the 6 with N; a critical hit always hits, so it
+also lowers the number needed. Indirect fire's floor applies to criticals too: a
+roll below it fails even where it would be critical. "Critical wounds on N+"
+works the same on the wound roll and combines with `[ANTI-X]` (the lower wins).
+
 Re-rolls act on the unmodified die: re-roll 1s gives $P' = P + \tfrac16 P$,
 re-roll failures gives $P' = P + (1-P)P$; the critical branch is recomputed on the
 re-rolled die.
@@ -205,6 +210,10 @@ Plunging Fire (§22.05) improves BS by 1.
 - A failed save makes the selected model lose **D** wounds.
 - Excess damage on a destroyed model is **lost**.
 - `Feel No Pain X+` (§24.12) is rolled **per wound** that would be lost.
+- Damage rules from abilities, in this order (`applyDamageRules`): "re-roll the
+  Damage roll" re-rolls a random roll below the average once; "halve the Damage"
+  rounds up, minimum 1; "change the Damage to 1" sets it to 1. The defender's two
+  apply per allocation group, like its AP and Damage modifiers.
 
 ### 2.6 Mortal wounds — §06.02
 
@@ -261,8 +270,11 @@ rollModifier   = clamp(Σ rollModifiers, -1, +1)                // Damaged, aura
 So a BS 3+ model shooting into cover (`-1 BS`) under a `-1 to hit` aura hits on
 5+, and two `-1 BS` sources stack to `-2`.
 
-- **Ignore modifiers (§02.02.02):** `[PSYCHIC]` may drop any modifier, so the
-  engine drops only the detrimental ones.
+- **Ignore modifiers (§02.02.02):** `[PSYCHIC]` and abilities that "ignore any
+  or all modifiers" to BS/WS, the hit roll or the wound roll may drop any
+  modifier, so the engine drops only the detrimental ones — each on its own, not
+  the net: a +1 and a −1 leave +1 (`skillModifierBonus`, `hitModifierBonus` and
+  `woundModifierBonus` carry the sum of the positive ones).
 - **Random characteristics (§02.02.03):** A is rolled when dice are gathered; D is
   rolled per attack after allocation. The `+N` in `D6+1` is part of the
   characteristic, so `[MELTA 2]` on `D6+1` gives `D6+3`.
@@ -428,16 +440,32 @@ and resolves the leader's allocation group last.
 
 ### 4.3 User-built modifiers — [src/combat/modifiers.js](../src/combat/modifiers.js)
 
-Unit-, faction-, detachment- and stratagem-specific ability text is **not**
-interpreted. The user builds each effect as a plain-JSON modifier:
+Each effect is a plain-JSON modifier:
 
 - **Scope:** list A / B / both, optionally one unit (a leader's name covers its
-  attached unit); role (attacking / defending); phase; "only vs keywords".
-- **Effects:** BS/WS, hit, wound, AP, Strength, Attacks, Damage; re-rolls;
-  granted weapon abilities in datasheet syntax; ignore negative hit modifiers;
-  defensively Feel No Pain, invulnerable save, benefit of cover.
+  attached unit), or the list's units "with" / "not with" keywords (a phrase
+  such as `ADEPTUS CUSTODES INFANTRY` matches when every word is among the unit's
+  keywords); role (attacking / defending); phase; "only vs keywords".
+- **Effects:** BS/WS, hit, wound (±1 in the editor), AP, Strength, Attacks,
+  Damage; re-rolls of hits, wounds and damage; critical hits / wounds on N+;
+  granted weapon abilities in datasheet syntax; ignore negative hit or wound
+  modifiers; defensively Feel No Pain, invulnerable save, benefit of cover,
+  halve damage, damage becomes 1.
 
-Roll modifiers from every source share the ±1 cap. Modifiers are built in
+Roll modifiers from every source share the ±1 cap. A modifier for a unit the
+list no longer contains stays stored but is hidden.
+
+**Generated from ability text** ([abilityRules.js](../src/combat/abilityRules.js),
+[abilityModifiers.js](../src/combat/abilityModifiers.js)): when a list is added,
+its datasheet, faction and detachment abilities are read sentence by sentence
+with regex rules (a recognised subject such as "each time this unit makes an
+attack", "each time an attack targets an INFANTRY unit from your army", or an
+aura, plus a recognised effect). Each match becomes a modifier the user can
+edit or delete. Choices ("select one of …") become one modifier per option,
+switched off; everything else is on. Auras and army-wide rules apply to the
+whole list, limited by the keywords they name. Reset brings back the generated
+set. `node scripts/abilityCoverage.mjs` measures the rules against a local copy
+of the BSData corpus (`scripts/.corpus/`, not committed). Modifiers are built in
 `ui/ModifierBuilder.jsx` and persisted in `localStorage` under `modifiersByArmy`,
 per army (the roster's catalog, e.g. `Imperium - Adeptus Custodes`): a list-A
 or list-B modifier belongs to that list's army and returns whenever a roster of
@@ -478,6 +506,7 @@ under the right armies, and the recipient's own are switched off, never deleted.
 | `simulate.test.js`               | exact engine vs Monte-Carlo within 4.5 standard errors, incl. spill and `[BLAST]`      |
 | `invariants.test.js`             | bounds, conserved probability mass, monotonicity, linearity, weapon-order independence |
 | `resolve.test.js`                | hand-computed golden values                                                            |
+| `exampleRosters.test.js`         | the modifiers generated for every example roster in `public/` (happy-dom)              |
 | other `*.test.js`                | parsing, profiles, modifiers, attachment, share links, library                         |
 
 A rule change in the engine must also be made in `oracle.js`.

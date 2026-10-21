@@ -399,7 +399,7 @@ export function Create40kRoster11th(doc, gameType) {
 	if (info) {
 		const roster = new Roster40k();
 		roster.gameType = gameType;
-		const name = info.getAttributeNode("name")?.nodeValue;
+		const name = info.getAttribute("name");
 		if (name) {
 			roster.name = name;
 		} else {
@@ -426,8 +426,8 @@ function ParseForces(doc, roster) {
 		if (root.hasAttribute("name") && root.hasAttribute("catalogueName")) {
 			const f = new Force();
 
-			const which = root.getAttributeNode("name")?.nodeValue;
-			const value = root.getAttributeNode("catalogueName")?.nodeValue;
+			const which = root.getAttribute("name");
+			const value = root.getAttribute("catalogueName");
 
 			if (which) {
 				f.name = which;
@@ -456,7 +456,7 @@ function ParseSelections(root, force) {
 
 	for (const selection of selections) {
 		// What kind of selection is this
-		const selectionName = selection.getAttributeNode("name")?.nodeValue;
+		const selectionName = selection.getAttribute("name");
 		if (!selectionName) continue;
 
 		if (selectionName.includes("Detachment Command Cost")) {
@@ -595,7 +595,7 @@ function LookupRole(roleText) {
 }
 
 function ExpandBaseNotes(root, obj) {
-	obj.name = root.getAttributeNode("name")?.nodeValue;
+	obj.name = root.getAttribute("name");
 	return obj.name;
 }
 
@@ -603,7 +603,7 @@ function ExtractNumberFromParent(root) {
 	// Get parent node (a selection) to determine model count.
 	if (root.parentElement?.parentElement) {
 		const parentSelection = root.parentElement.parentElement;
-		const countValue = parentSelection.getAttributeNode("number")?.nodeValue;
+		const countValue = parentSelection.getAttribute("number");
 		if (countValue) {
 			return +countValue;
 		}
@@ -683,7 +683,7 @@ function ParseUnit(root) {
 
 	const categories = root.querySelectorAll("categories>category");
 	for (const cat of categories) {
-		const catName = cat.getAttributeNode("name")?.nodeValue;
+		const catName = cat.getAttribute("name");
 		if (catName) {
 			const factPattern = "Faction: ";
 			const factIndex = catName.lastIndexOf(factPattern);

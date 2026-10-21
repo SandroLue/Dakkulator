@@ -53,13 +53,19 @@ export function applyModifiers({
 	skillModifier = 0,
 	rollModifier = 0,
 	ignoreNegative = false,
+	// The sum of only the positive modifiers; without it, all we know is the net.
+	skillBonus,
+	rollBonus,
 }) {
 	// §02.02.02 — "ignore modifiers" is optional per modifier, so the optimal
-	// play is to drop only the detrimental ones.
+	// play is to drop only the detrimental ones. They must be dropped one by
+	// one: a +1 and a -1 net to 0, but ignoring the -1 leaves +1.
 	const characteristic = ignoreNegative
-		? Math.max(skillModifier, 0)
+		? (skillBonus ?? Math.max(skillModifier, 0))
 		: skillModifier;
-	const roll = ignoreNegative ? Math.max(rollModifier, 0) : rollModifier;
+	const roll = ignoreNegative
+		? (rollBonus ?? Math.max(rollModifier, 0))
+		: rollModifier;
 	return {
 		effectiveSkill: clamp(skill - characteristic, 1, 7),
 		rollModifier: clamp(roll, -1, 1),
@@ -79,6 +85,10 @@ export function hitProbability({
 	indirect = false,
 	indirectSpotted = false,
 	ignoreNegative = false,
+	skillBonus,
+	rollBonus,
+	// "a critical hit is scored on an unmodified hit roll of 5+"
+	critOn = 6,
 }) {
 	if (torrent) {
 		// No hit roll is made, so there is no critical hit.
@@ -90,22 +100,31 @@ export function hitProbability({
 		skillModifier,
 		rollModifier,
 		ignoreNegative,
+		skillBonus,
+		rollBonus,
 	});
 	let target = clamp(modified.effectiveSkill - modified.rollModifier, 2, 6);
 
 	// §24.19 — indirect fire sets a floor on the unmodified roll and forbids
 	// hit re-rolls.
 	let rerollMode = reroll;
+	// A critical hit always hits, so it also lowers the number needed to hit.
+	let critTarget = clamp(critOn, 2, 6);
 	if (indirect) {
-		target = Math.max(target, indirectSpotted ? 4 : 6);
+		// Rolls below the floor always fail, even where they would be critical.
+		const floor = indirectSpotted ? 4 : 6;
+		target = Math.max(target, floor);
+		critTarget = Math.max(critTarget, floor);
 		rerollMode = "none";
 	}
 
-	const base = (7 - target) / 6;
+	const baseCrit = (7 - critTarget) / 6;
+	const base = Math.max((7 - target) / 6, baseCrit);
 	return {
 		hit: applyReroll(base, rerollMode),
-		critHit: applyReroll(1 / 6, rerollMode, base),
-		target,
+		critHit: applyReroll(baseCrit, rerollMode, base),
+		target: Math.min(target, critTarget),
+		critTarget,
 		autoHit: false,
 	};
 }
@@ -133,16 +152,20 @@ export function woundProbability({
 	twinLinked = false,
 	reroll = "none",
 	ignoreNegative = false,
+	// The sum of only the positive modifiers, for ignoring just the negatives.
+	rollBonus,
+	// "a critical wound is scored on an unmodified wound roll of 5+"
+	critOn = 6,
 }) {
 	const threshold = woundThreshold(strength, toughness);
 	const roll = clamp(
-		ignoreNegative ? Math.max(rollModifier, 0) : rollModifier,
+		ignoreNegative ? (rollBonus ?? Math.max(rollModifier, 0)) : rollModifier,
 		-1,
 		1,
 	);
 	const target = clamp(threshold - roll, 2, 6);
 
-	let critTarget = 6;
+	let critTarget = clamp(critOn, 2, 6);
 	for (const entry of anti) {
 		if (!targetKeywords.has(entry.keyword)) continue;
 		critTarget = Math.min(critTarget, clamp(entry.threshold, 2, 6));

@@ -176,7 +176,9 @@ export function mineUnitAbilities(unit) {
 			}
 		}
 
-		if (!recognised && name && !IGNORED_ABILITIES.test(name)) {
+		// Names can carry markers, e.g. "*Invulnerable Save".
+		const plainName = String(name ?? "").replace(/^[^a-z]+/i, "");
+		if (!recognised && plainName && !IGNORED_ABILITIES.test(plainName)) {
 			result.unmodelled.push(name);
 		}
 	}

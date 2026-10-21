@@ -43,6 +43,8 @@ export function engineInputs(sc) {
 		keywords: new Set(["INFANTRY"]),
 		fnp: sc.fnp ?? null,
 		pointsPerModel: 10,
+		halveDamage: Boolean(sc.halveDamage),
+		damageToOne: Boolean(sc.damageToOne),
 	};
 	const ctx = {
 		skillModifier: sc.skillModifier || 0,
@@ -53,6 +55,9 @@ export function engineInputs(sc) {
 		targetInCover: Boolean(sc.cover),
 		indirect: Boolean(sc.indirect && sc.indirect !== "none"),
 		indirectSpotted: sc.indirect === "spotted",
+		critHitOn: sc.critHitOn ?? 6,
+		critWoundOn: sc.critWoundOn ?? 6,
+		rerollDamage: Boolean(sc.rerollDamage),
 	};
 	return { profile, group, ctx };
 }
@@ -96,6 +101,11 @@ export function scenarioGenerator(seed) {
 			fnp: chance(0.25) ? int(4, 6) : null,
 			wounds: int(1, 4),
 			count,
+			critHitOn: chance(0.2) ? int(4, 5) : 6,
+			critWoundOn: chance(0.2) ? int(4, 5) : 6,
+			rerollDamage: chance(0.15),
+			halveDamage: chance(0.1),
+			damageToOne: chance(0.05),
 		};
 	};
 }

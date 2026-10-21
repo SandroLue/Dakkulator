@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { abilityModifiers, mergeAbilityModifiers } from "../abilityModifiers";
+import { isCombatAbility } from "../abilityRules";
 import { calculateMatchup } from "../index";
 import { unitAbilityEntries } from "../profiles";
 import { applyAttachments, listUnits } from "../unitList";
@@ -8,6 +10,7 @@ import { ModifierBuilder } from "./ModifierBuilder";
 import { ResultsMatrix } from "./ResultsMatrix";
 import { UnitPicker } from "./UnitPicker";
 import {
+	useAbilityModifiers,
 	useArmyModifiers,
 	useShareLink,
 	useUnitSetup,
@@ -48,9 +51,7 @@ function ShareBanner({
 			{waiting && (
 				<span>
 					To restore the unit selection, choose “{pending.rosterNames.A}” as the{" "}
-					{pending.reversed ? "defender" : "attacker"} and “
-					{pending.rosterNames.B}” as the{" "}
-					{pending.reversed ? "attacker" : "defender"}.
+					attacker and “{pending.rosterNames.B}” as the defender.
 				</span>
 			)}
 			{waiting && rosterA && rosterB && (
@@ -69,8 +70,15 @@ function ShareBanner({
 	);
 }
 
-/** Abilities the engine doesn't model, split by the side whose units have them. */
-function unmodelledAbilities(matchup) {
+/**
+ * Abilities the engine doesn't model, split by the side whose units have them.
+ * Only those whose text can change a combat result are offered.
+ */
+function unmodelledAbilities(matchup, abilityTexts) {
+	const relevant = (name) => {
+		const text = abilityTexts.get(String(name).toLowerCase());
+		return !text || isCombatAbility(text);
+	};
 	const attacker = new Set();
 	const defender = new Set();
 	for (const row of matchup?.rows || []) {
@@ -81,7 +89,8 @@ function unmodelledAbilities(matchup) {
 				defender.add(t);
 		}
 	}
-	const sorted = (names) => [...names].sort((a, b) => a.localeCompare(b));
+	const sorted = (names) =>
+		[...names].filter(relevant).sort((a, b) => a.localeCompare(b));
 	return { attacker: sorted(attacker), defender: sorted(defender) };
 }
 
@@ -111,18 +120,27 @@ export function Calculator({
 	rosterA,
 	rosterB,
 	listIds = {},
-	reversed = false,
-	onReversedChange,
+	onSwap,
 	listSelect,
 }) {
 	// Every unit starts selected, so both unit lists stay closed until needed.
 	const [choosingUnits, setChoosingUnits] = useState(false);
+	// "Attach leaders" opens on both sides at once.
+	const [attaching, setAttaching] = useState(false);
 	const [selectedCell, setSelectedCell] = useState(null);
 	// Each side's unit selection and attachments are remembered per army list.
 	const sideA = useUnitSetup(rosterA, listIds.A, () => setSelectedCell(null));
 	const sideB = useUnitSetup(rosterB, listIds.B, () => setSelectedCell(null));
 	const { ctx, setCtx, metric, setMetric } = useView();
 	const { modifiers, saveModifiers } = useArmyModifiers(rosterA, rosterB);
+	useAbilityModifiers({
+		sides: [
+			{ slot: "A", roster: rosterA, listId: listIds.A },
+			{ slot: "B", roster: rosterB, listId: listIds.B },
+		],
+		modifiers,
+		saveModifiers,
+	});
 	const share = useShareLink({
 		rosterA,
 		rosterB,
@@ -130,8 +148,6 @@ export function Calculator({
 		sideB,
 		ctx,
 		setCtx,
-		reversed,
-		onReversedChange,
 		modifiers,
 		saveModifiers,
 		onApplied: () => setSelectedCell(null),
@@ -158,13 +174,6 @@ export function Calculator({
 			block: "nearest",
 		});
 	});
-
-	const [shownReversed, setShownReversed] = useState(reversed);
-	// Swapping roles transposes the matrix, so the selected cell no longer applies.
-	if (shownReversed !== reversed) {
-		setSelectedCell(null);
-		setShownReversed(reversed);
-	}
 
 	const unitNames = useMemo(
 		() => ({ A: uniqueNames(rosterA), B: uniqueNames(rosterB) }),
@@ -212,19 +221,19 @@ export function Calculator({
 		.filter((e) => sideB.selected.has(e.key))
 		.map((e) => e.unit);
 
-	const attackers = reversed ? unitsB : unitsA;
-	const defenders = reversed ? unitsA : unitsB;
+	const attackers = unitsA;
+	const defenders = unitsB;
 
 	const matchup = useMemo(
 		() =>
 			attackers.length && defenders.length
 				? calculateMatchup(attackers, defenders, ctx, {
 						modifiers,
-						attackerList: reversed ? "B" : "A",
-						defenderList: reversed ? "A" : "B",
+						attackerList: "A",
+						defenderList: "B",
 					})
 				: null,
-		[attackers, defenders, ctx, modifiers, reversed],
+		[attackers, defenders, ctx, modifiers],
 	);
 
 	const pickers = (
@@ -238,13 +247,15 @@ export function Calculator({
 				onAttachmentsChange={sideA.setAttachments}
 				open={choosingUnits}
 				onOpenChange={setChoosingUnits}
+				attachOpen={attaching}
+				onAttachOpenChange={setAttaching}
 			/>
 			<button
 				type="button"
-				onClick={() => onReversedChange?.(!reversed)}
+				onClick={() => onSwap?.()}
 				aria-label="Swap attacker and defender"
-				title="Swap attacker and defender (keeps the unit selection)"
-				className="self-center justify-self-center rounded-full p-2"
+				title="Swap the attacker and defender lists (each keeps its unit selection)"
+				className="self-center justify-self-center rounded-full p-2 md:mt-[1.15rem] md:self-start"
 			>
 				<svg
 					viewBox="0 0 24 24"
@@ -268,6 +279,8 @@ export function Calculator({
 				onAttachmentsChange={sideB.setAttachments}
 				open={choosingUnits}
 				onOpenChange={setChoosingUnits}
+				attachOpen={attaching}
+				onAttachOpenChange={setAttaching}
 			/>
 		</div>
 	);
@@ -287,16 +300,10 @@ export function Calculator({
 				<div className="panel border-danger px-4 py-4 text-danger">
 					The combat calculator supports Warhammer 40,000 11th Edition only.
 					{!is11th(rosterA) && (
-						<div>
-							The {reversed ? "defender" : "attacker"} list is{" "}
-							{rosterA.gameType}.
-						</div>
+						<div>The attacker list is {rosterA.gameType}.</div>
 					)}
 					{!is11th(rosterB) && (
-						<div>
-							The {reversed ? "attacker" : "defender"} list is{" "}
-							{rosterB.gameType}.
-						</div>
+						<div>The defender list is {rosterB.gameType}.</div>
 					)}
 				</div>
 			</div>
@@ -372,14 +379,23 @@ export function Calculator({
 
 			<div className="print-display-none">
 				<ModifierBuilder
-					abilities={unmodelledAbilities(matchup)}
-					attackerList={reversed ? "B" : "A"}
+					abilities={unmodelledAbilities(matchup, abilityTexts)}
+					attackerList="A"
 					modifiers={modifiers}
 					onChange={saveModifiers}
 					unitNames={unitNames}
 					keywords={unitKeywords}
 					abilityTexts={abilityTexts}
 					listNames={{ A: rosterA.name, B: rosterB.name }}
+					defaults={() =>
+						mergeAbilityModifiers(
+							[],
+							[
+								...abilityModifiers(rosterA, "A"),
+								...abilityModifiers(rosterB, "B"),
+							],
+						)
+					}
 				/>
 			</div>
 

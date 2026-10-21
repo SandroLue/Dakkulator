@@ -13,7 +13,6 @@ const state = {
 	selected: { A: new Set(["0:1", "0:3"]), B: new Set(["0:0"]) },
 	attachments: { A: { "0:2": "0:1" }, B: {} },
 	ctx: defaultContext({ phase: "fight", charged: true, hitModifier: 1 }),
-	reversed: true,
 	modifiers: [
 		createModifier({ name: "Stand Vigil", rerollWounds: "ones" }),
 		createModifier({ name: "Off", enabled: false, list: "B", fnp: 5 }),
@@ -21,6 +20,24 @@ const state = {
 };
 
 describe("share state", () => {
+	it("turns an older link with reversed sides around, so list A attacks", () => {
+		const old = {
+			v: 1,
+			rosters: { A: "Custodes", B: "Tyranids" },
+			selected: { A: ["0:1"], B: ["0:0"] },
+			attachments: { A: { "0:2": "0:1" }, B: {} },
+			ctx: {},
+			reversed: true,
+			modifiers: [{ name: "Shield", list: "A", fnp: 5 }],
+		};
+		const hash = `#share=${btoa(JSON.stringify(old)).replace(/=+$/, "")}`;
+		const decoded = decodeShareState(hash);
+		expect(decoded.rosterNames).toEqual({ A: "Tyranids", B: "Custodes" });
+		expect(decoded.selected).toEqual({ A: ["0:0"], B: ["0:1"] });
+		expect(decoded.attachments).toEqual({ A: {}, B: { "0:2": "0:1" } });
+		expect(decoded.modifiers[0].list).toBe("B");
+	});
+
 	it("round-trips through the URL hash", () => {
 		const hash = encodeShareState(state);
 		expect(hasShareHash(hash)).toBe(true);
@@ -31,7 +48,6 @@ describe("share state", () => {
 		expect(decoded.selected).toEqual({ A: ["0:1", "0:3"], B: ["0:0"] });
 		expect(decoded.attachments.A).toEqual({ "0:2": "0:1" });
 		expect(decoded.ctx).toEqual(state.ctx);
-		expect(decoded.reversed).toBe(true);
 		expect(decoded.modifiers.map((m) => m.name)).toEqual([
 			"Stand Vigil",
 			"Off",

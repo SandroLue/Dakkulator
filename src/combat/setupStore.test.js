@@ -82,3 +82,37 @@ describe("view", () => {
 		expect(view.ctx.charged).toBe(false);
 	});
 });
+
+describe("obvious leader attachments", () => {
+	const suggest = (attachments) =>
+		"0:2" in attachments ? {} : { "0:2": "0:0" };
+
+	it("are made the first time a list is loaded", () => {
+		const setup = loadUnitSetup("list-1", keys, memoryStorage(), suggest);
+		expect(setup.attachments).toEqual({ "0:2": "0:0" });
+	});
+
+	it("are made once for a list saved before they existed", () => {
+		const storage = memoryStorage();
+		storage.setItem(
+			"unitSetupByList",
+			JSON.stringify({ "list-1": { selected: ["0:0"], attachments: {} } }),
+		);
+		expect(loadUnitSetup("list-1", keys, storage, suggest).attachments).toEqual(
+			{ "0:2": "0:0" },
+		);
+	});
+
+	it("are not made again once the user changed them", () => {
+		const storage = memoryStorage();
+		// The user detached the leader after the automatic pass.
+		saveUnitSetup(
+			"list-1",
+			{ selected: keys, attachments: {}, autoAttached: true },
+			storage,
+		);
+		expect(loadUnitSetup("list-1", keys, storage, suggest).attachments).toEqual(
+			{},
+		);
+	});
+});

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { engineInputs, scenarioGenerator } from "./__fixtures__/scenarios";
-import { mean, pmf } from "./diceExpr";
+import { pmf } from "./diceExpr";
 import {
 	allocateAttacks,
 	computeAttackStreams,
@@ -28,7 +28,9 @@ describe("bounds", () => {
 	it("keeps every metric inside what is physically possible", () => {
 		forEachScenario(11, (sc, label) => {
 			const r = resolve(sc);
-			const damage = mean(r.damageExpr) || 1;
+			// Expected damage per attack, after re-rolls, halving and the like.
+			const damage =
+				r.damagePmf.reduce((sum, p, value) => sum + p * value, 0) || 1;
 			expect(r.pDestroyed, label).toBeGreaterThanOrEqual(-EPS);
 			expect(r.pDestroyed, label).toBeLessThanOrEqual(1 + EPS);
 			expect(r.modelsSlain, label).toBeLessThanOrEqual(sc.count + EPS);
@@ -98,9 +100,16 @@ describe("monotonicity — a better attack never does less", () => {
 			damage: sc.damage === "1" ? "2" : sc.damage,
 		}),
 	};
+	// Re-rolling every failed hit gives a worse hit roll more chances at a
+	// critical hit; with [LETHAL HITS] or [SUSTAINED HITS] that can be worth more
+	// than the extra hits, so a better hit roll may genuinely do slightly less.
+	const critFishing = (sc) =>
+		sc.rerollHits === "all" && (sc.lethal || sc.sustained !== "0");
+	const exceptions = { "better BS": critFishing, "+1 hit roll": critFishing };
 	for (const [name, improve] of Object.entries(better)) {
 		it(name, () => {
 			forEachScenario(13, (sc, label) => {
+				if (exceptions[name]?.(sc)) return;
 				const base = resolve(sc);
 				const improved = resolve(improve(sc));
 				for (const metric of ["woundsLost", "modelsSlain", "pDestroyed"]) {

@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local rules corpus (Games Workshop text, never committed)
+scripts/.corpus/

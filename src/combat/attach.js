@@ -14,16 +14,35 @@ import {
  * `Leader` ability — the pairing itself has to come from the user.
  */
 
+// The Leader ability, and 11e's Support ability, both use this phrase.
 const LEADER_TARGETS = /attached to the following units:\s*([^.]+)/i;
 
-/** Normalised datasheet names this unit may be attached to, if it is a leader. */
+/** Words a renamed datasheet gained or lost: "PROSECUTORS" is now "Prosecutor Squad". */
+const GENERIC_WORDS = new Set(["squad", "sodality", "unit", "units"]);
+
+/**
+ * A datasheet name reduced to what stays stable across renames: lowercase,
+ * singular, without "Squad" or "Sodality".
+ */
+export function datasheetKey(name) {
+	return normalizeName(name)
+		.split(" ")
+		.filter((word) => word && !GENERIC_WORDS.has(word))
+		.map((word) => (word.length > 3 ? word.replace(/s$/, "") : word))
+		.join(" ");
+}
+
+/** Datasheet keys this unit may be attached to, if it is a leader or support unit. */
 export function getLeaderTargets(unit) {
 	for (const [, description] of unitAbilityEntries(unit)) {
 		const match = LEADER_TARGETS.exec(String(description ?? ""));
 		if (!match) continue;
+		// "A, B, C" or "- A - B - C". Never split on "and": it is part of
+		// names like "Custodian Guard with Adrasite and Pyrithite Spears".
 		return match[1]
-			.split(/,|\bor\b|\band\b/i)
-			.map(normalizeName)
+			.split(/,|\n|[■•]|(?:^|\s)-\s/)
+			.map((target) => target.trim().replace(/^(?:and|or)\s+/i, ""))
+			.map(datasheetKey)
 			.filter(Boolean);
 	}
 	return [];
@@ -35,7 +54,7 @@ export function isLeader(unit) {
 
 export function canLead(leader, bodyguard) {
 	if (!leader || !bodyguard || leader === bodyguard) return false;
-	const name = normalizeName(bodyguard.name);
+	const name = datasheetKey(bodyguard.name);
 	if (!name) return false;
 	return getLeaderTargets(leader).some(
 		(target) => name === target || name.startsWith(`${target} `),

@@ -34,27 +34,43 @@ const defaultStorage = () => globalThis.localStorage;
 
 /**
  * @param {Set<string>} allKeys every unit key of the list, all selected by default
- * @returns `{ selected: Set, attachments: object }`
+ * @param {(attachments: object) => object} suggest the obvious attachments to add
+ * the first time a list is loaded (see `suggestAttachments`)
+ * @returns `{ selected: Set, attachments: object, autoAttached: true }`
  */
-export function loadUnitSetup(listId, allKeys, storage = defaultStorage()) {
+export function loadUnitSetup(
+	listId,
+	allKeys,
+	storage = defaultStorage(),
+	suggest = () => ({}),
+) {
 	const stored = listId ? readJson(UNIT_SETUP_KEY, storage)?.[listId] : null;
 	if (!stored || !Array.isArray(stored.selected)) {
-		return { selected: new Set(allKeys), attachments: {} };
+		return {
+			selected: new Set(allKeys),
+			attachments: suggest({}),
+			autoAttached: true,
+		};
 	}
 	const known = (key) => allKeys.has(key);
+	const attachments = Object.fromEntries(
+		Object.entries(validAttachments(stored.attachments)).filter(
+			([leader, bodyguard]) => known(leader) && known(bodyguard),
+		),
+	);
 	return {
 		selected: new Set(stored.selected.filter(known)),
-		attachments: Object.fromEntries(
-			Object.entries(validAttachments(stored.attachments)).filter(
-				([leader, bodyguard]) => known(leader) && known(bodyguard),
-			),
-		),
+		// Obvious leaders are attached once per list; after that the user decides.
+		attachments: stored.autoAttached
+			? attachments
+			: { ...attachments, ...suggest(attachments) },
+		autoAttached: true,
 	};
 }
 
 export function saveUnitSetup(
 	listId,
-	{ selected, attachments },
+	{ selected, attachments, autoAttached = false },
 	storage = defaultStorage(),
 ) {
 	if (!listId) return;
@@ -63,9 +79,29 @@ export function saveUnitSetup(
 	// Most recently saved last, so the oldest lists are dropped first.
 	const entries = [
 		...Object.entries(all),
-		[listId, { selected: [...selected], attachments }],
+		[listId, { selected: [...selected], attachments, autoAttached }],
 	].slice(-MAX_LISTS);
 	writeJson(UNIT_SETUP_KEY, Object.fromEntries(entries), storage);
+}
+
+const ABILITIES_FILLED_KEY = "abilityModifiersFilled";
+
+/** Whether a list's abilities were already turned into modifiers (once per list). */
+export function abilitiesFilled(listId, storage = defaultStorage()) {
+	const filled = readJson(ABILITIES_FILLED_KEY, storage);
+	return Array.isArray(filled) && filled.includes(listId);
+}
+
+export function markAbilitiesFilled(listId, storage = defaultStorage()) {
+	const filled = readJson(ABILITIES_FILLED_KEY, storage);
+	const ids = (Array.isArray(filled) ? filled : []).filter(
+		(id) => id !== listId,
+	);
+	writeJson(
+		ABILITIES_FILLED_KEY,
+		[...ids, listId].slice(-MAX_LISTS * 4),
+		storage,
+	);
 }
 
 /**

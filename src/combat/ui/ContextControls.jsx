@@ -9,44 +9,38 @@ const TOGGLE_GROUPS = [
 			{
 				key: "withinHalfRange",
 				label: "Within half range",
-				hint: "[RAPID FIRE], [MELTA]",
 				on: true,
 			},
 			{
 				key: "remainedStationary",
 				label: "Remained stationary",
-				hint: "[HEAVY]",
 				on: true,
 			},
 			{
 				key: "charged",
 				label: "Charged this turn",
-				hint: "[LANCE]",
 				on: true,
 			},
 			// Off by default: it needs tall terrain, and it would hide other bonuses
 			// like [HEAVY] once a weapon already hits on 2+.
-			{ key: "plungingFire", label: "Plunging fire", hint: "+1 BS" },
+			{ key: "plungingFire", label: "Plunging fire" },
 		],
 	},
 	{
 		label: "Hinders the attacker",
 		toggles: [
-			{ key: "targetInCover", label: "Target in cover", hint: "−1 BS" },
+			{ key: "targetInCover", label: "Target in cover" },
 			{
 				key: "attackerDamaged",
 				label: "Attacker is Damaged",
-				hint: "−1 to hit",
 			},
 			{
 				key: "indirect",
 				label: "Shooting indirectly",
-				hint: "[INDIRECT FIRE] hits on 6s, no re-rolls",
 			},
 			{
 				key: "indirectSpotted",
 				label: "…and spotted",
-				hint: "hits on 4+ instead",
 				requires: "indirect",
 			},
 		],
@@ -58,7 +52,6 @@ const TOGGLE_GROUPS = [
 			{
 				key: "useLethalHits",
 				label: "Opt out of [LETHAL HITS]",
-				hint: "critical hits roll to wound",
 				invert: true,
 			},
 		],
@@ -66,8 +59,8 @@ const TOGGLE_GROUPS = [
 ];
 
 const APPLY_TO_ALL = [
-	{ key: "allLethalHits", label: "[LETHAL HITS]" },
-	{ key: "allDevastatingWounds", label: "[DEVASTATING WOUNDS]" },
+	{ key: "allLethalHits", label: "LETHAL HITS" },
+	{ key: "allDevastatingWounds", label: "DEVASTATING WOUNDS" },
 ];
 
 const SUSTAINED_OPTIONS = [
@@ -100,7 +93,7 @@ function assumptions(ctx) {
 		if (ctx[toggle.key]) phrases.push(`${toggle.label} on every weapon`);
 	}
 	if (ctx.allSustainedHits > 0) {
-		phrases.push(`[SUSTAINED HITS ${ctx.allSustainedHits}] on every weapon`);
+		phrases.push(`SUSTAINED HITS ${ctx.allSustainedHits} on every weapon`);
 	}
 	for (const modifier of MODIFIERS) {
 		const value = ctx[modifier.key];
@@ -140,15 +133,18 @@ export function AssumptionsLine({ ctx, onEdit }) {
 }
 
 const MODIFIERS = [
-	{
-		key: "skillModifier",
-		label: "BS / WS characteristic",
-		hint: "+1 improves, uncapped",
-	},
-	{ key: "hitModifier", label: "Hit roll", hint: "capped to ±1" },
-	{ key: "woundModifier", label: "Wound roll", hint: "capped to ±1" },
-	{ key: "apModifier", label: "AP", hint: "+1 is one better" },
+	{ key: "skillModifier", label: "BS / WS characteristic" },
+	// Hit and wound roll modifiers are capped at ±1 by the rules.
+	{ key: "hitModifier", label: "Hit roll", min: -1, max: 1 },
+	{ key: "woundModifier", label: "Wound roll", min: -1, max: 1 },
+	{ key: "apModifier", label: "AP" },
 ];
+
+/** Keeps a value within a field's limits, if it has any. */
+const clamp = (
+	value,
+	{ min = Number.NEGATIVE_INFINITY, max = Number.POSITIVE_INFINITY },
+) => Math.max(min, Math.min(max, value));
 
 const REROLLS = [
 	{ key: "rerollHits", label: "Re-roll hits" },
@@ -255,9 +251,6 @@ export function ContextControls({ ctx, onChange }) {
 											}
 										>
 											{toggle.label}
-											{toggle.hint && (
-												<span className="hint">{toggle.hint}</span>
-											)}
 										</Toggle>
 									))}
 							</div>
@@ -266,12 +259,7 @@ export function ContextControls({ ctx, onChange }) {
 				</div>
 
 				<div className="flex flex-col gap-2">
-					<span className="section-label">
-						Apply to all{" "}
-						<span className="hint normal-case tracking-normal">
-							— every attacking weapon gains these
-						</span>
-					</span>
+					<span className="section-label">Apply to all</span>
 					<div className="flex flex-wrap items-center gap-2">
 						{APPLY_TO_ALL.map((toggle) => (
 							<Toggle
@@ -283,7 +271,7 @@ export function ContextControls({ ctx, onChange }) {
 							</Toggle>
 						))}
 						<div className="flex items-center gap-2">
-							<span className="font-semibold">[SUSTAINED HITS]</span>
+							<span className="font-semibold">SUSTAINED HITS</span>
 							<Segmented
 								label="Sustained Hits for all weapons"
 								value={ctx.allSustainedHits ?? 0}
@@ -303,13 +291,17 @@ export function ContextControls({ ctx, onChange }) {
 								<input
 									type="number"
 									step="1"
-									value={ctx[modifier.key] ?? 0}
+									min={modifier.min}
+									max={modifier.max}
+									value={clamp(ctx[modifier.key] ?? 0, modifier)}
 									onChange={(e) =>
-										set(modifier.key, Number(e.target.value) || 0)
+										set(
+											modifier.key,
+											clamp(Number(e.target.value) || 0, modifier),
+										)
 									}
 									className="w-20"
 								/>
-								<span className="hint">{modifier.hint}</span>
 							</label>
 						))}
 						{REROLLS.map((reroll) => (

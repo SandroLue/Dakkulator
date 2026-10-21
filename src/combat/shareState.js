@@ -58,7 +58,6 @@ export function encodeShareState({
 	selected = {},
 	attachments = {},
 	ctx,
-	reversed = false,
 	modifiers = [],
 }) {
 	const payload = {
@@ -67,7 +66,6 @@ export function encodeShareState({
 		selected: { A: [...(selected.A || [])], B: [...(selected.B || [])] },
 		attachments: { A: attachments.A || {}, B: attachments.B || {} },
 		ctx: compactContext(ctx),
-		reversed: Boolean(reversed),
 		modifiers: modifiers.map(compactModifier),
 	};
 	return `${PREFIX}${toBase64Url(JSON.stringify(payload))}`;
@@ -127,26 +125,28 @@ export function decodeShareState(hash) {
 		return null;
 	}
 	const name = (value) => (typeof value === "string" ? value : "");
+	// List A is always the attacker now. Older links could have the sides
+	// reversed; those are turned around so A is their attacker too.
+	const flip = payload.reversed === true;
+	const side = (A, B) => (flip ? { A: B, B: A } : { A, B });
+	const otherList = { A: "B", B: "A", any: "any" };
 	return {
-		rosterNames: {
-			A: name(payload.rosters?.A),
-			B: name(payload.rosters?.B),
-		},
-		selected: {
-			A: validKeys(payload.selected?.A),
-			B: validKeys(payload.selected?.B),
-		},
-		attachments: {
-			A: validAttachments(payload.attachments?.A),
-			B: validAttachments(payload.attachments?.B),
-		},
+		rosterNames: side(name(payload.rosters?.A), name(payload.rosters?.B)),
+		selected: side(
+			validKeys(payload.selected?.A),
+			validKeys(payload.selected?.B),
+		),
+		attachments: side(
+			validAttachments(payload.attachments?.A),
+			validAttachments(payload.attachments?.B),
+		),
 		ctx: validContext(payload.ctx),
-		reversed: payload.reversed === true,
 		modifiers: Array.isArray(payload.modifiers)
 			? payload.modifiers
 					.slice(0, MAX_MODIFIERS)
 					.filter((m) => m && typeof m === "object")
 					.map((m) => normalizeModifier({ ...m, id: undefined }))
+					.map((m) => (flip ? { ...m, list: otherList[m.list] } : m))
 			: [],
 	};
 }

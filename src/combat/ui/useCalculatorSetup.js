@@ -3,6 +3,7 @@ import {
 	trySettingLocalStorage,
 	useLocalStorage,
 } from "../../helpers/useLocalStorage";
+import { abilityModifiers, mergeAbilityModifiers } from "../abilityModifiers";
 import {
 	armyOf,
 	modifiersForArmies,
@@ -11,8 +12,10 @@ import {
 	storeModifiersForArmies,
 } from "../modifiers";
 import {
+	abilitiesFilled,
 	loadUnitSetup,
 	loadView,
+	markAbilitiesFilled,
 	saveUnitSetup,
 	saveView,
 } from "../setupStore";
@@ -21,7 +24,7 @@ import {
 	encodeShareState,
 	mergeSharedModifiers,
 } from "../shareState";
-import { listUnits } from "../unitList";
+import { listUnits, suggestAttachments } from "../unitList";
 import { bestCaseContext } from "./ContextControls";
 import { METRICS } from "./metrics";
 
@@ -31,22 +34,26 @@ const MODIFIER_KEY = "modifiersByArmy";
 const LEGACY_MODIFIER_KEY = "modifiers";
 const DEFAULT_METRIC = "pDestroyed";
 
-export const allUnitKeys = (roster) =>
-	new Set(listUnits(roster).map((entry) => entry.key));
-
 /**
  * One side's unit selection and leader attachments, remembered per army list.
  * `onListChange` runs when another list is chosen for this side.
  */
 export function useUnitSetup(roster, listId, onListChange) {
-	const [setup, setSetup] = useState(() =>
-		loadUnitSetup(listId, allUnitKeys(roster)),
-	);
+	const load = () => {
+		const entries = listUnits(roster);
+		return loadUnitSetup(
+			listId,
+			new Set(entries.map((entry) => entry.key)),
+			undefined,
+			(attachments) => suggestAttachments(entries, attachments),
+		);
+	};
+	const [setup, setSetup] = useState(load);
 	const [shownList, setShownList] = useState(listId);
 	// Unit keys are per roster, so another list brings its own remembered setup.
 	if (shownList !== listId) {
 		setShownList(listId);
-		setSetup(loadUnitSetup(listId, allUnitKeys(roster)));
+		setSetup(load());
 		onListChange?.();
 	}
 	useEffect(() => {
@@ -111,6 +118,28 @@ export function useArmyModifiers(rosterA, rosterB) {
 }
 
 /**
+ * Turns each list's abilities into modifiers the first time the list is used,
+ * so its abilities count without manual work. Once per list: modifiers the
+ * user edits or deletes afterwards stay that way.
+ */
+export function useAbilityModifiers({ sides, modifiers, saveModifiers }) {
+	// Runs after every render, but only acts for a list it has not filled yet.
+	useEffect(() => {
+		let next = modifiers;
+		const filled = [];
+		for (const { slot, roster, listId } of sides) {
+			if (!roster || !listId || abilitiesFilled(listId)) continue;
+			next = mergeAbilityModifiers(next, abilityModifiers(roster, slot));
+			filled.push(listId);
+		}
+		if (!filled.length) return;
+		// Marked first, so the re-render after saving does not fill again.
+		for (const listId of filled) markAbilitiesFilled(listId);
+		if (next !== modifiers) saveModifiers(next);
+	});
+}
+
+/**
  * Reading a share link from the URL (in two stages: settings at once, unit
  * selection once the same rosters are loaded) and copying one.
  */
@@ -121,8 +150,6 @@ export function useShareLink({
 	sideB,
 	ctx,
 	setCtx,
-	reversed,
-	onReversedChange,
 	modifiers,
 	saveModifiers,
 	onApplied,
@@ -137,7 +164,6 @@ export function useShareLink({
 	useEffect(() => {
 		if (pending?.stage !== "settings") return;
 		setCtx(pending.ctx);
-		onReversedChange?.(pending.reversed);
 		setNotice("Loaded the shared battlefield settings.");
 		setPending({ ...pending, stage: "selection" });
 		// Reloading should not re-apply the link.
@@ -146,7 +172,7 @@ export function useShareLink({
 			"",
 			`${window.location.pathname}${window.location.search}`,
 		);
-	}, [pending, onReversedChange, setCtx]);
+	}, [pending, setCtx]);
 
 	// Modifiers are stored per army, so they wait until the shared rosters are loaded.
 	const apply = (shared) => {
@@ -181,7 +207,6 @@ export function useShareLink({
 			selected: { A: sideA.selected, B: sideB.selected },
 			attachments: { A: sideA.attachments, B: sideB.attachments },
 			ctx,
-			reversed,
 			modifiers,
 		});
 		const { origin, pathname, search } = window.location;

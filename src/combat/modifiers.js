@@ -67,14 +67,29 @@ export function normalizeModifier(raw = {}) {
 		role: pick(raw.role, ROLES, "attacking"),
 		phase: pick(raw.phase, PHASES, "any"),
 		vsKeywords: typeof raw.vsKeywords === "string" ? raw.vsKeywords : "",
+		// Which of the list's own units it is for, by keyword ("TERMAGANTS"),
+		// and which are left out ("MONSTER, VEHICLE").
+		unitKeywords: typeof raw.unitKeywords === "string" ? raw.unitKeywords : "",
+		excludeUnitKeywords:
+			typeof raw.excludeUnitKeywords === "string"
+				? raw.excludeUnitKeywords
+				: "",
 		rerollHits: pick(raw.rerollHits, REROLL_MODES, "none"),
 		rerollWounds: pick(raw.rerollWounds, REROLL_MODES, "none"),
 		weaponAbilities:
 			typeof raw.weaponAbilities === "string" ? raw.weaponAbilities : "",
 		ignoreHitModifiers: raw.ignoreHitModifiers === true,
+		ignoreWoundModifiers: raw.ignoreWoundModifiers === true,
+		// "a critical hit/wound is scored on an unmodified roll of N+"
+		critHitOn: toThreshold(raw.critHitOn),
+		critWoundOn: toThreshold(raw.critWoundOn),
+		rerollDamage: raw.rerollDamage === true,
 		fnp: toThreshold(raw.fnp),
 		invuln: toThreshold(raw.invuln),
 		cover: raw.cover === true,
+		// Incoming attacks: "halve the Damage" (rounding up), "change the Damage to 1".
+		halveDamage: raw.halveDamage === true,
+		damageToOne: raw.damageToOne === true,
 	};
 	for (const key of NUMERIC_EFFECTS.attacking) modifier[key] = toInt(raw[key]);
 	return modifier;
@@ -110,8 +125,26 @@ function keywordSet(unit) {
 	);
 }
 
+/**
+ * Whether a unit has a keyword phrase. Rosters split keywords ("Khorne",
+ * "Legiones Daemonica") where rules join them ("KHORNE LEGIONES DAEMONICA"),
+ * so a phrase also matches when every word of it is among the unit's keywords.
+ */
+function hasKeyword(unit, phrase) {
+	const keywords = keywordSet(unit);
+	if (keywords.has(phrase)) return true;
+	const words = new Set(
+		[...keywords].flatMap((k) => k.replace(/^FACTION:\s*/, "").split(/\s+/)),
+	);
+	return phrase.split(/\s+/).every((word) => words.has(word));
+}
+
 function belongsTo(modifier, unit, list) {
 	if (modifier.list !== "any" && modifier.list !== list) return false;
+	const only = parseKeywords(modifier.unitKeywords);
+	if (only.length && !only.some((k) => hasKeyword(unit, k))) return false;
+	const not = parseKeywords(modifier.excludeUnitKeywords);
+	if (not.some((k) => hasKeyword(unit, k))) return false;
 	if (!modifier.unitName) return true;
 	return (
 		unit?.name === modifier.unitName ||
@@ -229,14 +262,31 @@ export function applyUserModifiers({
 	}
 	const both = (key) =>
 		total(attacking, "attacking", key) + total(defending, "defending", key);
+	// The positive contributions alone, so "ignore modifiers" can drop just the negatives.
+	const bonus = (key) =>
+		[
+			...attacking.filter(() => NUMERIC_EFFECTS.attacking.includes(key)),
+			...defending.filter(() => NUMERIC_EFFECTS.defending.includes(key)),
+		].reduce((sum, m) => sum + Math.max(m[key] || 0, 0), 0);
 
 	const nextCtx = {
 		...ctx,
 		skillModifier: (ctx.skillModifier || 0) + both("skillModifier"),
 		hitModifier: (ctx.hitModifier || 0) + both("hitModifier"),
+		skillModifierBonus:
+			(ctx.skillModifierBonus ?? Math.max(ctx.skillModifier || 0, 0)) +
+			bonus("skillModifier"),
+		hitModifierBonus:
+			(ctx.hitModifierBonus ?? Math.max(ctx.hitModifier || 0, 0)) +
+			bonus("hitModifier"),
 		woundModifier: (ctx.woundModifier || 0) + both("woundModifier"),
-		apModifier: (ctx.apModifier || 0) + both("apModifier"),
-		damageModifier: (ctx.damageModifier || 0) + both("damageModifier"),
+		// A defender's AP and Damage modifiers act after allocation, per model
+		// group (see below); only the attacker's go into the shared context.
+		apModifier:
+			(ctx.apModifier || 0) + total(attacking, "attacking", "apModifier"),
+		damageModifier:
+			(ctx.damageModifier || 0) +
+			total(attacking, "attacking", "damageModifier"),
 		rerollHits: attacking.reduce(
 			(mode, m) => bestReroll(mode, m.rerollHits),
 			ctx.rerollHits || "none",
@@ -248,6 +298,23 @@ export function applyUserModifiers({
 		ignoreHitModifiers:
 			Boolean(ctx.ignoreHitModifiers) ||
 			attacking.some((m) => m.ignoreHitModifiers),
+		ignoreWoundModifiers:
+			Boolean(ctx.ignoreWoundModifiers) ||
+			attacking.some((m) => m.ignoreWoundModifiers),
+		woundModifierBonus:
+			(ctx.woundModifierBonus ?? Math.max(ctx.woundModifier || 0, 0)) +
+			bonus("woundModifier"),
+		// The best (lowest) threshold applies.
+		critHitOn: Math.min(
+			ctx.critHitOn ?? 6,
+			...attacking.map((m) => m.critHitOn ?? 6),
+		),
+		critWoundOn: Math.min(
+			ctx.critWoundOn ?? 6,
+			...attacking.map((m) => m.critWoundOn ?? 6),
+		),
+		rerollDamage:
+			Boolean(ctx.rerollDamage) || attacking.some((m) => m.rerollDamage),
 		targetInCover: Boolean(ctx.targetInCover) || defending.some((m) => m.cover),
 	};
 
@@ -275,15 +342,28 @@ export function applyUserModifiers({
 	const nextGroups = groups.map((group) => {
 		let fnp = group.fnp || 7;
 		let invuln = group.invuln ? parseSkill(group.invuln, 7) : 7;
+		// "Attacks allocated to this model have -1 D" protects that model only.
+		let apModifier = 0;
+		let damageModifier = 0;
+		let halveDamage = Boolean(group.halveDamage);
+		let damageToOne = Boolean(group.damageToOne);
 		for (const m of defending) {
 			if (!covers(m, group)) continue;
 			if (m.fnp) fnp = Math.min(fnp, m.fnp);
 			if (m.invuln) invuln = Math.min(invuln, m.invuln);
+			apModifier += m.apModifier || 0;
+			damageModifier += m.damageModifier || 0;
+			halveDamage ||= m.halveDamage;
+			damageToOne ||= m.damageToOne;
 		}
 		return {
 			...group,
 			fnp: fnp < 7 ? fnp : group.fnp,
 			invuln: invuln < 7 ? `${invuln}+` : group.invuln,
+			apModifier: (group.apModifier || 0) + apModifier,
+			damageModifier: (group.damageModifier || 0) + damageModifier,
+			halveDamage,
+			damageToOne,
 		};
 	});
 
@@ -330,10 +410,16 @@ function describeEffects(raw) {
 			effects.push(`re-roll wounds (${REROLL_LABEL[m.rerollWounds]})`);
 		if (m.weaponAbilities.trim()) effects.push(m.weaponAbilities.trim());
 		if (m.ignoreHitModifiers) effects.push("ignore hit modifiers");
+		if (m.ignoreWoundModifiers) effects.push("ignore wound modifiers");
+		if (m.critHitOn) effects.push(`critical hits on ${m.critHitOn}+`);
+		if (m.critWoundOn) effects.push(`critical wounds on ${m.critWoundOn}+`);
+		if (m.rerollDamage) effects.push("re-roll damage");
 	} else {
 		if (m.fnp) effects.push(`Feel No Pain ${m.fnp}+`);
 		if (m.invuln) effects.push(`${m.invuln}+ invulnerable`);
 		if (m.cover) effects.push("benefit of cover");
+		if (m.halveDamage) effects.push("halve damage");
+		if (m.damageToOne) effects.push("damage becomes 1");
 	}
 	return effects.join(", ") || "no effect";
 }

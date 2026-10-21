@@ -1,4 +1,4 @@
-import { addFlat, emptyExpr, parseDiceExpr, pmf } from "./diceExpr";
+import { addFlat, emptyExpr, mean, parseDiceExpr, pmf } from "./diceExpr";
 import {
 	fnpFailProbability,
 	hitProbability,
@@ -340,18 +340,27 @@ function hitModifiers(profile, group, ctx, indirect) {
 	const abilities = profile.abilities;
 	let skillModifier = ctx.skillModifier || 0;
 	let rollModifier = ctx.hitModifier || 0;
+	// The positive parts alone, for "ignore modifiers", which drops only the negatives.
+	let skillBonus = ctx.skillModifierBonus ?? Math.max(skillModifier, 0);
+	let rollBonus = ctx.hitModifierBonus ?? Math.max(rollModifier, 0);
 
 	if (!profile.isMelee) {
 		// §13.08 — benefit of cover worsens the attack's BS; §10.07 indirect shooting grants it.
 		const inCover = ctx.targetInCover || group.stealth || indirect;
 		if (inCover && !abilities.ignoresCover) skillModifier -= 1;
-		if (ctx.plungingFire) skillModifier += 1;
-		if (abilities.heavy && ctx.remainedStationary) rollModifier += 1;
+		if (ctx.plungingFire) {
+			skillModifier += 1;
+			skillBonus += 1;
+		}
+		if (abilities.heavy && ctx.remainedStationary) {
+			rollModifier += 1;
+			rollBonus += 1;
+		}
 	}
 	// §24.39 — Damaged is an attacker-side hit ROLL modifier.
 	if (ctx.attackerDamaged) rollModifier -= 1;
 
-	return { skillModifier, rollModifier };
+	return { skillModifier, rollModifier, skillBonus, rollBonus };
 }
 
 /** Bonus attack dice fold into the A characteristic, so they are a flat bonus. */
@@ -382,15 +391,42 @@ function attackDice(profile, group, ctx) {
 	};
 }
 
-function damageExpression(profile, ctx) {
+function damageExpression(profile, ctx, group = {}) {
 	const base = parseDiceExpr(profile.damage) ?? { dice: 0, sides: 0, flat: 1 };
 	const melta =
 		profile.abilities.melta && ctx.withinHalfRange
 			? profile.abilities.melta
 			: 0;
-	const bonus = melta + (ctx.damageModifier || 0);
+	// The defender's own Damage modifiers are per model group.
+	const bonus = melta + (ctx.damageModifier || 0) + (group.damageModifier || 0);
 	// Damage never drops below 1: `pmf(expr, 1)` and the sampler both floor it.
 	return bonus ? addFlat(base, bonus) : base;
+}
+
+/**
+ * A damage distribution after re-rolling low rolls once, halving (rounding up)
+ * and "the Damage characteristic becomes 1", in that order. Damage stays ≥ 1.
+ */
+export function applyDamageRules(dist, { rerollBelow, halve, toOne } = {}) {
+	let out = dist;
+	if (rerollBelow != null) {
+		const low = dist.reduce(
+			(sum, p, v) => (v < rerollBelow ? sum + p : sum),
+			0,
+		);
+		out = dist.map((p, v) => (v < rerollBelow ? 0 : p) + low * p);
+	}
+	if (halve) {
+		const halved = [];
+		out.forEach((p, v) => {
+			if (!p) return;
+			const to = Math.max(1, Math.ceil(v / 2));
+			halved[to] = (halved[to] || 0) + p;
+		});
+		out = Array.from(halved, (p) => p || 0);
+	}
+	if (toOne) out = [0, 1];
+	return out;
 }
 
 /**
@@ -409,7 +445,7 @@ export function computeAttackStreams(profile, group, context = {}) {
 	const indirect = Boolean(
 		!profile.isMelee && ctx.indirect && abilities.indirectFire,
 	);
-	const { skillModifier, rollModifier } = hitModifiers(
+	const { skillModifier, rollModifier, skillBonus, rollBonus } = hitModifiers(
 		profile,
 		group,
 		ctx,
@@ -424,6 +460,9 @@ export function computeAttackStreams(profile, group, context = {}) {
 		indirect,
 		indirectSpotted: ctx.indirectSpotted,
 		ignoreNegative: abilities.psychic || ctx.ignoreHitModifiers,
+		skillBonus,
+		rollBonus,
+		critOn: ctx.critHitOn ?? 6,
 	});
 
 	const hits = attacks * hit.hit;
@@ -446,8 +485,8 @@ export function computeAttackStreams(profile, group, context = {}) {
 	const autoWounds = lethal ? critHits : 0;
 	const woundRolls = Math.max(0, totalHits - autoWounds);
 
-	const woundRollModifier =
-		(ctx.woundModifier || 0) + (abilities.lance && ctx.charged ? 1 : 0);
+	const lance = abilities.lance && ctx.charged ? 1 : 0;
+	const woundRollModifier = (ctx.woundModifier || 0) + lance;
 	const wound = woundProbability({
 		strength: profile.strength,
 		toughness: group.toughness,
@@ -456,6 +495,11 @@ export function computeAttackStreams(profile, group, context = {}) {
 		targetKeywords: keywords,
 		twinLinked: abilities.twinLinked,
 		reroll: ctx.rerollWounds,
+		ignoreNegative: Boolean(ctx.ignoreWoundModifiers),
+		// The positive parts alone, so ignoring drops only the negatives.
+		rollBonus:
+			(ctx.woundModifierBonus ?? Math.max(ctx.woundModifier || 0, 0)) + lance,
+		critOn: ctx.critWoundOn ?? 6,
 	});
 
 	const wounds = woundRolls * wound.wound + autoWounds;
@@ -469,12 +513,19 @@ export function computeAttackStreams(profile, group, context = {}) {
 		save: group.save,
 		invuln: group.invuln,
 		ap: profile.ap,
-		apModifier: ctx.apModifier || 0,
+		apModifier: (ctx.apModifier || 0) + (group.apModifier || 0),
 	});
 	const failedSaves = normalWounds * save.fail;
 
-	const damageExpr = damageExpression(profile, ctx);
-	const damagePmf = pmf(damageExpr, 1);
+	const damageExpr = damageExpression(profile, ctx, group);
+	const damageRules = {
+		// Re-rolling a damage roll below average is the best use of a re-roll.
+		rerollBelow:
+			ctx.rerollDamage && damageExpr.dice > 0 ? mean(damageExpr) : null,
+		halve: Boolean(group.halveDamage),
+		toOne: Boolean(group.damageToOne),
+	};
+	const damagePmf = applyDamageRules(pmf(damageExpr, 1), damageRules);
 
 	return {
 		weaponName: profile.weaponName,
@@ -519,6 +570,7 @@ export function computeAttackStreams(profile, group, context = {}) {
 			devastatingWounds: devastating,
 			// Phase-specific defender modifiers can give each weapon its own FNP.
 			fnp: group.fnp ?? null,
+			damageRules,
 		},
 		detail: {
 			hitTarget: hit.target,

@@ -1,15 +1,21 @@
 import { useMemo, useState } from "react";
 import { canLead, isLeader } from "../attach";
 import { buildDefenderProfiles, getUnitTotalModels } from "../profiles";
-import { applyAttachments, listUnits, suggestAttachments } from "../unitList";
+import { applyAttachments, listUnits } from "../unitList";
+import { Toggle } from "./controls";
 
-function AttachControls({ entries, attachments, onChange }) {
+// Both sides' sections open together, so the caller owns `open`.
+function AttachControls({
+	entries,
+	attachments,
+	onChange,
+	open = false,
+	onOpenChange,
+}) {
+	// Units the datasheet does not list stay out of the dropdowns until asked for.
+	const [showUnlisted, setShowUnlisted] = useState(false);
 	const leaders = entries.filter((entry) => isLeader(entry.unit));
 	if (!leaders.length) return null;
-
-	// Leaders with only one datasheet to join can be attached in one click.
-	const suggested = suggestAttachments(entries, attachments);
-	const suggestions = Object.keys(suggested).length;
 
 	const setLeader = (leaderKey, bodyguardKey) => {
 		const next = { ...attachments };
@@ -19,29 +25,49 @@ function AttachControls({ entries, attachments, onChange }) {
 	};
 
 	return (
-		<details className="border-t border-line px-4 py-2">
+		<details
+			open={open}
+			onToggle={(event) => {
+				// Fires for the open prop as well, so only report a real change.
+				if (event.currentTarget.open !== open) {
+					onOpenChange?.(event.currentTarget.open);
+				}
+			}}
+			className="border-t border-line px-4 py-2"
+		>
 			<summary className="section-label cursor-pointer hover:text-ink">
 				Attach leaders ({Object.keys(attachments).length})
-			</summary>
-			<div className="flex flex-wrap items-center gap-2 py-2">
-				<p className="hint flex-1">
-					Rosters do not record this — leaders join a unit before the battle.
-				</p>
-				{suggestions > 0 && (
-					<button
-						type="button"
-						className="button-small"
-						title="Attach every leader that can only join one kind of unit"
-						onClick={() => onChange({ ...attachments, ...suggested })}
+				{/* In the header row while open; its click must not fold the section. */}
+				{open && (
+					// biome-ignore lint/a11y/useKeyWithClickEvents: only stops the summary's own toggle
+					<span
+						className="float-right -mt-1"
+						onClick={(event) => event.preventDefault()}
 					>
-						Attach the obvious ones ({suggestions})
-					</button>
+						<Toggle
+							pressed={showUnlisted}
+							onChange={setShowUnlisted}
+							className="button-small normal-case tracking-normal"
+							title="Also offer units the datasheet does not list; roster data can lag behind a new codex"
+						>
+							Allow attaching to all units
+						</Toggle>
+					</span>
 				)}
-			</div>
-			<div className="flex flex-col gap-1.5 pb-1">
+			</summary>
+			<div className="clear-both flex flex-col gap-1.5 pb-1 pt-2">
 				{leaders.map((leader) => {
 					const options = entries.filter((entry) =>
 						canLead(leader.unit, entry.unit),
+					);
+					// Roster data can lag behind a new codex, so any other unit can still be
+					// chosen. A unit already attached this way always stays in the list.
+					const others = entries.filter(
+						(entry) =>
+							entry !== leader &&
+							!isLeader(entry.unit) &&
+							!options.includes(entry) &&
+							(showUnlisted || attachments[leader.key] === entry.key),
 					);
 					return (
 						<label key={leader.key} className="flex items-center gap-3 text-sm">
@@ -49,17 +75,24 @@ function AttachControls({ entries, attachments, onChange }) {
 							<select
 								value={attachments[leader.key] ?? ""}
 								onChange={(event) => setLeader(leader.key, event.target.value)}
-								disabled={!options.length}
+								disabled={!options.length && !others.length}
 								className="w-[40%] shrink-0 text-xs"
 							>
-								<option value="">
-									{options.length ? "— on its own —" : "— no eligible unit —"}
-								</option>
+								<option value="">— on its own —</option>
 								{options.map((entry) => (
 									<option key={entry.key} value={entry.key}>
 										{entry.label}
 									</option>
 								))}
+								{others.length > 0 && (
+									<optgroup label="Not listed on the datasheet">
+										{others.map((entry) => (
+											<option key={entry.key} value={entry.key}>
+												{entry.label}
+											</option>
+										))}
+									</optgroup>
+								)}
 							</select>
 						</label>
 					);
@@ -111,6 +144,8 @@ export function UnitPicker({
 	// Both pickers open together, so the caller owns this.
 	open = false,
 	onOpenChange,
+	attachOpen = false,
+	onAttachOpenChange,
 }) {
 	const [search, setSearch] = useState("");
 	const raw = useMemo(() => listUnits(roster), [roster]);
@@ -202,6 +237,8 @@ export function UnitPicker({
 					entries={raw}
 					attachments={attachments}
 					onChange={onAttachmentsChange}
+					open={attachOpen}
+					onOpenChange={onAttachOpenChange}
 				/>
 			)}
 			{roster && open && (

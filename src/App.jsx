@@ -5,8 +5,8 @@ import { RosterTable, SlotSelect, UploadArea } from "./library/LibraryPanel";
 import { loadRosterFile, loadRosterUrl } from "./library/loadRoster";
 import { isFirstVisit, useRosterLibrary } from "./library/rosterLibrary";
 
-const roleLabel = (slot, reversed) =>
-	(slot === "A") !== reversed ? "Attacker" : "Defender";
+// List A is always the attacker; swapping exchanges the lists, not the roles.
+const roleLabel = (slot) => (slot === "A" ? "Attacker" : "Defender");
 // Loaded on a first visit; the ones with a `slot` start as attacker and defender.
 const EXAMPLES = [
 	{ slot: "A", source: "example:custodes", file: "Custodes.rosz" },
@@ -47,7 +47,6 @@ function App() {
 	const library = useRosterLibrary();
 	const [busy, setBusy] = useState(false);
 	const [messages, setMessages] = useState([]);
-	const [reversed, setReversed] = useState(false);
 	// "Add army lists" and "Your army lists" open and close together. They start
 	// open for a first-time visitor, who has nothing else to do yet.
 	const [libraryOpen, setLibraryOpen] = useState(
@@ -76,7 +75,7 @@ function App() {
 					continue;
 				}
 				// Takes an empty slot or an example's, attacker first; otherwise the attacker's.
-				library.assignUpload(entry.id, reversed ? ["B", "A"] : ["A", "B"]);
+				library.assignUpload(entry.id);
 				track("user_uploaded_roster", {
 					roster_faction: roster.forces[0].catalog,
 					roster_type: roster.gameType,
@@ -109,7 +108,7 @@ function App() {
 					<RosterTable
 						entries={library.entries}
 						slots={library.slots}
-						slotLabel={(slot) => roleLabel(slot, reversed)}
+						slotLabel={roleLabel}
 						onAssign={library.assignRole}
 						onRemove={library.remove}
 						open={libraryOpen}
@@ -121,12 +120,11 @@ function App() {
 					rosterA={library.rosters.A}
 					rosterB={library.rosters.B}
 					listIds={library.slots}
-					reversed={reversed}
-					onReversedChange={setReversed}
+					onSwap={library.swapSlots}
 					listSelect={(slot) => (
 						<SlotSelect
 							slot={slot}
-							label={roleLabel(slot, reversed)}
+							label={roleLabel(slot)}
 							entries={library.entries}
 							value={library.slots[slot]}
 							onChange={(id) => library.assign(slot, id)}
