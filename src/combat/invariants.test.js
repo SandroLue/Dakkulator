@@ -99,13 +99,42 @@ describe("monotonicity — a better attack never does less", () => {
 			...sc,
 			damage: sc.damage === "1" ? "2" : sc.damage,
 		}),
+		"critical hits on 5+": (sc) => ({
+			...sc,
+			critHitOn: Math.min(sc.critHitOn ?? 6, 5),
+		}),
+		"critical wounds on 5+": (sc) => ({
+			...sc,
+			critWoundOn: Math.min(sc.critWoundOn ?? 6, 5),
+		}),
+		"[DEVASTATING WOUNDS]": (sc) => ({ ...sc, devastating: true }),
+		// A re-rolled low damage roll is never worse than the roll it replaces.
+		"re-roll damage": (sc) => ({ ...sc, rerollDamage: true }),
+		"no halved damage": (sc) => ({ ...sc, halveDamage: false }),
+		"no 'damage becomes 1'": (sc) => ({ ...sc, damageToOne: false }),
+		"no Feel No Pain against mortal wounds": (sc) => ({
+			...sc,
+			mortalFnp: null,
+		}),
 	};
 	// Re-rolling every failed hit gives a worse hit roll more chances at a
 	// critical hit; with [LETHAL HITS] or [SUSTAINED HITS] that can be worth more
 	// than the extra hits, so a better hit roll may genuinely do slightly less.
 	const critFishing = (sc) =>
 		sc.rerollHits === "all" && (sc.lethal || sc.sustained !== "0");
-	const exceptions = { "better BS": critFishing, "+1 hit roll": critFishing };
+	// With [LETHAL HITS], a critical hit wounds automatically and so can no
+	// longer roll a critical wound: with [DEVASTATING WOUNDS] that can cost more.
+	const lethalSkipsDevastating = (sc) => sc.lethal && sc.devastating;
+	// A mortal wound skips the save but meets the Feel No Pain "against mortal
+	// wounds"; a failed save does not, so the mortal wound can do less.
+	const mortalFnp = (sc) => sc.mortalFnp != null;
+	const exceptions = {
+		"better BS": critFishing,
+		"+1 hit roll": critFishing,
+		"critical hits on 5+": lethalSkipsDevastating,
+		"critical wounds on 5+": (sc) => sc.devastating && mortalFnp(sc),
+		"[DEVASTATING WOUNDS]": mortalFnp,
+	};
 	for (const [name, improve] of Object.entries(better)) {
 		it(name, () => {
 			forEachScenario(13, (sc, label) => {

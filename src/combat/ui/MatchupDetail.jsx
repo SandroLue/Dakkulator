@@ -4,7 +4,7 @@ import {
 	BarChart,
 	CartesianGrid,
 	Cell,
-	LabelList,
+	ReferenceLine,
 	ResponsiveContainer,
 	Tooltip,
 	XAxis,
@@ -23,8 +23,6 @@ import {
 import { format } from "./metrics";
 import { useSimulation } from "./useSimulation";
 
-const ROUNDS_CAP = 10;
-
 const describeGroup = (group) =>
 	group
 		? `${group.name} ×${group.count} — T${group.toughness} Sv${group.save}${
@@ -33,31 +31,6 @@ const describeGroup = (group) =>
 		: "—";
 
 /** The weapon's abilities; granted ones (modifiers, "apply to all") are marked. */
-// Room for the 130px axis column at the axis font size.
-const NAME_CHARS = 18;
-
-/** A unit name on one line, cut to fit; the full name shows on hover. */
-function NameTick({ x, y, payload }) {
-	const name = String(payload?.value ?? "");
-	const short =
-		name.length > NAME_CHARS
-			? `${name.slice(0, NAME_CHARS - 1).trimEnd()}…`
-			: name;
-	return (
-		<text
-			x={x}
-			y={y}
-			dy="0.35em"
-			textAnchor="end"
-			fill="var(--color-muted)"
-			fontSize={12}
-		>
-			<title>{name}</title>
-			{short}
-		</text>
-	);
-}
-
 function WeaponAbilities({ weapon }) {
 	if (!weapon.abilities) return null;
 	const own = new Set(abilityLabels(weapon.baseAbilities ?? weapon.abilities));
@@ -209,6 +182,20 @@ function WeaponRow({ weapon, groups, multiGroup, muted = false }) {
 
 const weaponName = (w) => String(w.weaponName ?? "").replace(/^[➤▸▶>*\s]+/, "");
 
+/** The round-one distribution, overkill included, with a bar for every total. */
+export function woundsChartData(simulation, unitWounds) {
+	const histogram = simulation.potentialHistogram?.length
+		? simulation.potentialHistogram
+		: simulation.histogram;
+	const byValue = new Map(histogram.map((h) => [h.value, h.probability]));
+	const top = Math.max(unitWounds, ...histogram.map((h) => h.value));
+	return Array.from({ length: top + 1 }, (_, value) => ({
+		value,
+		probability: byValue.get(value) ?? 0,
+		overkill: Math.max(0, value - unitWounds),
+	}));
+}
+
 /** The pairing's result in plain sentences, one statement per line, before any tables. */
 function summarise(pairing) {
 	const groups = pairing.groups || [];
@@ -249,7 +236,7 @@ function summarise(pairing) {
 	].filter(Boolean);
 }
 
-export function MatchupDetail({ pairing, rowCells = [] }) {
+export function MatchupDetail({ pairing }) {
 	const { result: simulation, error: simulationError } = useSimulation(
 		pairing,
 		{
@@ -286,22 +273,14 @@ export function MatchupDetail({ pairing, rowCells = [] }) {
 		sources.size > 1 ? { ...weapon, showSource: true } : weapon;
 	const multiGroup =
 		new Set(pairing.weapons.map((w) => w.groupIndex ?? 0)).size > 1;
-	const chartData = simulation?.histogram;
-	const clearData = simulation?.clearedBy.map((probability, index) => ({
-		round: index + 1,
-		probability,
-	}));
-	const roundsData = rowCells.map((cell) => {
-		const rounds = cell.totals.roundsToClear;
-		return {
-			name: cell.defenderName,
-			rounds: Number.isFinite(rounds)
-				? Math.min(rounds, ROUNDS_CAP)
-				: ROUNDS_CAP,
-			label: Number.isFinite(rounds) ? rounds.toFixed(1) : "never",
-			selected: cell === pairing,
-		};
-	});
+	// Every wound total from 0 up, overkill included, so the line for "unit
+	// destroyed" has a place even where no trial ended exactly on it.
+	const unitWounds = groups.reduce((sum, g) => sum + g.count * g.wounds, 0);
+	const chartData = simulation && woundsChartData(simulation, unitWounds);
+	// Reaching the line at all is what counts: the chance the unit is destroyed.
+	const killChance = (chartData ?? [])
+		.filter((d) => d.value >= unitWounds)
+		.reduce((sum, d) => sum + d.probability, 0);
 
 	return (
 		<div className="panel flex flex-col gap-4 p-4">
@@ -441,146 +420,72 @@ export function MatchupDetail({ pairing, rowCells = [] }) {
 				</div>
 			</details>
 
-			<div className="grid gap-4 md:grid-cols-2">
-				<div className="flex flex-col gap-4">
-					<div className="flex flex-col gap-1">
-						<div className="section-label">Wounds lost in one round</div>
-						<div style={{ height: 220 }}>
-							{!chartData && (
-								<div className="hint flex h-full items-center justify-center">
-									{simulationError
-										? `Monte-Carlo failed: ${simulationError}`
-										: "Running Monte-Carlo…"}
-								</div>
-							)}
-							{chartData && (
-								<ResponsiveContainer width="100%" height="100%">
-									<BarChart
-										data={chartData}
-										margin={{ top: 4, right: 8, bottom: 16, left: 8 }}
-									>
-										<CartesianGrid {...GRID} vertical={false} />
-										<XAxis
-											dataKey="value"
-											{...AXIS}
-											label={axisLabel("Wounds lost")}
-										/>
-										<YAxis tickFormatter={percent} width={48} {...AXIS} />
-										<Tooltip
-											{...TOOLTIP}
-											formatter={(value) => [percent(value), "Probability"]}
-											labelFormatter={(value) => `${value} wounds lost`}
-										/>
-										<Bar
-											dataKey="probability"
-											fill="var(--primary-color)"
-											radius={[3, 3, 0, 0]}
-											{...BAR_ANIMATION}
-										/>
-									</BarChart>
-								</ResponsiveContainer>
-							)}
-						</div>
-					</div>
-					<div className="flex flex-col gap-1">
-						<div className="section-label">Unit destroyed by round</div>
-						<div style={{ height: 220 }}>
-							{clearData && (
-								<ResponsiveContainer width="100%" height="100%">
-									<BarChart
-										data={clearData}
-										margin={{ top: 4, right: 8, bottom: 16, left: 8 }}
-									>
-										<CartesianGrid {...GRID} vertical={false} />
-										<XAxis
-											dataKey="round"
-											{...AXIS}
-											label={axisLabel("Round")}
-										/>
-										<YAxis
-											tickFormatter={percent}
-											domain={[0, 1]}
-											width={48}
-											{...AXIS}
-										/>
-										<Tooltip
-											{...TOOLTIP}
-											formatter={(value) => [percent(value), "Destroyed"]}
-											labelFormatter={(value) => `By the end of round ${value}`}
-										/>
-										<Bar
-											dataKey="probability"
-											fill="var(--color-accent)"
-											radius={[3, 3, 0, 0]}
-											{...BAR_ANIMATION}
-										/>
-									</BarChart>
-								</ResponsiveContainer>
-							)}
-						</div>
-					</div>
-				</div>
-				{roundsData.length > 1 && (
-					<div className="flex flex-col gap-1">
-						<div className="section-label">Expected rounds to clear</div>
-						<div style={{ height: Math.max(120, roundsData.length * 28 + 40) }}>
+			<div className="flex flex-col gap-4">
+				<div className="flex flex-col gap-1">
+					<div className="section-label">Wounds lost in one round</div>
+					<div style={{ height: 280 }}>
+						{!chartData && (
+							<div className="hint flex h-full items-center justify-center">
+								{simulationError
+									? `Monte-Carlo failed: ${simulationError}`
+									: "Running Monte-Carlo…"}
+							</div>
+						)}
+						{chartData && (
 							<ResponsiveContainer width="100%" height="100%">
 								<BarChart
-									data={roundsData}
-									layout="vertical"
-									margin={{ top: 4, right: 40, bottom: 16, left: 8 }}
+									data={chartData}
+									margin={{ top: 24, right: 8, bottom: 16, left: 8 }}
 								>
-									<CartesianGrid {...GRID} horizontal={false} />
+									<CartesianGrid {...GRID} vertical={false} />
 									<XAxis
-										type="number"
-										domain={[0, ROUNDS_CAP]}
-										ticks={[0, 2, 4, 6, 8, 10]}
+										dataKey="value"
 										{...AXIS}
-										label={axisLabel(`Rounds (capped at ${ROUNDS_CAP})`)}
+										label={axisLabel("Wounds lost")}
 									/>
-									<YAxis
-										type="category"
-										dataKey="name"
-										width={130}
-										interval={0}
-										{...AXIS}
-										tick={<NameTick />}
-									/>
+									<YAxis tickFormatter={percent} width={48} {...AXIS} />
 									<Tooltip
 										{...TOOLTIP}
-										formatter={(_value, _name, item) => [
-											item.payload.label,
-											"Expected rounds",
-										]}
+										formatter={(value) => [percent(value), "Probability"]}
+										labelFormatter={(value) =>
+											value > unitWounds
+												? `${value} wounds · ${value - unitWounds} overkill`
+												: value === unitWounds
+													? `${value} wounds lost · ${value} or more: ${percent(killChance)}`
+													: `${value} wounds lost`
+										}
+									/>
+									{/* Past this line the unit is gone: the rest is overkill. */}
+									<ReferenceLine
+										x={unitWounds}
+										stroke="var(--color-muted)"
+										strokeDasharray="4 3"
+										label={{
+											value: `destroyed · ${percent(killChance)}`,
+											// Above the plot, so no bar can cover it.
+											position: "top",
+											fill: "var(--color-muted)",
+											fontSize: 11,
+										}}
 									/>
 									<Bar
-										dataKey="rounds"
+										dataKey="probability"
 										fill="var(--primary-color)"
-										radius={[0, 3, 3, 0]}
+										radius={[3, 3, 0, 0]}
 										{...BAR_ANIMATION}
 									>
-										<LabelList
-											dataKey="label"
-											position="right"
-											fill="var(--color-muted)"
-											fontSize={12}
-										/>
-										{roundsData.map((entry, index) => (
+										{chartData.map((entry) => (
 											<Cell
-												key={`${entry.name}-${index}`}
-												fill={
-													entry.selected
-														? "var(--color-accent)"
-														: "var(--primary-color)"
-												}
+												key={entry.value}
+												fillOpacity={entry.overkill > 0 ? 0.4 : 1}
 											/>
 										))}
 									</Bar>
 								</BarChart>
 							</ResponsiveContainer>
-						</div>
+						)}
 					</div>
-				)}
+				</div>
 			</div>
 		</div>
 	);

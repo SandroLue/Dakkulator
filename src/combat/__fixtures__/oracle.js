@@ -16,6 +16,8 @@
  *   wounds only, on top of fnp) · wounds · count
  *   critHitOn 5 · critWoundOn 5 (critical on that unmodified roll and up)
  *   rerollDamage (re-roll a damage roll below average) · halveDamage · damageToOne
+ *
+ * `oracleGroups` resolves the same against several model groups in turn.
  */
 
 const FACES = [1, 2, 3, 4, 5, 6];
@@ -323,4 +325,135 @@ export function oracle(input) {
 		}
 	}
 	return { ...expected, woundsLost, modelsSlain, pDestroyed };
+}
+
+/**
+ * The same attack sequence against a unit of several model groups, allocated
+ * in order (§05.03): `sc.groups` lists each group's own count, wounds,
+ * toughness, save, invuln, fnp, mortalFnp, halveDamage and damageToOne. A
+ * group's Toughness and saves apply to the attacks made while it is the one
+ * taking them, so every state is resolved with its own group's numbers.
+ *
+ * @returns woundsLost, modelsSlain and pDestroyed
+ */
+export function oracleGroups(input) {
+	const sc = { models: 1, attacks: "1", ...input };
+	const groups = sc.groups;
+	const destroyed = groups.length;
+	const totalModels = groups.reduce((sum, g) => sum + g.count, 0);
+	const per = groups.map((group) => {
+		const s = { ...sc, ...group };
+		const better = Math.min(s.fnp ?? 7, s.mortalFnp ?? 7);
+		return {
+			wound: woundOutcomes(s),
+			fail: saveFails(s),
+			losses: lossOutcomes(s),
+			mortal: lossOutcomes(s, better < 7 ? better : null),
+		};
+	});
+	const hits = hitOutcomes(sc);
+	const sustained = rollOutcomes(sc.sustained ?? "0");
+
+	// State: "group,dead in that group,wounds left on the current model".
+	const stateKey = (g, dead, left) => `${g},${dead},${left}`;
+	const parse = (k) => k.split(",").map(Number);
+
+	// Applies one damaging attack, with the current group's loss distribution.
+	const inflict = (states, mortal) => {
+		const next = new Map();
+		const add = (k, p) => next.set(k, (next.get(k) || 0) + p);
+		for (const [k, p] of states) {
+			const [g, dead, left] = parse(k);
+			if (g === destroyed) {
+				add(k, p);
+				continue;
+			}
+			for (const [lost, q] of mortal ? per[g].mortal : per[g].losses) {
+				if (left - lost > 0) {
+					add(stateKey(g, dead, left - lost), p * q);
+				} else if (dead + 1 < groups[g].count) {
+					add(stateKey(g, dead + 1, groups[g].wounds), p * q);
+				} else if (g + 1 < destroyed) {
+					add(stateKey(g + 1, 0, groups[g + 1].wounds), p * q);
+				} else {
+					add(stateKey(destroyed, 0, 0), p * q);
+				}
+			}
+		}
+		return next;
+	};
+	// Each state rolls with its own group's numbers.
+	const perState = (states, step) => {
+		let out = new Map();
+		for (const [k, p] of states) {
+			const g = parse(k)[0];
+			const one = new Map([[k, p]]);
+			out = mix(out, g === destroyed ? one : step(one, per[g]), 1);
+		}
+		return out;
+	};
+	const savedOrNot = (states) =>
+		perState(states, (one, group) =>
+			mix(mix(new Map(), one, 1 - group.fail), inflict(one, false), group.fail),
+		);
+	const rollToWound = (states) =>
+		perState(states, (one, group) => {
+			let out = new Map();
+			for (const { result, p } of group.wound) {
+				if (result === "fail") out = mix(out, one, p);
+				else if (result === "crit" && sc.devastating)
+					out = mix(out, inflict(one, true), p);
+				else out = mix(out, savedOrNot(one), p);
+			}
+			return out;
+		});
+	const attackDie = (states) => {
+		let out = new Map();
+		for (const { result, p } of hits) {
+			if (result === "fail") {
+				out = mix(out, states, p);
+				continue;
+			}
+			if (result === "hit") {
+				out = mix(out, rollToWound(states), p);
+				continue;
+			}
+			const after = sc.lethal ? savedOrNot(states) : rollToWound(states);
+			let crit = new Map();
+			for (const { value: extra, p: q } of sustained) {
+				let s = after;
+				for (let i = 0; i < extra; i++) s = rollToWound(s);
+				crit = mix(crit, s, q);
+			}
+			out = mix(out, crit, p);
+		}
+		return out;
+	};
+
+	const blastDice = (sc.blast || 0) * Math.floor(totalModels / 5);
+	let states = new Map([[stateKey(0, 0, groups[0].wounds), 1]]);
+	for (let m = 0; m < sc.models; m++) {
+		let next = new Map();
+		for (const { value: dice, p } of rollOutcomes(sc.attacks, 1)) {
+			let s = states;
+			for (let d = 0; d < dice + blastDice; d++) s = attackDie(s);
+			next = mix(next, s, p);
+		}
+		states = next;
+	}
+
+	let woundsLost = 0;
+	let modelsSlain = 0;
+	let pDestroyed = 0;
+	for (const [k, p] of states) {
+		const [g, dead, left] = parse(k);
+		const before = groups.slice(0, g);
+		const slain = before.reduce((sum, x) => sum + x.count, 0) + dead;
+		let lost = before.reduce((sum, x) => sum + x.count * x.wounds, 0);
+		if (g === destroyed) pDestroyed += p;
+		else lost += dead * groups[g].wounds + groups[g].wounds - left;
+		modelsSlain += p * slain;
+		woundsLost += p * lost;
+	}
+	return { woundsLost, modelsSlain, pDestroyed };
 }

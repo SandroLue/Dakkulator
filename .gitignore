@@ -25,3 +25,4 @@ dist-ssr
 
 # Local rules corpus (Games Workshop text, never committed)
 scripts/.corpus/
+coverage/

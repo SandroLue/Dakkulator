@@ -39,8 +39,9 @@ jobs:
       # A failing check stops the deploy, so a broken build never goes live.
       - name: Lint
         run: npm run lint
+      # Fails as well when engine or list-handling coverage drops (vite.config.js).
       - name: Test
-        run: npm test
+        run: npm run test:coverage
       - name: Build
         run: npm run build
         env:

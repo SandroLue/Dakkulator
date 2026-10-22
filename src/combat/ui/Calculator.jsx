@@ -356,10 +356,7 @@ export function Calculator({
 					/>
 					{pairing && (
 						<div ref={detailRef} className="scroll-my-4">
-							<MatchupDetail
-								pairing={pairing}
-								rowCells={matchup.rows[shownCell.row].cells}
-							/>
+							<MatchupDetail pairing={pairing} />
 						</div>
 					)}
 				</div>

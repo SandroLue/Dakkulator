@@ -32,6 +32,11 @@ function sampleExpr(expr, rng, min = 0) {
 	return Math.max(min, total);
 }
 
+const toDistribution = (counts, trials) =>
+	[...counts.entries()]
+		.sort((a, b) => a[0] - b[0])
+		.map(([value, hits]) => ({ value, probability: hits / trials }));
+
 /** Turns a fractional count into an integer with the same mean. */
 function randomRound(value, rng) {
 	const whole = Math.floor(value);
@@ -72,10 +77,15 @@ export function simulate(
 	}));
 	const totalModels = targets.reduce((sum, t) => sum + t.count, 0);
 	const profileCount = targets[0]?.streams.length ?? 0;
+	const last = targets.length - 1;
 
 	let totalWoundsLost = 0;
 	let totalModelsSlain = 0;
 	const histogram = new Map();
+	// Round one again, but the attacks go on after the unit is destroyed, against
+	// more of its last model type: what the attack could do, overkill included.
+	const potentialHistogram = new Map();
+	let totalPotential = 0;
 	const clearedIn = new Array(rounds).fill(0);
 
 	for (let trial = 0; trial < trials; trial++) {
@@ -84,7 +94,12 @@ export function simulate(
 		let slainInGroup = 0;
 		let alive = totalModels;
 		let lost = 0;
+		let potential = 0;
+		// Set once the unit is gone in round one: the rest of that round's attacks
+		// hit fresh copies of the last model type and count only as potential.
+		let endless = false;
 		let round = 0;
+		const attacking = () => alive > 0 || endless;
 
 		// Excess damage is lost (§05.04) and a critical wound can only ever
 		// damage one model (§24.10).
@@ -108,14 +123,25 @@ export function simulate(
 				if (rng() < fnpFail) woundsRemoved++;
 			}
 			const applied = Math.min(woundsRemoved, remaining);
-			if (round === 0) lost += applied;
+			if (round === 0) potential += applied;
 			remaining -= applied;
+			if (endless) {
+				if (remaining <= 0) remaining = targets[last].wounds;
+				return;
+			}
+			if (round === 0) lost += applied;
 			if (remaining > 0) return;
 			alive--;
 			slainInGroup++;
 			if (slainInGroup >= target.count) {
 				groupIndex++;
 				slainInGroup = 0;
+			}
+			if (alive === 0 && round === 0) {
+				endless = true;
+				groupIndex = last;
+				remaining = targets[last].wounds;
+				return;
 			}
 			remaining = targets[groupIndex]?.wounds ?? 0;
 		};
@@ -139,7 +165,7 @@ export function simulate(
 		for (; round < rounds && alive > 0; round++) {
 			// §24.05 [BLAST] / [CLEAVE] count the models present at target selection.
 			const targeted = alive;
-			for (let profile = 0; profile < profileCount && alive > 0; profile++) {
+			for (let profile = 0; profile < profileCount && attacking(); profile++) {
 				const gathered = targets[groupIndex].streams[profile].sampling;
 				const bonus =
 					(gathered.perFive || 0) *
@@ -153,13 +179,13 @@ export function simulate(
 					);
 				}
 
-				for (let a = 0; a < attacks && alive > 0; a++) {
+				for (let a = 0; a < attacks && attacking(); a++) {
 					const p = targets[groupIndex].streams[profile].sampling;
 					const roll = rng();
 					if (roll < p.critHit) {
 						resolveHit(profile, p.lethalHits);
 						const extra = sampleExpr(p.sustainedExpr, rng, 0);
-						for (let s = 0; s < extra && alive > 0; s++) {
+						for (let s = 0; s < extra && attacking(); s++) {
 							resolveHit(profile, false);
 						}
 					} else if (roll < p.hit) {
@@ -171,6 +197,12 @@ export function simulate(
 				totalWoundsLost += lost;
 				totalModelsSlain += totalModels - alive;
 				histogram.set(lost, (histogram.get(lost) || 0) + 1);
+				totalPotential += potential;
+				potentialHistogram.set(
+					potential,
+					(potentialHistogram.get(potential) || 0) + 1,
+				);
+				endless = false;
 			}
 		}
 		if (alive <= 0) clearedIn[round - 1]++;
@@ -189,9 +221,10 @@ export function simulate(
 		pDestroyed: clearedBy[0] ?? 0,
 		meanWoundsLost: totalWoundsLost / trials,
 		meanModelsSlain: totalModelsSlain / trials,
-		histogram: [...histogram.entries()]
-			.sort((a, b) => a[0] - b[0])
-			.map(([value, hits]) => ({ value, probability: hits / trials })),
+		histogram: toDistribution(histogram, trials),
+		// Overkill included: round one's attacks, all of them.
+		meanPotentialWoundsLost: totalPotential / trials,
+		potentialHistogram: toDistribution(potentialHistogram, trials),
 		clearedBy,
 		medianRounds: median >= 0 ? median + 1 : null,
 	};

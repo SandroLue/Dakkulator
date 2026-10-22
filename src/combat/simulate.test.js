@@ -201,3 +201,64 @@ describe("exact engine vs Monte-Carlo — spill across allocation groups", () =>
 		});
 	}
 });
+
+describe("Monte-Carlo overkill: round one in full", () => {
+	// D3 bolters into 3 Marines (W2): usually dead long before the last attack.
+	const sc = {
+		attacks: "4",
+		models: 5,
+		skill: 3,
+		strength: 5,
+		toughness: 4,
+		save: 4,
+		damage: "D3",
+		wounds: 2,
+		count: 3,
+	};
+
+	it("is the capped result with everything past the wipe folded in", () => {
+		const { profile, group, ctx } = engineInputs(sc);
+		const streams = computeAttackStreams(profile, group, ctx);
+		const sim = simulate([{ group, streams: [streams] }], {
+			trials: TRIALS,
+			seed: 11,
+			rounds: 1,
+		});
+		const total = sc.wounds * sc.count;
+		const folded = new Map();
+		for (const { value, probability } of sim.potentialHistogram) {
+			const key = Math.min(value, total);
+			folded.set(key, (folded.get(key) ?? 0) + probability);
+		}
+		for (const { value, probability } of sim.histogram) {
+			expect(folded.get(value)).toBeCloseTo(probability, 12);
+		}
+		expect(sim.meanPotentialWoundsLost).toBeGreaterThan(sim.meanWoundsLost);
+		expect(
+			Math.max(...sim.potentialHistogram.map((h) => h.value)),
+		).toBeGreaterThan(total);
+	});
+
+	it("matches the exact result against a unit too big to wipe", () => {
+		const { profile, group, ctx } = engineInputs(sc);
+		const sim = simulate(
+			[{ group, streams: [computeAttackStreams(profile, group, ctx)] }],
+			{ trials: TRIALS, seed: 12, rounds: 1 },
+		);
+		const endless = { ...group, count: 200 };
+		const exact = allocateAttacks(
+			[[computeAttackStreams(profile, endless, ctx)]],
+			[endless],
+		);
+		let square = 0;
+		for (const { value, probability } of sim.potentialHistogram) {
+			square += value * value * probability;
+		}
+		const se = Math.sqrt(
+			Math.max(square - sim.meanPotentialWoundsLost ** 2, 1 / TRIALS) / TRIALS,
+		);
+		expect(
+			Math.abs(exact.woundsLost - sim.meanPotentialWoundsLost),
+		).toBeLessThanOrEqual(Z * se);
+	});
+});

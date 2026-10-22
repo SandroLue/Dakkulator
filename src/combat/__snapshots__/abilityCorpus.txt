@@ -1,0 +1,2155 @@
+003c-a9a4-d4a3-0c9f Digital Weapons: –
+0069-720c-b0c2-db77 Spatterfilth: attacking fight ignoreHitModifiers=true ignoreWoundModifiers=true
+009f-62d6-dbd0-513a Dread Foe: attacking fight ? apModifier=1
+00b0-7b18-84b1-f460 Heart of Sol: attacking any ? ownModelsOnly=true woundModifier=1
+012f-2864-25e8-4ff6 Marked Prey: attacking any list ? unitKeywords=WAR DOG weaponAbilities=[SUSTAINED HITS 1]
+0185-23fb-27a7-56d4 Terror Made Manifest: attacking any list ? hitModifier=1 unitKeywords=HERETIC ASTARTES | defending any list ? hitModifier=-1 unitKeywords=HERETIC ASTARTES | attacking any list ? unitKeywords=HERETIC ASTARTES vsKeywords=BATTLE-SHOCKED woundModifier=1
+018f-3ad6-0398-a338 The Doom of Thorantus: defending shooting list ? attacksModifier=-2
+01a5-125a-dd54-b50c Amulet of Auto-chastisement: defending any list ? hitModifier=-1
+01a5-5e86-b905-a68c A Challenge Worthy of Skill: attacking any ownModelsOnly=true rerollHits=all rerollWounds=all vsKeywords=CHARACTER, MONSTER, WALKER
+01b2-8ea8-4fc1-dbe7 Data-spike: –
+01be-511c-98aa-6d7b Morghenna's Curse: attacking fight apModifier=1 damageModifier=1 ownModelsOnly=true
+01c3-ee26-6917-3af8 Astromantic Perception Portal: attacking any ? rerollHits=all
+01ef-51c4-ce61-b86d Malign Wards: defending any ? mortalFnp=4 ownModelsOnly=true
+021a-c246-5697-b311 Damaged: 1-4 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+0238-3cc6-3ca7-42e1 Hardy Bioniks: defending any strengthVsToughness=gt woundModifier=-1
+0265-c158-895f-4020 Crux Obsidian: –
+02ad-2024-117e-8235 Blade of the Clans: attacking fight weaponAbilities=[SUSTAINED HITS 1]
+031c-1efa-dd80-b157 Tactical Instinct: attacking any weaponAbilities=[LETHAL HITS]
+0379-3e19-803c-5ecb Dread Majesty (Aura): attacking any list ? excludeUnitKeywords=MONSTER, TITIANIC rerollHits=ones rerollWounds=ones unitKeywords=NECRONS
+03a9-d9fd-9407-779c Daemon Lord of Khorne (Aura): attacking fight list ? hitModifier=1 unitKeywords=BLOOD LEGIONS
+03e2-062d-6bd2-9e8a Unbound Hubris: –
+0443-b9f5-0690-1c6a Painful Lessons: –
+0492-05d8-8023-74ec Oblivion Knight: attacking any hitModifier=1 | attacking any ? hitModifier=1 vsKeywords=PSYKER, BATTLE-SHOCKED woundModifier=1
+050c-5c05-99bc-905a Shepherds of the Dead: –
+051d-bef5-f9ed-7178 Warpmeld Sacrifice: defending any ? woundModifier=-1 | attacking any ? woundModifier=1
+053d-5598-e192-042d Font of Spores (Aura): attacking any list ? apModifier=1 unitKeywords=LEGIONES DAEMONICA NURGLE
+0558-6bd5-ce39-ca09 Dark Zealotry: attacking fight woundModifier=1
+0565-355a-2b90-415c Eyes of the Oracle: attacking any ownModelsOnly=true weaponAbilities=[PRECISION]
+0565-9380-d815-7314 Seer's Bane: attacking any ? apModifier=1 damageModifier=1 ownModelsOnly=true strengthModifier=1 | attacking any ? apModifier=2 damageModifier=2 ownModelsOnly=true strengthModifier=2 vsKeywords=PSYKER
+0572-a04a-1973-cbab Galvanic Field: attacking any weaponAbilities=[LETHAL HITS]
+0653-0bd4-860a-1b31 Wulfen Stone: attacking fight attacksModifier=2 ownModelsOnly=true strengthModifier=2 | attacking fight weaponAbilities=[SUSTAINED HITS 1] | attacking fight ? weaponAbilities=[SUSTAINED HITS 2]
+0676-2fc4-37c0-4cc9 Shiverquills: attacking shooting weaponAbilities=[IGNORES COVER]
+0683-a696-a7d7-efa4 Alchemyk Counteragents: defending any ? mortalFnp=6
+0689-e00e-3022-a235 Hagiomnifex: attacking any ? strengthModifier=1 | defending any ? strengthVsToughness=gt woundModifier=-1
+073d-47a9-ec58-6f8e Nazdreg's Know-wotz: attacking shooting weaponAbilities=[IGNORES COVER]
+0758-08c9-37e3-a89c Shattered Defences: attacking shooting list ? apModifier=1 unitKeywords=ADEPTUS ASTARTES
+076f-bb1f-48be-9b3d Ministorum Sermon: attacking fight ? woundModifier=1
+0788-7422-2940-1777 Psychic Communion (Psychic): –
+079a-b3a3-72ce-f4de Daemonic Empowerment: attacking any list ? weaponAbilities=[SUSTAINED HITS 1]
+079b-1908-fa42-12fc Gorefather: attacking fight ownModelsOnly=true weaponAbilities=[DEVASTATING WOUNDS]
+079c-c14f-83f1-25a6 Death to the Alien: attacking any rerollHits=ones | attacking any ? rerollHits=all
+07ba-0c62-37d2-2042 Might of Titan: attacking fight ? attacksModifier=3 ownModelsOnly=true strengthModifier=3
+07ef-c552-cfd5-29ad Void Waaagh!: attacking fight list ? attacksModifier=1 strengthModifier=1
+0801-d1ad-ca0d-ac32 Unbreakable Bond: –
+0824-b418-de17-618c Heroic Example: attacking any ? rerollHits=all
+087c-930f-dd21-38d9 Scanner Uplinks: defending any list ? hitModifier=-1
+088e-3c36-f4e3-6140 Talonstrike Doctrines: attacking any apModifier=1 | attacking fight weaponAbilities=[LANCE]
+08f1-d20a-08cb-780e Talons of the Sire: attacking any rerollWounds=ones
+0911-ff95-3a37-98aa Destructive Encore: –
+0a4d-88d1-161e-213b Hypermorphic Fury: attacking fight ? attacksModifier=1
+0a7c-c752-f53e-ed90 Focused Gunners: –
+0aad-6917-8a35-facb Ward Against the Malefic Arts: defending any hitModifier=-1 weaponFilter=PSYCHIC woundModifier=-1
+0ab3-6430-d18f-c4c6 Judgement of the Omnissiah: attacking any ? ownModelsOnly=true rerollWounds=all
+0aea-f581-22d2-0f26 Exotic Munitions: attacking shooting weaponAbilities=[ANTI-MONSTER 5+], [ANTI-VEHICLE 5+]
+0b01-da3a-6c9a-c235 Ramshackle Cover: defending any ? cover=true
+0b0e-07cd-2469-831b Stand Vigil: attacking any ? weaponAbilities=[LETHAL HITS: NON-MONSTER/VEHICLE] | attacking any ? weaponAbilities=[LETHAL HITS: NON-MONSTER/VEHICLE] | attacking any ? weaponAbilities=[LETHAL HITS: NON-MONSTER/VEHICLE]
+0b5b-a6e8-c618-7ea8 Omnissiah's Blessing: –
+0b60-64ba-dab2-aba2 Multi-spectral visor: attacking shooting rerollWounds=ones
+0ba6-c146-1daf-225e Occulus Infernum: attacking shooting list ? skillModifier=1 unitKeywords=SEKHETAR ROBOTS
+0c5e-9421-fd4a-5384 Pin and Predate: attacking fight ownModelsOnly=true rerollWounds=ones
+0c92-aa1c-c7e5-a527 Miasma of Pestilence (Aura): defending shooting list ? cover=true unitKeywords=DEATH GUARD
+0caf-212e-b669-1738 Violent Fury: –
+0cc9-e726-c0fa-c4f3 Ion Aegis (Aura): defending any list ? cover=true unitKeywords=ARMIGER
+0ce9-aaa0-f90b-2d7e Chrono-impedance Fields: defending any list ? damageModifier=-1 unitKeywords=NECRONS VEHICLE, NECRONS MOUNTED
+0d01-a562-a398-9775 Moment Shackle: attacking any ? attacksModifier=3 ownModelsOnly=true weaponFilter=WATCHER'S AXE
+0d1f-6c43-cca7-6d34 Aspect of Murder: attacking fight damageModifier=1 ownModelsOnly=true weaponAbilities=[PRECISION]
+0d57-672e-1ac3-ef41 Martial Zealot: attacking fight weaponAbilities=[SUSTAINED HITS 1]
+0d92-84dc-f7da-1aa0 Electro-Infusion: defending any ? woundModifier=-1
+0dc9-e4c5-a971-8931 The Journal of Artax: –
+0e1d-825c-7ea8-c0c0 Heretek Adept: –
+0e4f-8cca-c666-dbf8 Frenzied Rampage (Aura): attacking any list ? rerollHits=ones unitKeywords=WAR DOG
+0e96-c0db-ab00-214f Recurrent Rebinding: –
+0f5f-8cde-1b43-9773 Bringer of Justice: attacking fight attacksModifier=2 hitModifier=1 ownModelsOnly=true
+0ff3-f29e-1e9b-5ad1 Mindhunger: attacking any list rerollHits=ones unitKeywords=LICTOR, NEUROLICTOR vsKeywords=CHARACTER
+1036-9395-903e-6420 Morkai’s Howl: defending any list ? hitModifier=-1 weaponFilter=PSYCHIC
+1045-5217-fc58-54d2 Smoky Gubbinz: –
+1052-994f-1876-9713 Armour of Faith: defending any ? apModifier=-1
+10a5-fa4d-7f1d-20cf Fortification: –
+10ac-79f8-b15d-f71e Cold and Calculating: –
+1126-93a8-c690-60f Fire Support: –
+1128-558d-f576-111e Spirit of Eldanesh: attacking any weaponAbilities=[ANTI-MONSTER 3+], [ANTI-VEHICLE 3+] weaponFilter=PSYCHIC
+1134-a964-3935-8d16 Skjald's Foretelling: attacking fight weaponAbilities=[LANCE]
+1164-3aff-c9a6-718d Bolter Discipline: attacking shooting ? hitModifier=1 | attacking shooting ? hitModifier=1 | attacking shooting ? hitModifier=1
+116b-b23c-4ea4-30ed Psychic Hood: defending any ? psychicFnp=4
+117e-c438-62e4-e680 Iron Ambassador: –
+1198-4ec5-cd18-1825 Brute Instinct: attacking fight strengthModifier=2
+11c1-4782-61b6-4b98 Crusader's Duty (Bondsman): –
+11c5-d957-6f38-4633 Slaughterer's Helm: attacking fight attacksModifier=2 ownModelsOnly=true strengthModifier=2
+11e5-0999-5307-3f38 Guiding Presence: –
+11f2-63db-2fdc-f92 Intoxicating Elixir: –
+1202-10a8-78e9-4c67 Heavy: –
+124a-b2fa-7f09-9e61 Rolling Fortress: defending any ? cover=true
+128b-1d2f-6361-b2d3 Knight Diabolus: attacking fight ownModelsOnly=true skillModifier=1 | attacking fight ? ownModelsOnly=true weaponAbilities=[LANCE]
+12b9-05c9-9ace-f098 Impenetrable Defence: attacking any ? weaponAbilities=[SUSTAINED HITS 1: NON-MONSTER/VEHICLE] | attacking any ? weaponAbilities=[SUSTAINED HITS 1: NON-MONSTER/VEHICLE] | attacking any ? weaponAbilities=[SUSTAINED HITS 1: NON-MONSTER/VEHICLE]
+12c3-a683-f4e4-fa51 Omnispex: –
+12c4-7063-0640-084b Shock Cavalry: attacking any ? hitModifier=1 | attacking any ? woundModifier=1
+12ce-2a62-9fea-74bd Damaged: 1-9 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+12d7-f786-be4d-c6c0 Integrated Refraction Emitters: –
+12f3-b721-1932-8ee5 Daemon Lord of Tzeentch (Aura): attacking shooting list ? strengthModifier=1 unitKeywords=SCINTILLATING LEGIONS
+130a-d876-45f9-5e77 Mindlock: attacking any ? ownModelsOnly=true skillModifier=1
+131a-a751-8f2d-afb2 Reavers of the Void: attacking any rerollHits=ones
+133a-43b1-cad3-95d6 Strafing Run: attacking shooting ? hitModifier=1 ownModelsOnly=true
+1340-4954-6815-8fcc Soulsight Occulum: attacking shooting ignoreHitModifiers=true ownModelsOnly=true
+134d-1e4d-5f9c-2905 Callous Competition: attacking any list ? rerollHits=ones unitKeywords=DRUKHARI, HARLEQUINS
+134f-6a3c-ce86-fda0 Mark of Legend: –
+1377-3875-ed15-5926 Warp Focus (Psychic): attacking any strengthModifier=1 weaponFilter=PSYCHIC | attacking any ? strengthModifier=2 weaponFilter=PSYCHIC
+1379-e3ee-3ca1-af23 Praesidium Shield: defending any strengthVsToughness=gt woundModifier=-1
+139d-42fd-b56a-fbc8 Bust 'Em: attacking any list ? unitKeywords=SPEED FREEKS vsKeywords=BUSTED weaponAbilities=[LETHAL HITS]
+13a0-e056-4856-cc9c Driven From Their Lairs: attacking shooting list ? unitKeywords=ARMIGER weaponAbilities=[IGNORES COVER]
+13a2-57cd-83ff-2127 Despoilers: attacking any ? rerollHits=all
+13e0-01f8-38e6-f549 Kantu Vambrace: defending any damageModifier=-1 ownModelsOnly=true
+13f1-27da-509b-815f Bladeguard: attacking fight ? hitModifier=1 | defending any ? hitModifier=-1
+1401-75a9-a358-7fdb Experienced Leader: attacking any list ? rerollWounds=all unitKeywords=KROOT
+142c-1d24-80b4-fb91 Eldritch Flames: attacking any list ? weaponAbilities=[IGNORES COVER]
+143-1a21-8afb-16c4 For the Khan!: attacking shooting weaponAbilities=[ASSAULT] | attacking fight weaponAbilities=[LANCE]
+1445-36a0-5608-c65b Memento Moritoi: attacking fight attacksModifier=1 damageModifier=1 ownModelsOnly=true strengthModifier=1
+1459-5c72-93f2-622f Extreme Methods: attacking any ? ownModelsOnly=true weaponAbilities=[DEVASTATING WOUNDS]
+158c-6d6d-dc68-3225 Linked Fire: –
+1593-8a48-7114-164b Malevolus Lockout: attacking shooting ? ownModelsOnly=true weaponAbilities=[DEVASTATING WOUNDS]
+1597-2952-693f-60f2 Crisis Commander: attacking shooting rerollHits=ones
+15a8-ad21-6d15-014f Digital Arsenal: –
+15bc-376d-3c82-73b2 Soul Eater: attacking any ? attacksModifier=1 ownModelsOnly=true
+15d8-f178-3876-42f5 Never Shall the Standard Fall: defending any ? strengthVsToughness=gt woundModifier=-1
+15e4-32cb-fc3d-7858 Wall of Muscle: defending any damageModifier=-1
+15e5-86d8-663a-2891 Hekatrix Bloodbrides: attacking fight skillModifier=1
+15ef-da73-e7e6-b4b7 Mantle of the Troll King: –
+1616-7709-6f77-5dc1 Bastion Plate: –
+162d-775a-686f-cc9a Flame-wreathed: attacking fight ownModelsOnly=true rerollHits=all
+1650-6b89-864b-9281 Fury Unbound: attacking fight ? rerollHits=all
+167c-25a9-9fed-9d96 Ballistus Strike: attacking shooting ? weaponAbilities=[SUSTAINED HITS 1]
+1698-cded-3890-3f7e Improbable Shield (Aura): defending any list ? mortalFnp=4 psychicFnp=4 unitKeywords=LEGIONES DAEMONICA TZEENTCH
+171d-8e5e-5354-738d Ironbound Enmity: attacking any ? ownModelsOnly=true woundModifier=1
+1725-a235-f42f-4584 Totem of Prok: –
+179e-a700-2330-1df8 Biosplint Gland: –
+17bd-f4a1-e0a4-41ea Airborne Predator: attacking any hitModifier=1 ownModelsOnly=true vsKeywords=FLY
+17e1-b41e-4ccc-7db7 Sadistic Savagery: attacking fight weaponAbilities=[SUSTAINED HITS 1]
+1852-5055-1320-6d2e Been There, Seen it, Killed it: attacking fight ? ownModelsOnly=true rerollHits=all rerollWounds=all
+1897-c22c-9597-12b1 Sustained Hits: –
+18a6-28f3-1242-fc24 Assassin: attacking any ownModelsOnly=true rerollHits=all vsKeywords=CHARACTER
+18c3-bb63-3d2b-10fa Methodical Destruction: attacking any ? ownModelsOnly=true rerollWounds=all
+192f-d7f1-dc58-702c Materiel: Surplus: –
+1934-9c67-78e2-4fd9 Damaged: 1-10 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+197b-d89e-1c1-403e Reorder Reality: –
+197e-a2ea-b468-48d9 Perfectionists: attacking any weaponAbilities=[LETHAL HITS]
+1989-6f58-9d94-8045 Sentinel Protocols: –
+1992-27a1-d4fe-db50 Quivering Cilia: –
+19eb-919d-254f-18e1 Krumpin’ Time: –
+19f7-84bb-8aca-b2de Divinator-class Auspexes: attacking shooting list ? rerollHits=ones
+1a0b-ff07-a6a2-cc2c Soulsnare Sigil: –
+1a1b-79a9-bfe2-8a7c Tempered Ferocity: attacking any weaponAbilities=[SUSTAINED HITS 1] | attacking any ? rerollHits=ones
+1a45-e2e6-ef40-b0c5 Fortification: –
+1a78-f1c2-6a28-b557 Prime Test Subject: attacking fight ? damageModifier=1 ownModelsOnly=true | attacking fight ? ownModelsOnly=true rerollHits=all
+1a83-553c-50b2-4d18 Death On Dark Wings: defending shooting ? hitModifier=-1
+1a85-7c7e-c4a3-4a38 Malefic Surge (Psychic): attacking any ownModelsOnly=true weaponFilter=PSYCHIC woundModifier=1
+1af8-0854-8cbf-3bd7 Sigil of the Hunt: attacking any rerollHits=ones
+1b37-0a10-61d8-0eeb Nullstone Field Generator (Aura): defending any list ? mortalFnp=5 psychicFnp=5 unitKeywords=NECRONS
+1b45-014e-96d1-d8c7 Devoted to Pain: –
+1b74-9e3-3eb9-306f Jungle Fighters: attacking fight ? woundModifier=1
+1bc3-7b38-21d2-2d73 Acquisition at any cost: attacking any list ? rerollWounds=ones unitKeywords=ADEPTUS MECHANICUS
+1be5-8ccf-3d43-2b32 Adaptive Instincts (Once per turn, per unit): attacking fight ? strengthModifier=1 | defending any ? toughnessChange=1
+1c2c-6600-523d-4363 Shield of the Righteous: –
+1c5f-64ca-b1cf-d514 Hard-wired for Destruction: attacking shooting ? rerollHits=ones
+1c63-d49f-380c-4aa8 Invulnerable Save (4+*): –
+1c65-125a-1174-7149 Tainted Blade: attacking fight attacksModifier=1 damageModifier=1 ownModelsOnly=true strengthModifier=1 | attacking fight ? ownModelsOnly=true weaponAbilities=[HAZARDOUS], [DEVASTATING WOUNDS]
+1c90-5f23-d62b-f9f0 Malefic Destruction: attacking any ? attacksModifier=3 ownModelsOnly=true weaponFilter=HELLFORGED
+1ccb-ca03-9256-bd5e Oathbound: attacking fight hitModifier=1
+1cd0-7589-b11f-2830 Speedboss: attacking fight hitModifier=1
+1cd4-b9f4-4c51-c589 Storm of Bolts: defending any list ? hitModifier=-1
+1cd4-c27b-45d2-5fcf Integrated Targeting AI: –
+1d21-3b48-6cd2-d5f5 Macro-extinction Protocols: attacking any hitModifier=1 ownModelsOnly=true vsKeywords=MONSTER, VEHICLE
+1d27-390a-ab3a-1c06 Indomitable Conquerors: –
+1d28-343b-c471-4427 Suppression Protocols: defending any list ? hitModifier=-1
+1d34-0925-d0bd-3108 Martial Espionage: attacking shooting ? apModifier=1
+1d35-f0ed-8ef8-a52d Gallant's Duty (Bondsman): –
+1d54-e21e-4429-035e Font of Unreality: defending any list ? hitModifier=-1 ownModelsOnly=true unitKeywords=DAEMON
+1d79-68a9-913f-4217 Mobile Hunter-killer: attacking any ownModelsOnly=true rerollWounds=all vsKeywords=MONSTER, VEHICLE
+1d80-bc5e-ee21-1aeb Anathematic Diadem (Aura): –
+1db8-859e-c4c7-d8b2 Branching Fates (Psychic): –
+1dc7-8961-7532-3d25 Tears of the Emperor: attacking shooting attacksModifier=1 damageModifier=1 ownModelsOnly=true strengthModifier=1 weaponAbilities=[DEVASTATING WOUNDS], [ANTI-CHAOS 4+]
+1ddc-603c-d82f-9ff1 Malefic Maelstrom (Psychic): attacking any weaponAbilities=[SUSTAINED HITS 1]
+1de1-8f78-4ad3-92ad Interceptor: attacking shooting hitModifier=1 ownModelsOnly=true vsKeywords=FLY
+1dfc-5377-99ac-a700 Relentless Onslaught: –
+1e0f-82d6-b1d4-c00e Ritual Butchery: attacking fight weaponAbilities=[SUSTAINED HITS 1]
+1e19-78d7-a49d-e1e6 Close-range Devastation: attacking shooting ? ownModelsOnly=true rerollHits=all
+1e42-6c14-1938-93a3 Fire Support: –
+1e64-6be4-df39-120c Holy Cover: –
+1e6a-09c7-ab51-a292 Warp-touched Weapon: –
+1e6c-5c2-76b4-bb89 Kustom Dakka: attacking shooting weaponAbilities=[IGNORES COVER]
+1e72-4707-d30b-a3af Purity Seals: defending any ? psychicFnp=5
+1e7a-d5af-ec52-af9d Lucent Aureole: –
+1e8a-8854-9520-1956 Sentinel Directives: –
+1eb1-ef74-14b4-e544 Damaged: 1-8 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+1eb5-c753-c9ab-ed3a Martial Warrior: –
+1ecf-416a-6465-156c Legendary Tenacity: defending any strengthVsToughness=gt woundModifier=-1
+1ee5-63a2-6c01-e628 Surge of Wrath (Psychic): attacking fight ownModelsOnly=true rerollDamage=true rerollHits=all rerollWounds=all vsKeywords=MONSTER, VEHICLE
+1ee8-8fac-5c19-3b78 Ground Strike Fighter: attacking shooting ? hitModifier=1 ownModelsOnly=true
+1eee-035b-6f51-bb40 Warden of Fate: defending shooting ? cover=true
+1f07-f102-c159-6c60 Heroes of the League: attacking any ? hitModifier=1
+1f13-359b-7cdb-283 Sunderer of Fortresses: attacking any ? damageModifier=3 ownModelsOnly=true strengthModifier=3 vsKeywords=FORTIFICATION
+1f1c-d5df-c16-7d62 Furious Barrage: attacking any ? ownModelsOnly=true rerollHits=all
+1f5-2b97-2b2c-60dc Enaegic Dermal Bond: –
+1fa8-d8d6-7361-c235 Weavefield crest: –
+1fbb-5352-7e95-368c No Mercy: attacking any ? hitModifier=1
+1fc1-36f5-8b8c-20d2 Symphony of Pain (Psychic): attacking any list ? rerollHits=all rerollWounds=all unitKeywords=SLAANESH LEGIONES DAEMONICA
+200f-326c-01d2-0de1 Kustom Force Field: –
+201c-e66a-0499-a549 Zaall, the Wrathful: attacking fight ? damageModifier=1 ownModelsOnly=true strengthModifier=3
+2023-0e3e-5861-73f6 Scorpion Tail: attacking fight attacksModifier=1 ownModelsOnly=true
+2050-72df-fd02-7085 Tidewall Cover: –
+2053-cbc3-5fe2-9c02 Channellin' da Waaagh!: –
+2055-2504-fd8e-7483 Putridity: attacking any ? critHitOn=5 ownModelsOnly=true
+207b-71f8-17d3-ee99 Armour of Antoninus: –
+208f-d793-f82d-67e5 Sanctic Hood: defending any ? psychicFnp=4
+209d-da09-990b-aacd Catechism of Death: attacking fight ? weaponAbilities=[DEVASTATING WOUNDS]
+20c4-9b25-4f77-852e Gift of Contagion (Psychic): attacking any ? weaponAbilities=[SUSTAINED HITS 1]
+20d7-959d-9ddd-0c14 Daughters of the Abyss: defending any ? psychicFnp=5
+20e8-7393-ab52-c9f6 Destroyer Madness: attacking any ownModelsOnly=true rerollHits=all
+2142-e51d-ad2d-c601 Gene Affliction: defending any ownModelsOnly=true toughnessChange=-1 | attacking any ownModelsOnly=true skillModifier=-1
+2154-b6a4-d144-ca67 Rules Adaptions: –
+2162-94df-78ff-8f83 Phased Cover: –
+2179-a9f0-2bbf-85a5 Virulent Blessing (Psychic): –
+2184-10e8-fe1e-9731 Praesidium Shield: defending any damageModifier=-1 ownModelsOnly=true
+2195-4d6e-a1f1-1b63 Displays of Savagery: attacking fight list unitKeywords=MEGANOBZ, NOBZ weaponAbilities=[SUSTAINED HITS 1]
+2198-489f-8911-3858 The Gift From Beyond: –
+219d-340d-6681-ab1 Rites of Tempering: defending any strengthVsToughness=gt woundModifier=-1
+21ab-9f38-7657-0496 Spectral Disassembly Targeters: attacking shooting weaponAbilities=[IGNORES COVER]
+21c3-e79f-94e6-51f3 Inverse Power Feeds: attacking fight ownModelsOnly=true weaponAbilities=[DEVASTATING WOUNDS]
+21d9-2f2a-a34c-48e4 Radiant Champion: attacking fight ? ownModelsOnly=true weaponAbilities=[PRECISION]
+21da-375a-fb19-c622 Damaged: 1-3 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+21e-428-eea2-55e0 Fire Support: –
+221-7d8c-a074-f7a8 Suppression Fire: defending any list ? hitModifier=-1
+222f-a01c-620b-a089 Excessive Vigour (Aura): attacking fight list ? apModifier=1 unitKeywords=SLAANESH
+225-c66d-542c-3ea1 Brutal Impact: attacking any ? damageModifier=1
+22b2-d9d0-69ed-4540 Diseased icon: –
+22b5-806a-a74c-eb4 Faolchú: attacking shooting weaponAbilities=[IGNORES COVER]
+22c5-4fdb-71c6-6734 Blood Glaive: attacking fight damageModifier=1 ownModelsOnly=true weaponAbilities=[TWIN-LINKED]
+22fa-126d-31e4-6a5a Seeker of the Unfound: –
+22fb-6e85-141e-589c Damaged: 1-20 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+232e-9a50-d5c3-9bbb Grim Demeanour: attacking any ? hitModifier=1 woundModifier=1
+2362-0c75-df57-05da Ancestral Exo-armour: defending any ? mortalFnp=5
+2397-a41d-fe9e-ed6d Golden Laurels: defending any apModifier=-1
+23a3-2f58-81f5-7be2 Thief of Enigmas (Psychic): attacking any list ? rerollHits=all unitKeywords=THOUSAND SONS
+23b8-bd02-3e27-712c Piercing Talons: attacking any apModifier=1
+23f5-de7-b1f3-e52f Cursed Wardings (Psychic): defending any ? psychicFnp=4
+240a-982f-b03f-b617 Lambent Taint: attacking any list ? rerollHits=ones unitKeywords=NURGLE DAEMON
+241c-8bed-ca28-f77 Reinforced Cover: –
+2425-636f-288f-cbda Zealous Devotion: attacking fight ? skillModifier=1
+245-26d9-efcc-544c Mark the Target: attacking shooting ? weaponAbilities=[DEVASTATING WOUNDS]
+2458-a30b-3f7d-69ca Mark of Devotion: attacking fight attacksModifier=1 ownModelsOnly=true | attacking fight ? attacksModifier=2 damageModifier=1 ownModelsOnly=true
+248d-6da7-057c-1d44 Eye For Weakness: attacking any vsKeywords=ASSAILED woundModifier=1
+24b5-43b5-1537-2bd2 Infernus Firebombs: –
+24f5-4ea1-bbc0-fc59 Exemplar of the Silvered Host: –
+24ff-2511-1349-6dc8 Overkill: attacking fight ? attacksModifier=3 ownModelsOnly=true
+2538-8dfc-05be-cdf1 Neverblade: attacking fight apModifier=1 attacksModifier=1 hitModifier=1 ownModelsOnly=true strengthModifier=2
+255b-3bb3-dbc6-f9bb Spirit Mark (Psychic): –
+2563-c51b-e993-9354 Blessed Spirit: –
+2569-0de4-1748-b6da Lost to Fury: attacking fight weaponAbilities=[SUSTAINED HITS 1]
+256d-f30c-4fc1-37b7 Wise Orator: attacking fight list ? ownModelsOnly=true unitKeywords=ADEPTUS ASTARTES woundModifier=1
+258f-8850-ca4d-0e84 Conversion Field: –
+25c8-c84a-4f3d-7b60 Seductive Gambit: attacking any ? rerollHits=all rerollWounds=ones
+25d2-5cb4-d235-7e54 Soulwarden: –
+25d7-5293-3a46-569d Touch of Vicissitude: –
+25e0-520a-a78a-e6f8 Leprous Insensibility: –
+25ee-74b5-c6e8-674a Blood Throne: attacking any list ? apModifier=1 damageModifier=1 strengthModifier=1 unitKeywords=KHORNE LEGIONES DAEMONICA
+2617-f155-a26e-062d Gene-tailored Toxins: attacking any damageModifier=1 ownModelsOnly=true
+2621-1ced-08ff-1612 Breaching Command: attacking any rerollHits=ones
+2687-9d88-fa31-78e4 Pan-spectral scanner: attacking shooting rerollHits=ones
+2698-5ab4-26f8-a0c Blacklight Marker Drones: –
+269f-6b39-4a8e-0872 Wrath of Khorne: –
+26c9-87df-bd88-1d5e Merciless Marksmen: attacking shooting ? weaponAbilities=[LETHAL HITS]
+26cf-9f9e-d621-a61c Augury Servo-host: attacking any list ? weaponAbilities=[IGNORES COVER]
+26d9-e27b-c1cb-8ecb Rituale Nullificatus: defending any ? mortalFnp=4 psychicFnp=4
+26e3-58c8-a7f2-9697 Internal Rivalries: –
+271e-3791-de91-b1ec Depleted Transmaterial Reserves: attacking fight attacksModifier=1
+2728-2a25-69af-e7af Malign Cover: –
+2734-7402-ba72-8244 Lord of the Wolfkin: –
+273d-6431-86ad-21b0 Warden Drones: –
+273f-ef55-b141-0ab3 Exemplar of Duty: –
+2760-a977-5b19-6364 Structural Analyser: attacking shooting woundModifier=1
+2769-d6d8-29c8-7689 Kindred Hero: attacking any weaponAbilities=[LETHAL HITS]
+276f-2632-2303-3c9a Strafing Run: attacking shooting ? hitModifier=1
+278f-3b22-7414-a670 Mirage Field: defending any hitModifier=-1
+2791-3816-abd5-4e07 Doomseer: attacking any hitModifier=1
+27f4-7449-a636-ae8c Invulnerable Save (5+): –
+27fb-11c4-283b-c3d3 Shield of Baal: attacking fight ? rerollWounds=all
+280e-3f11-f189-e044 Cold Steel and Courage: attacking fight weaponAbilities=[LETHAL HITS]
+2829-667b-d347-8af8 Immaterial Edge: attacking fight ownModelsOnly=true weaponAbilities=[DEVASTATING WOUNDS]
+286e-4c57-b171-2344 Singular Purpose: attacking any ? ownModelsOnly=true rerollHits=all rerollWounds=all
+2872-cb8d-09c1-83b9 Battle-scarred Resistance: –
+2876-9918-aa22-a9c3 Blood Chalice: attacking fight apModifier=1
+28eb-c1af-6634-4b08 Fire Support: –
+291e-fc3a-573c-a199 Duellist: –
+2935-a4b2-6689-0d11 Tactical Teachings: defending shooting ? cover=true
+2948-fe70-8807-d6c3 Giantslayers: attacking any rerollHits=ones
+298f-418e-2bd7-9d49 Totemic Infusions - Orks: attacking fight ? strengthModifier=1
+2992-78d6-3deb-f5b7 Micromelta Rounds: –
+29a1-b246-bd11-df46 Vengeance of the Omnissiah: –
+29c3-7ef-ae82-6eae Dread Reaver: attacking fight ? ownModelsOnly=true rerollHits=all rerollWounds=all
+29f2-47-a0fe-a59e Armoured Frontis: defending any damageModifier=-1 ownModelsOnly=true
+29fe-dbb0-2a7-a301 Defence Line: –
+2a50-924a-8b28-3d6c Devoted to Destruction: –
+2a62-719f-829d-6cc9 Rune of Faolchú: attacking any list ? apModifier=1 unitKeywords=AELDARI
+2a98-bf22-f0af-4a1e Tachyon Field Phase Inducer: –
+2aa8-048c-cf96-be49 Cranium Obscura: –
+2aab-7d64-4e7c-6899 Vengeance for the Omnissiah: –
+2aab-b30e-2194-79cc Sigil of the Shadowlord: –
+2ac6-4080-aea3-847e Integrated Tactics: –
+2aca-579b-16a9-8d17 Flames of Change (Psychic): attacking shooting weaponAbilities=[IGNORES COVER]
+2ad4-2722-1059-760c Medicus Ministorum: defending any fnp=5
+2aec-b6cb-9185-ff51 Pledges to the Dark Prince: attacking any ? rerollHits=ones | attacking any ? rerollWounds=ones | attacking fight ? weaponAbilities=[LETHAL HITS], [SUSTAINED HITS 1] | attacking any ? critHitOn=5
+2b0d-53da-81d7-5f40 Cult Demagogue: attacking any rerollHits=all
+2b10-8964-d5d7-a93a Powerful Volley: attacking any ? weaponAbilities=[LETHAL HITS] weaponFilter=HEAVY
+2b17-fd21-a7c5-d15d Shield of Admonishment: defending fight hitModifier=-1 ownModelsOnly=true
+2b4b-2f29-7f3f-e161 Rush to the Fray: attacking fight ? weaponAbilities=[LANCE]
+2bbc-7386-1adc-6a4b Kaela Mensha Shelwe, Song of the Bloody-handed: attacking fight ownModelsOnly=true weaponAbilities=[ANTI-BEASTS 3+]
+2bd8-b2ce-9c1d-3ce4 Feverish Butchery: attacking fight woundModifier=1
+2c04-568d-8702-a2dd Harbinger of Death: –
+2c27-e045-f180-1712 Denunciator of Tyrants: attacking any hitModifier=1 vsKeywords=CHARACTER woundModifier=1
+2c5e-3e93-97cc-7ec5 Strafing Run: attacking shooting ? hitModifier=1 ownModelsOnly=true
+2c94-4da5-66f4-e3d9 Borthrod Gland: attacking fight critHitOn=5
+2cac-9b4b-a8d4-7b76 Unflinching Will: attacking fight ownModelsOnly=true weaponAbilities=[PRECISION], [ANTI-INFANTRY 5+]
+2cad-f0ef-b5b3-6b5f Deadly Retinue (Pain): attacking fight ? weaponAbilities=[LETHAL HITS] | attacking shooting ? weaponAbilities=[IGNORES COVER] | defending fight ? woundModifier=-1
+2cc0-3a51-cd4f-429e Mass of Doom: attacking fight ? weaponAbilities=[DEVASTATING WOUNDS:NON-MONSTER/VEHICLE]
+2ce2-73a5-1981-bdb2 Might From Beyond: attacking fight weaponAbilities=[DEVASTATING WOUNDS]
+2ce9-6bce-d7de-e9d0 Malicious Opportunist: attacking any hitModifier=1 woundModifier=1
+2cf-e1fe-fd6e-6857 Crystal Matrix: –
+2cfa-5a0f-a56e-3617 Righteous Fury: attacking fight ? strengthModifier=1 | attacking fight ? strengthModifier=1 | attacking fight ? strengthModifier=1
+2d15-df8c-b6bc-1bf0 Damaged: 1-15 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+2d2c-3eb8-963e-c75a Lord of the Machine Cult: defending any fnp=5
+2d38-b835-fadf-bfe9 Born of Wolves: attacking fight weaponAbilities=[SUSTAINED HITS 1]
+2d68-2ebf-825c-d755 Radiant Mantle: defending any hitModifier=-1
+2d69-8e7f-9d12-c775 Spiteful Power Trip: attacking any ? hitModifier=1
+2d86-80c9-5263-e39e Poxbringer: attacking any critHitOn=5
+2db8-9ae5-2874-e83 Armoured Spearhead: attacking any ? ownModelsOnly=true rerollHits=ones
+2db9-a2a5-7c0d-4600 Fire Support: –
+2de0-4b8c-56c2-e909 Sentinel Protocols: –
+2dfe-d334-c4b1-1dde Faithful Devotee: –
+2e00-2ac9-9892-856 Temple Relics: defending any ? toughnessChange=1 | attacking fight ? apModifier=1
+2e08-718b-1740-8ca4 Survey Augur: attacking any list ? unitKeywords=GENESTEALER CULTS weaponAbilities=[IGNORES COVER]
+2e26-ee50-c66b-6b0e Damaged Armour: attacking any list ? apModifier=1 unitKeywords=NECRONS
+2e57-1628-2cbf-507c Xylocil: –
+2e68-c478-cb2f-9ff6 Dance of Death: attacking any ? rerollHits=ones | attacking any ? woundModifier=1 | defending any ? hitModifier=-1
+2e70-7085-af42-e162 Chaos Lord: attacking any rerollHits=ones
+2e7d-c58b-febe-4e0e Forceshield: –
+2ebc-abdf-8129-6c57 Lance: –
+2ec0-29f0-9fb3-dfc3 Damaged: 1-8 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+2eea-63e7-1177-f43d Precognicient Volleys: –
+2f11-3bd0-4e01-4ed4 Soulguilt scanner: attacking shooting weaponAbilities=[IGNORES COVER]
+2f15-2068-945f-093d Eldritch Vortex of E'taph: attacking any damageModifier=1 ownModelsOnly=true strengthModifier=1 weaponFilter=PSYCHIC
+2f24-2a2c-c245-fc6a Debt to the Soulforge: attacking shooting ? woundModifier=1 | attacking fight ? attacksModifier=2
+2f50-0a3e-92db-13bb Blessing of the Omnissiah: –
+2f58-bad5-7d6b-bc2c Empyric Onslaught: attacking shooting ? attacksModifier=3 ownModelsOnly=true weaponFilter=PSYCHIC
+2f79-0968-0cff-59df Arcane Might: attacking any strengthModifier=1 weaponFilter=PSYCHIC | attacking any ? strengthModifier=2 weaponFilter=PSYCHIC
+2fb9-2f24-0e08-ecf2 Fury's Cage: attacking any ? ownModelsOnly=true rerollHits=all rerollWounds=all
+2ffd-423f-c721-1b75 Warp-sighted Butcher: attacking fight ? rerollHits=all
+3070-b510-7093-db8f Beacons of Rage (Aura): attacking fight list ? hitModifier=1 unitKeywords=WORLD EATERS
+307f-af7c-e7b6-a4b0 Punishing Suppression: defending any list ? hitModifier=-1
+30a1-8f15-f406-fa7b Daemon Lord of Slaanesh (Aura): –
+30ba-76fc-9e6a-b853 Perfection of the Body: –
+3106-d752-30b8-b24d Damaged: 1-5 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+310a-9b8b-d0dc-b142 Psychic Spoor: attacking any ? ownModelsOnly=true rerollHits=all rerollWounds=all
+3124-82c3-e183-213e Called Shots: –
+3125-a7a9-2716-8a9f Alpha Leader: attacking any rerollHits=all
+3154-b43-deb7-ce47 Dispersion Shield: –
+316b-f39a-e518-815e The Tidecrystal: –
+317c-3f1d-9993-b610 Patient Hunter: attacking shooting list unitKeywords=T'AU EMPIRE weaponAbilities=[SUSTAINED HITS 1]
+317f-19b4-6fb6-0761 Vulkan's Quest: attacking shooting list ? strengthModifier=1 unitKeywords=ADEPTUS ASTARTES
+31a5-10b2-e55d-9eff Champion Slayer: attacking fight ownModelsOnly=true rerollWounds=all vsKeywords=CHARACTER, MONSTER
+31d1-7d64-2414-4f94 Esteemed - Headsman: attacking any ? damageModifier=1 weaponAbilities=[SUSTAINED HITS 1]
+31ed-3d34-0d2b-60d2 Close-range Killers (Aura): attacking any list ? apModifier=1 unitKeywords=WAR DOG
+3225-fc4d-a159-3610 Fortress of Minds (Psychic): defending any ? mortalFnp=5 psychicFnp=5
+3236-3866-ec87-2be6 Malefic Wardings (Psychic): –
+323a-a7cc-3e8b-1cb5 Fast Reflexes: defending fight hitModifier=-1
+323f-f6d9-36e5-e4c1 Walking Bastion: –
+324a-c2ac-7ff8-df8 Ceramite Cover: –
+3255-16d4-cadf-94dd Belligerent Boarders: defending any list ? excludeUnitKeywords=GROTS unitKeywords=ORKS woundModifier=-1
+328a-1d9d-42cd-b451 Path of the Warrior: attacking any ? rerollHits=ones | attacking any ? rerollWounds=ones
+32aa-c6cb-524c-8d03 Fortress on Wheels: –
+32c-463b-ec70-ebc2 Nebuloscope: attacking shooting ownModelsOnly=true weaponAbilities=[IGNORES COVER]
+32de-35c9-8e2f-72 Phasal Subjugator (Aura): attacking any list ? excludeUnitKeywords=CHARACTER hitModifier=1 unitKeywords=NECRONS
+330c-5a54-2c94-8e5b Auto-fury Cacodaemons: attacking shooting ? ownModelsOnly=true weaponAbilities=[SUSTAINED HITS 1]
+335-9406-8606-6855 Psyoculum: attacking shooting weaponAbilities=[ANTI-PSYKER 4+]
+3354-3ebb-4495-92d4 Deadly Crossfire: –
+3355-18b8-ee22-87f9 Truesilver Aegis (Psychic): defending any list ? mortalFnp=6 unitKeywords=GREY KNIGHTS
+3371-50b9-5dff-e7fc Stone of Pech: attacking any ? hitModifier=1 | attacking any ? woundModifier=1
+337f-0d81-c111-e376 Flowing Flesh: –
+3392-de4e-e5a3-b5cb Pledge of Unholy Fortune: –
+339e-f5bd-cf4b-0aae Sanguinary High Priest: –
+33c2-f369-cc5a-cd3c Wyrdmaker's Helm: –
+33c4-69ba-36d1-5d02 Templar Vows: attacking fight ? vsKeywords=PSYKER weaponAbilities=[PRECISION] | attacking fight ? vsKeywords=PSYKER weaponAbilities=[LANCE] woundModifier=1
+33d5-9c8e-db2f-63b5 Inspirational Exemplar: attacking fight hitModifier=1
+340c-eebd-4abd-7d46 Powers of Da Waaagh!: –
+3431-c2fc-bb66-b5f3 Node Lash (Psychic): attacking any hitModifier=1
+346f-5f19-1f4-262d Vengeance for the Omnissiah: –
+3477-d6b3-fc9-9761 Hammerstrike: attacking shooting ? weaponAbilities=[SUSTAINED HITS 1]
+34ad-4a93-4309-03bd Brigand: attacking shooting ? ownModelsOnly=true weaponAbilities=[IGNORES COVER]
+34b3-35ff-995a-560d Feeding Frenzy: attacking fight ? hitModifier=1 ownModelsOnly=true
+34b3-af3e-2476-eaae United In Destruction: attacking fight weaponAbilities=[LETHAL HITS]
+34b5-faea-6f0b-f390 Icon of Flame: attacking shooting ? weaponAbilities=[IGNORES COVER]
+34ba-2f78-5a6c-efcf Twisted Science: attacking fight weaponAbilities=[LETHAL HITS]
+351a-a702-9080-7f08 Prioritised Efficiency: attacking any ? hitModifier=1 | attacking any ? hitModifier=1 | defending any ? strengthVsToughness=gt woundModifier=-1
+3541-c1ee-4233-00d0 Biohorror Disruption (Psychic): attacking shooting weaponAbilities=[LETHAL HITS]
+3557-568d-4745-af79 Optimal Application: attacking any ? rerollHits=ones
+3584-fc70-a917-5feb Blinding Light: –
+35b7-41e1-1488-6df9 Mental Fortress: –
+35c3-c475-61ae-4aa3 Cover: –
+35ea-1c17-0d09-35cf Assassination Edict: attacking any hitModifier=1 vsKeywords=CHARACTER
+364e-dc9e-6d15-e3a8 Moritoi Ancients: attacking any list ? rerollHits=ones unitKeywords=ADEPTUS CUSTODES DREADNOUGHT | attacking any list ? rerollHits=ones unitKeywords=ADEPTUS CUSTODES DREADNOUGHT | attacking any list ? rerollWounds=ones unitKeywords=ADEPTUS CUSTODES DREADNOUGHT
+364f-3bc8-c79f-8188 Quake Supervisor: –
+365e-a0cc-81f6-c188 Unnatural Resistance: defending any ? mortalFnp=4 ownModelsOnly=true
+3663-aed0-bb7b-422f Interceptor: attacking shooting hitModifier=1 ownModelsOnly=true vsKeywords=FLY
+3672-ce89-5d2d-d000 Psychic Hood: defending any ? psychicFnp=4
+367b-f75c-5fc9-8d6e Overseer of Redemption: –
+36a5-3ecd-bc4d-79f Starscythe: attacking shooting ? apModifier=1
+36a5-9438-9d6f-b0d7 Daemon Lord of Tzeentch (Aura): attacking shooting list ? strengthModifier=1 unitKeywords=TZEENTCH LEGIONES DAEMONICA
+36a7-a0c0-ff14-14a7 Mentor (Bondsman): –
+36de-d363-3e1b-7731 Flashiest Gitz: attacking shooting rerollHits=all
+36e-245-5b61-c7a9 Eye of Spite: attacking fight apModifier=1 attacksModifier=1 ownModelsOnly=true | attacking fight ? apModifier=2 attacksModifier=2 ownModelsOnly=true
+36f2-466c-a396-051c Penumbral Puppetry: defending fight hitModifier=-1
+36f6-15a1-62fa-112b Arcane Shield (Psychic): –
+3723-a2c0-a8e7-3f96 Nova Shielding: defending any ? ownModelsOnly=true strengthVsToughness=gt woundModifier=-1
+3736-b495-1fa9-38d6 Master Nemesine: attacking any ownModelsOnly=true weaponAbilities=[ANTI-BEAST 2+], [ANTI-MONSTER 4+]
+3799-e03b-fda9-e8e9 Savage Exaltation: attacking fight ? hitModifier=1 ownModelsOnly=true woundModifier=1
+37bd-f09d-4fd8-c80f Destroyer Ankh: attacking fight ? attacksModifier=2 ownModelsOnly=true
+37c3-1a87-c670-6b4 Mesmerising Form: defending any hitModifier=-1 ownModelsOnly=true
+37d7-4c6f-14e0-42c0 Projected Void Shields (Aura): –
+37ff-73af-59de-5b7a Prophet of Destruction: attacking any list ? rerollWounds=ones unitKeywords=DESTROYER CULT
+3803-e455-2608-1d74 Iron Ambassador: –
+3832-c8f7-c7b2-2bd9 Damaged: 1-20 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+3851-87e1-704c-e97d Fateskimmer: attacking fight weaponAbilities=[LETHAL HITS]
+3863-f078-be63-9230 Fury Unbound: attacking fight weaponAbilities=[LETHAL HITS]
+3868-7a56-0437-6f41 Belt of Russ: –
+386a-34d2-9ad8-476b Insectile Murmuration: attacking any ? rerollWounds=ones
+388f-814a-df25-c988 Command Protocols: attacking any ? hitModifier=1
+38ac-2ed6-0bd7-e628 Nimble Defence: –
+38cb-3eeb-590a-96d3 Tôrek's Shard: attacking fight ? attacksModifier=1
+38e1-9c82-18ed-4bf0 Sweeping Blow: –
+3926-4865-e8c7-c5eb Breach and Clear: attacking shooting ? rerollWounds=all
+3928-4923-0ccb-858c Predatory Senses: attacking shooting rerollHits=ones
+393b-57c0-3ce6-9543 Periclaen Eye: defending fight ? hitModifier=-1
+393e-1194-2f16-2738 Drill Commander: attacking shooting ? critHitOn=5
+3942-42f4-fc46-6b8e Surgeon Acolyte: –
+3988-e8af-dc19-633d Sacrificial Blessing: –
+39dc-f5a6-364d-51ac Artificer Weapon: –
+39dd-f8e7-418a-a141 Diseased Malice: attacking any ownModelsOnly=true vsKeywords=AFFLICTED woundModifier=1
+39f0-3f81-55b0-5da6 Exquisite Swordsmanship: –
+3a03-4856-4b7b-1500 Unholy Mechanisms (Aura): attacking any list ? strengthModifier=2 unitKeywords=DAEMON VEHICLE
+3a2c-ca3d-1282-c6aa Dominate Will (Psychic): attacking any ? hitModifier=-1
+3a30-3e69-8e3e-f3f9 Damaged: 1-7 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+3a31-f7fd-c92-34f7 Horrible Fascination (Psychic): –
+3a41-f55f-c44f-9782 Beguiling Form: –
+3a47-84c9-767e-fe13 Spiritual Fortitude: defending any ? mortalFnp=4 psychicFnp=4
+3a48-4edb-7e5f-ba05 Force Shield (Psychic): defending any ? strengthVsToughness=gt woundModifier=-1
+3a61-eed0-8af5-c4ac Inescapable Accuracy: attacking shooting ignoreHitModifiers=true
+3a6a-659b-9b4f-9935 Mutated Bodyguard: –
+3a84-9b8d-06f5-52f7 Bastion Running: attacking shooting ignoreHitModifiers=true ownModelsOnly=true
+3a88-c8f1-2c7b-85e4 Purgatus Quarry: –
+3a98-1cea-5115-60b5 Fables of Nightmare: –
+3aa6-2e1e-cf55-6803 Malus Codicium: –
+3abe-d690-f7c1-40be Mantle of Traitors: attacking fight ownModelsOnly=true rerollHits=all
+3ae5-52a5-65d0-fef8 Blessed Wardings: –
+3b0d-9a29-6ab9-b186 Archeotech Armament: –
+3b72-1499-de01-95bb Litany of Hate: attacking fight weaponAbilities=[LANCE]
+3b77-2fdc-9e1b-40ed Psychic Guidance: –
+3b80-3fee-3cf7-9bb Covering Fire: –
+3ba1-9027-f91a-8436 Inescapable Death: –
+3bc2-66b3-2336-8ad4 Skulls for Khorne: attacking any ownModelsOnly=true rerollHits=all rerollWounds=all vsKeywords=CHARACTER
+3bfc-c8c2-7d75-f058 Siege-breaker Protocols: attacking fight hitModifier=1 ownModelsOnly=true vsKeywords=VEHICLE, FORTIFICATION woundModifier=1
+3c30-003c-fc9e-29ce Warding Inscriptions: defending any ? mortalFnp=6 psychicFnp=6 | defending any ? mortalFnp=5 psychicFnp=5
+3c68-e0f1-4621-4376 Alacritous Assault: attacking fight weaponAbilities=[LANCE]
+3cd-1880-37fe-4cfc Champion of the Order of Purifiers (Psychic): attacking any attacksModifier=1
+3d07-90f6-1c18-dda0 Target Acquisition: attacking any list ? weaponAbilities=[IGNORES COVER]
+3d17-e5-295-fcf0 Armorium Cherub: –
+3d6e-7d4-ba81-9a8f Weapon Support System: attacking shooting ignoreHitModifiers=true ownModelsOnly=true
+3d7e-17e1-ec11-57ef Invulnerable Save (4+): –
+3ddd-d93d-d7af-ddb7 Rokkit Charge: attacking fight ? attacksModifier=1 strengthModifier=1 | attacking fight ? weaponAbilities=[HAZARDOUS]
+3de3-728d-6264-1eb3 Unholy Bloodshed: attacking any ? weaponAbilities=[DEVASTATING WOUNDS]
+3e0a-31f-8be-e293 Black Rage: attacking fight rerollHits=ones
+3e22-58ca-3f4a-2ce6 Divine Authority: attacking any rerollHits=ones
+3e27-a26c-5625-4074 Manufactorum Cover: –
+3e2a-c56a-2594-bb7d Sculptor of Torments (Pain): defending fight list ? woundModifier=1
+3e60-2c1f-8812-9a1 Big an’ Stompy: attacking fight rerollHits=ones
+3e6c-ffd5-d96b-37ec Experimental Enhancements (Pain): –
+3e8e-6329-8bcc-a625 Flâyre: attacking fight ? attacksModifier=2 ownModelsOnly=true | attacking fight ? attacksModifier=1 ownModelsOnly=true
+3e8f-093a-1795-a68a Indomitable Stature: –
+3ea6-ce2a-42a5-6f89 Distortion: attacking fight attacksModifier=1 damageModifier=1 ownModelsOnly=true
+3ea7-e149-640a-ad40 Triptych of the Macharian Crusade: –
+3eab-db6a-2f7f-e2df Holy Hatred: attacking fight weaponAbilities=[SUSTAINED HITS 1]
+3ebb-9bbe-208-ac9c Force Edge (Psychic): attacking fight ? apModifier=1
+3ebe-135b-8cb0-76f5 Airborne Predator: attacking any hitModifier=1 ownModelsOnly=true vsKeywords=FLY
+3efc-c528-9b0d-0568 Litany of Hate: attacking fight woundModifier=1
+3f15-9407-875e-1a5c Omnissian Unguents (Aura): defending any list ? fnp=5 unitKeywords=ARMOURED SKIRMISHER
+3f1a-2d7b-ede7-842a Helm of the Nameless Warrior: attacking fight ownModelsOnly=true weaponAbilities=[DEVASTATING WOUNDS]
+3f2f-8aa8-cb41-6815 Bizarrely Resilient: defending any apModifier=-1
+3f37-2173-b6ca-bc1b Rampart Crest: –
+3f43-dec3-d3dc-069c Damaged: 1-7 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+3f64-f896-c54f-7fea Hammerhand (Psychic): attacking fight weaponAbilities=[LETHAL HITS]
+3f72-66e9-bdce-7448 Unleash Hell: defending any list ? hitModifier=-1
+3f72-d7a7-dce1-8da4 Twisted Sorceries (Psychic): attacking any ? attacksModifier=3 ownModelsOnly=true strengthModifier=3 weaponFilter=PSYCHIC
+3f73-8bbc-22e7-6075 Psychic Destroyer: attacking shooting damageModifier=1 ownModelsOnly=true weaponFilter=PSYCHIC
+3f75-88b1-db9c-63cd Duty Eternal: defending any strengthVsToughness=gt woundModifier=-1
+3f84-ce7d-f9a5-024e Canny Hunters: attacking fight apModifier=1
+3fda-fc6d-db15-78d2 Astartes shield: –
+3feb-a01d-7ba0-38c1 Diseased Cover: –
+3ffd-af3b-fe75-e013 Perfectly Adapted: –
+400b-c724-6710-76b1 Bonded Heroes: attacking shooting list ? strengthModifier=1 unitKeywords=T'AU EMPIRE BATTLESUIT
+4016-04e6-9751-89e3 Battle Protocols: attacking shooting ? attacksModifier=2 | attacking fight ? attacksModifier=2
+4019-5ac3-1808-fb5b Invulnerable Save: –
+4050-a088-38c5-ab2a Precise Targeting: attacking any rerollHits=all vsKeywords=SPOTTED
+405f-1984-f624-369c Winged Strike (Pain): attacking shooting ? rerollHits=all
+407-7706-8874-ca33 Ascended Daemon: –
+4075-171a-38ab-65d5 Exacting Cruelty: attacking fight list unitKeywords=WYCH CULT weaponAbilities=[LETHAL HITS: NON-MONSTER/VEHICLE]
+407b-4251-b15f-a019 Foul Infusion: attacking any weaponAbilities=[LETHAL HITS] | attacking any ? critHitOn=5
+407e-e4f2-29ce-13de Damaged: 1-7 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+409-e43f-2c32-248a Cruel Amusement: –
+4097-6639-4ea6-9601 Tzagulla: attacking any apModifier=1 attacksModifier=1 ownModelsOnly=true strengthModifier=1 | attacking any ? damageModifier=1 ownModelsOnly=true
+40b5-b4ba-e914-6e86 Righteous Judgement: attacking shooting ? weaponAbilities=[IGNORES COVER]
+40d6-3ccd-a1f7-d4c2 Logis: attacking any ? hitModifier=1
+40ee-97e4-6842-5262 Blizzard shield: –
+40f3-ad42-a70c-c4db Priority Target: attacking any list ? rerollHits=ones unitKeywords=GENESTEALER CULTS
+4111-82e3-9444-e942 Anti: –
+4129-703-44-c6c Hunter's Instincts: attacking any list ? hitModifier=1 unitKeywords=KROOT woundModifier=1
+4130-3962-d1f1-2a04 Fervent Purgation: attacking shooting list ? strengthModifier=1 unitKeywords=ADEPTA SORORITAS weaponAbilities=[ASSAULT]
+413e-e03b-21b0-63e1 Burna Bomb: –
+4141-7397-e71a-14cf Titan-killer: attacking shooting ? ownModelsOnly=true vsKeywords=MONSTER, VEHICLE weaponAbilities=[DEVASTATING WOUNDS]
+418c-2890-4e7b-6dd4 Blessed Venom: attacking fight weaponAbilities=[ANTI-INFANTRY 3+]
+419d-1edd-9c5d-dff7 Supreme Grand Master: attacking any weaponAbilities=[SUSTAINED HITS 1]
+41bc-61e5-b4dc-1194 Gift of the Iron Wolf: –
+41c9-1420-19bf-0c45 Fleshmetal Fusion: –
+420d-447-d2c3-42fc Artificer Armour: –
+423f-bec8-2d31-7b79 Army: Skorflense: –
+428-ed57-e316-6110 Rolling Fortress: defending shooting list ? cover=true unitKeywords=ASTRA MILITARUM
+429b-8985-6cfb-8970 Industrialised Destruction: attacking any rerollWounds=ones
+42b1-57e1-df1b-ea7e Prey on the Weak: attacking any list ? rerollHits=ones unitKeywords=HERETIC ASTARTES INFANTRY FLY vsKeywords=BATTLE-SHOCKED
+42b6-4294-385b-7e55 Endurant shield: –
+42b9-4a39-da93-2516 Peerless Fighters: attacking fight rerollHits=ones | attacking fight ? rerollWounds=ones
+42cb-ad3c-fc75-34f2 Furnace of Plagues: attacking fight attacksModifier=1 ownModelsOnly=true strengthModifier=1
+42e3-ad7-3b46-8fa8 Mechanical Augmentation (Aura): attacking any list ? apModifier=1 unitKeywords=NECRONS BATTLELINE | defending any list ? apModifier=-1 unitKeywords=NECRONS BATTLELINE
+42ef-96d9-daa3-3b7d Inspirational Exemplar: attacking fight critHitOn=5
+4362-2036-1522-de2e Damaged: 1-8 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+43b3-b8cd-a5b9-f282 Eye of Judgement (Psychic): attacking any ownModelsOnly=true rerollWounds=all
+43b7-b56b-83d3-3fca High King of Fenris: attacking fight list ? rerollHits=all unitKeywords=ADEPTUS ASTARTES
+4435-c6ab-3c79-4b05 Betentacled Limbs: attacking fight attacksModifier=1 ownModelsOnly=true
+443e-6ef5-6bdd-e418 Synaptic Imperitives: attacking fight ? hitModifier=1
+4442-c96-8da6-8957 Autoclavic Denounciation: attacking shooting ownModelsOnly=true weaponAbilities=[ANTI-INFANTRY 2+], [ANTI-MONSTER 4+]
+44ba-e745-82b3-0a56 Q'o'ak, the Boundless: attacking any ? ownModelsOnly=true rerollHits=all rerollWounds=all
+44f9-96ce-cf30-c1fb Fire Discipline: attacking shooting rerollHits=ones
+458c-7a32-ebf7-a249 Runic Tattoos: defending any ? mortalFnp=4 ownModelsOnly=true psychicFnp=4 | defending any ? mortalFnp=6 psychicFnp=6
+459f-b6fe-6656-7e08 Fury of the Righteous: attacking any weaponAbilities=[LETHAL HITS]
+45a8-1aaa-cff6-938b Advanced Armour: defending any ? mortalFnp=4
+4616-6546-2834-02e6 Black-winged Vigilance: attacking shooting list unitKeywords=RAVENWING FLY weaponAbilities=[IGNORES COVER]
+461a-e603-b852-5339 Steeped in Suffering: attacking any ? hitModifier=1
+4623-7752-38d8-2a68 Wolf-tail Talisman: defending any damageModifier=-1 ownModelsOnly=true
+4640-43e7-30b-215a Ignores Cover: –
+4652-4462-711c-484c Blood Chalice: attacking fight apModifier=1
+467f-6b90-9fac-e6bc Fortify (Psychic): defending any fnp=5
+46c3-7691-3912-bc70 Fire Coordinator: attacking shooting weaponAbilities=[SUSTAINED HITS 1]
+46ce-58b9-3cd9-a2ee Euphoric Crown: attacking fight ownModelsOnly=true strengthModifier=1
+46d1-a9f3-efe5-b4a9 Control Edict: attacking any rerollHits=all
+473-3f8d-7861-5a6d Magaera’s Duty (Bondsman): –
+4740-bb90-46bb-346c Vanguard Ambushers: attacking any ? rerollWounds=ones
+4749-f1a9-a9a6-36c9 Specialised Weapon System: attacking any ? ownModelsOnly=true weaponAbilities=[IGNORES COVER] weaponFilter=INDIRECT FIRE
+475e-d58f-5d60-f349 Guided by Fate: attacking any ownModelsOnly=true rerollHits=all rerollWounds=all
+4773-1d4a-88a5-fced Front-line Champions: –
+47ad-d3d0-b44e-2b05 Damaged: 1-9 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+47ca-e9d7-e55f-17f8 Branching Fates (Psychic): –
+47d3-771a-7668-fd15 Guardian Eternal: defending shooting damageModifier=-1
+47d6-60fd-3fc0-91d8 Blessing of the Omnissiah: –
+4824-2448-872a-9974 Diamond of Distortion: defending any hitModifier=-1
+4834-d74e-0304-1460 Assassins' Poisons (Pain): attacking any ? weaponAbilities=[LETHAL HITS], [PRECISION]
+4839-9e5c-f1f7-a72b Hands of the Pious: attacking fight ? strengthModifier=1
+4857-fa29-6537-4d5d Invulnerable Save: –
+4860-ab93-a599-a217 Despoilers Without Mercy: –
+486b-a9a7-402c-ab9d Big an’ Shooty: attacking shooting rerollHits=ones
+486c-f4fd-5ec1-38e3 Fabricator Claw Array (Aura): defending any list ? fnp=6 unitKeywords=NECRONS VEHICLE
+489d-fafc-e8fa-ffd1 War Howl: attacking fight ? strengthModifier=1 weaponAbilities=[SUSTAINED HITS 1]
+48b5-f665-e088-07e4 Weapon Sentinels: attacking shooting ? ignoreHitModifiers=true ignoreWoundModifiers=true
+48cf-9858-89c4-f598 Heirs of Azkaellon: defending any strengthVsToughness=gt woundModifier=-1
+48d0-0d0f-c9b6-5b34 Tenacious Spirit: attacking any ? hitModifier=1 | attacking any ? woundModifier=1
+492b-cd7c-f5e5-4d76 Agile Dogfighter: defending any hitModifier=-1 ownModelsOnly=true
+4941-ff7-a233-6730 Embittered: –
+4947-3e88-7fbb-a2d4 Eradicate the Foe: attacking any ? ownModelsOnly=true rerollHits=all
+4952-cb93-5b85-f9b6 Daring Recon: attacking any list ? rerollHits=ones unitKeywords=ASTRA MILITARUM
+495e-a4f1-9476-85e4 Territorial: attacking any ? rerollWounds=ones
+4960-b1d4-a81d-1d5 Ferocious Show-off: attacking fight attacksModifier=1 ownModelsOnly=true
+497e-7004-42af-82a9 Raptorial Talons: attacking fight apModifier=1 ownModelsOnly=true strengthModifier=1
+49a0-fe58-5293-bdc2 Daemonic Ordnance: attacking shooting ? ownModelsOnly=true weaponAbilities=[DEVASTATING WOUNDS], [HAZARDOUS]
+49b9-2115-9a48-ac5e Shimmerstone: defending shooting woundModifier=-1
+49c8-2d8a-5a03-49bb Daemonic Patrons: –
+4a2d-2388-d446-e087 Go fer da Weak Spot: attacking shooting vsKeywords=MONSTER, VEHICLE woundModifier=1
+4a3f-c7c6-c5ed-92eb Blessing of the Omnissiah: –
+4a6-2d-af1-918a Virulent Blessing (Psychic): –
+4a86-1713-528f-cf2a Righteous Paragons: attacking any hitModifier=1 vsKeywords=MONSTER, VEHICLE woundModifier=1
+4ab4-3b9c-be82-adce Revolting Regeneration: –
+4aeb-d675-b699-1130 Barrage of Filth: attacking any list ? weaponAbilities=[IGNORES COVER]
+4b30-d8a6-e4be-342a Damaged: 1-5 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+4b3a-3278-d14e-3b30 Holy Piety: attacking fight ? ownModelsOnly=true rerollHits=all
+4b43-4623-e0e1-f159 Malicious Calculations: attacking any ignoreHitModifiers=true
+4b60-7366-0ef4-76b5 Enduring Vengeance: –
+4bac-5c2a-5e23-d586 Impetuous Glory: –
+4bba-93e6-ebe2-381c Destructor: attacking shooting apModifier=1 ownModelsOnly=true vsKeywords=INFANTRY
+4bca-c36a-7f10-4d90 Armour of Faith: –
+4bf7-19ff-4761-8e69 Cackling Plague Mites: attacking shooting weaponAbilities=[IGNORES COVER]
+4bfc-77bd-5c43-4781 Calgar’s Champion: attacking any ? ownModelsOnly=true rerollHits=ones vsKeywords=CHARACTER | attacking any ? ownModelsOnly=true rerollWounds=ones vsKeywords=CHARACTER
+4c02-411-e9be-6773 Master Chronomancer: –
+4c60-9f79-8895-7b27 Prophet of Da Great Waaagh! (Aura): attacking fight list ? hitModifier=1 unitKeywords=ORKS | attacking fight list ? unitKeywords=ORKS woundModifier=1
+4c7a-f618-0ab6-34b2 Ruthless Interrogators: attacking fight rerollHits=ones
+4c8f-5d71-2fee-d6c6 Balemind Membrane: attacking any ? ownModelsOnly=true rerollHits=all rerollWounds=all
+4ca9-3652-f045-85ba Damaged: 1-7 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+4ced-f030-661-af4c Auto-Tapestry of the Emperor's Judgement: attacking any ? weaponAbilities=[DEVASTATING WOUNDS]
+4cf6-54cd-36c6-86f2 Beastpyre: –
+4d1e-4abe-101d-3c11 Piledriver: –
+4d66-d140-3901-6bf Warrior Noble: defending fight hitModifier=-1
+4dbf-e8fe-c4fc-8bdd Lightning Reflexes: –
+4dce-4847-6686-4832 Scattershield: –
+4dce-d8aa-02ec-abef Rod of Office: attacking any rerollHits=ones
+4de5-a4a3-8fd3-f8b6 Saturation Rounds: attacking shooting weaponAbilities=[IGNORES COVER]
+4e0d-9757-de02-730b Magna Imperator: –
+4e1-4598-e547-e79c Mob-handed Brutality: attacking fight list unitKeywords=BOYZ weaponAbilities=[SUSTAINED HITS 1] | attacking fight ? weaponAbilities=[LETHAL HITS: NON-MONSTER/VEHICLE]
+4e8a-5427-cf94-3421 Lethal Reverb: defending any list ? hitModifier=-1
+4e9b-b002-b008-6077 *Invulnerable Save: –
+4ed1-cf05-904a-5af7 Bring it Down!: attacking shooting rerollHits=ones rerollWounds=ones vsKeywords=MONSTER, VEHICLE
+4ee6-6225-5888-59ce Reinforced Superstructure: –
+4eeb-5bad-c9ef-cd9a Fell Harvester: attacking fight attacksModifier=2 ownModelsOnly=true
+4f3e-74ec-5c46-1fea Fluxmaster: defending fight hitModifier=-1
+4f50-7ded-d201-1e2b Lurid Flux: –
+4f61-91c6-eae4-94fa Decimator Protocols: attacking shooting rerollHits=ones
+4f66-cea2-404b-2c52 Fortification: –
+4f6a-e0d9-049c-234a Drawn to Suffering (Pain): attacking any ? hitModifier=1
+4f70-a79d-6d4b-e437 Wrath of the Machine Spirit: attacking shooting ? weaponAbilities=[DEVASTATING WOUNDS: NON-MONSTER/VEHICLE]
+4f7f-4559-76e4-b73a A Worthy Skull: attacking fight ownModelsOnly=true rerollHits=all rerollWounds=all vsKeywords=CHARACTER
+4f92-1ba8-41bc-c802 Noctic Shield: defending any ownModelsOnly=true toughnessChange=1 woundsChange=1 | defending any ? damageModifier=-1
+4fd6-b128-8f09-4748 Soulseeing: attacking shooting ? ignoreHitModifiers=true weaponAbilities=[IGNORES COVER]
+4fd7-faf4-6d02-1fa6 Tranceweaver: attacking any rerollHits=ones
+4fef-0ab4-2b60-48c4 Raiders and Reavers: attacking any list ? apModifier=1 unitKeywords=HERETIC ASTARTES weaponAbilities=[ASSAULT]
+4ffa-bb99-74dd-488b On the Archtraitor's Bridge: attacking fight attacksModifier=2 ownModelsOnly=true
+5021-8bf2-f214-c0ad Alpha Invader: attacking any weaponAbilities=[SUSTAINED HITS 1]
+5045-41f8-b903-6332 Achillan Eye: attacking any ? ownModelsOnly=true rerollWounds=all vsKeywords=INFANTRY | attacking any ? ownModelsOnly=true rerollWounds=all vsKeywords=MONSTER, VEHICLE
+5056-0ceb-f941-c2ce Valour's Edge: attacking fight apModifier=2 ownModelsOnly=true weaponAbilities=[LETHAL HITS]
+505c-7ce2-155c-682c Adaptive Defence: attacking any list ? rerollWounds=ones unitKeywords=ADEPTUS ASTARTES
+506d-483f-7ff9-117a Serpent Shield: –
+50a1-52e1-ef3c-71e0 Martial Paragon: –
+50a6-7304-dbf3-857f Leading the Charge: attacking fight ? weaponAbilities=[DEVASTATING WOUNDS]
+50c7-c357-0b3b-c9a8 Intoxicating Musk: defending fight strengthVsToughness=gt woundModifier=-1
+50d3-4d64-992a-213a Shimmerplume of Achillrial: defending shooting hitModifier=-1 woundModifier=-1
+50d4-136a-4e2a-d234 Unyielding Ancient: defending any strengthVsToughness=gt woundModifier=-1
+5108-e919-a44e-bf88 Massed Firearms: attacking shooting rerollHits=ones | attacking shooting ? weaponAbilities=[SUSTAINED HITS 1]
+516c-bfe5-2102-d03c Huskarl to the Jarl: –
+5171-dc2c-e7b0-2d4 Bio-stimulus: attacking fight list ? apModifier=1 unitKeywords=TYRANIDS
+5188-f8f-edfa-1f82 Aggressive Deployment: –
+518b-fe87-0821-dc60 Combined Deployment: –
+51ae-c850-5c2a-761f Thin Their Ranks: attacking shooting ? ownModelsOnly=true weaponAbilities=[DEVASTATING WOUNDS]
+51dc-4079-4caf-2ef6 Belicosa-class Capacitor Vanes: attacking shooting ? strengthModifier=1
+5216-4a0b-633c-64a Atrapos’ Duty (Bondsman): –
+5221-477f-fa83-f13f Thunderstrike: attacking shooting vsKeywords=MONSTER, VEHICLE woundModifier=1
+523d-6d7f-a2b3-581a Shard of Dying Light: –
+524c-2860-9d11-a042 Tales of Heroism: –
+525f-c5d8-d135-e7a1 The Emperor's Shield: defending any strengthVsToughness=gt woundModifier=-1
+527b-7d13-b4d6-bf7d Herald of Ynnead: attacking any list ? rerollWounds=ones unitKeywords=AELDARI
+528c-7067-fc97-2ea7 Fury of the Machine Spirit: –
+52ec-5780-4e0-56f4 Skyfire: –
+5311-f846-c528-3e84 Treasure of the Technomandrites: –
+5317-434b-033e-5048 Soul Forge Boons: –
+531c-aeb5-cc4e-10af Death-hold: –
+532-a15d-87bd-10d2 Mindlock: –
+5324-763c-61f5-9e4b Oath of Rynn: attacking any ? attacksModifier=1
+5389-de27-ddda-bd2a Blessed Visages: –
+539c-d112-c026-eac5 Virtuous - Master of Judgement: attacking any ? damageModifier=1 weaponAbilities=[SUSTAINED HITS D3]
+53ac-7226-48a5-2aa9 Blissgiver: attacking fight apModifier=1 attacksModifier=1 damageModifier=1 ownModelsOnly=true weaponAbilities=[PRECISION], [DEVASTATING WOUNDS]
+53b4-562f-b888-7e28 Unrelenting and Uncompromising: attacking any ignoreHitModifiers=true
+53c9-34f6-2443-a95e Voice Of Command: attacking fight ? skillModifier=1 | attacking shooting ? skillModifier=1 | attacking any ? attacksModifier=1 weaponFilter=RAPID FIRE | defending any ? saveChange=1
+53d6-1459-4b2c-e3be Kabalite Trueborn: attacking shooting skillModifier=1
+53db-1bc6-da94-f8e9 Eye of Judgement (Psychic): attacking any ownModelsOnly=true rerollWounds=all
+53dd-b506-8f4b-26b2 Wisdom of the Ancients [Aura]: attacking any list ? rerollHits=ones unitKeywords=ADEPTUS ASTARTES INFANTRY
+5403-758b-7dcc-6733 Press the Attack: –
+5425-95ba-94fa-3348 Urban Fighters: –
+542e-f8cc-d96d-fa24 Assisted Targeting (Aura): attacking any list ? skillModifier=1 unitKeywords=ADEPTUS MECHANICUS | attacking any list ? unitKeywords=ADEPTUS MECHANICUS weaponAbilities=[HEAVY]
+543c-c7fe-bd85-793c Mechanised Murder: attacking any list ? rerollHits=ones rerollWounds=ones unitKeywords=EMPEROR'S CHILDREN
+54e4-f882-ed68-ac45 Weavers' Wail: attacking fight attacksModifier=1 ownModelsOnly=true strengthModifier=3
+54ee-20b6-f8e0-298c Venerable Champion (Aura): attacking any list ? rerollHits=ones unitKeywords=ADEPTUS ASTARTES INFANTRY, MOUNTED
+5510-ef4b-2979-bf54 Baleful Armaments (Pain): attacking shooting ? damageModifier=1 weaponAbilities=[HAZARDOUS]
+5516-6c59-a173-22a2 Focused Machine Spirit: –
+5517-52c6-1f29-8ffd Medallion Resolute: –
+5525-ea73-2154-123b Helix Gauntlet: –
+5529-bbb2-8c35-a970 [Psychic Abilities] - Shrouding (Psychic Level 1): defending any ? hitModifier=-1
+552b-e379-9632-da7c Root-graven Weapon: attacking any ? ownModelsOnly=true rerollHits=all rerollWounds=all
+552d-c1ce-b79b-54c4 Iron Artifice: attacking any ownModelsOnly=true weaponAbilities=[ANTI-VEHICLE 4+], [ANTI-FORTIFICATION 4+]
+553b-c4da-0956-0a9b Iron-hard Talons: attacking fight apModifier=1 ownModelsOnly=true
+5581-c972-51ae-e5c2 Murderous Crossfire: attacking shooting list ? apModifier=1 unitKeywords=DRUKHARI
+55c1-6fe9-562f-48c2 Walking Fortress: attacking shooting ? weaponAbilities=[HEAVY] | attacking shooting ? hitModifier=1
+55c7-c97f-7158-f4a9 Righteous Rage: attacking fight ? attacksModifier=1 ownModelsOnly=true strengthModifier=1
+55cf-7f41-35ce-3259 Death Companion: –
+561f-ca8b-8b44-9c94 Immediate Threats: attacking fight ? rerollWounds=ones
+5627-af72-ff28-8f3d Thyrnicine: –
+565-616f-548a-b9ab Bastion of Firepower: attacking shooting ? ownModelsOnly=true weaponAbilities=[LETHAL HITS]
+5676-8bc3-fdc1-cd3c Brutal Raider: attacking fight ? apModifier=1 ownModelsOnly=true strengthModifier=1
+567d-867a-3de8-fcab Pech'ra: attacking shooting weaponAbilities=[IGNORES COVER]
+56bf-6bad-83b7-3a78 Stalker: attacking any ? ownModelsOnly=true woundModifier=1
+56dc-c61d-fed9-a85 Overwhelming Short-range Firepower: attacking any ? ownModelsOnly=true rerollHits=ones rerollWounds=ones
+56dc-ead8-d1a8-9d4 Rites of Castigation: attacking shooting list ? apModifier=1 unitKeywords=ADEPTA SORORITAS
+56f4-2daa-ceee-d995 Master of Combat: attacking any ? damageModifier=2 ownModelsOnly=true
+5707-1f88-52d4-09cc Angel's Wing: defending shooting ? hitModifier=-1
+5722-e69a-a553-9dcd Combat Drugs: attacking fight list ? attacksModifier=1 unitKeywords=WYCH CULT | attacking fight list ? skillModifier=1 unitKeywords=WYCH CULT | defending any list ? toughnessChange=1 unitKeywords=WYCH CULT | attacking fight list ? strengthModifier=1 unitKeywords=WYCH CULT | attacking shooting list ? skillModifier=1 unitKeywords=WYCH CULT
+572a-806f-52a7-36e6 Ingrained Superiority: attacking any apModifier=1
+57ba-51b5-0700-bd06 Master of the Deathwing: attacking any ? woundModifier=1
+57c2-1dfb-ce23-2761 Angelic Executioner: attacking fight ? weaponAbilities=[LETHAL HITS]
+5842-bfd2-5eaa-93ea Changecaster: attacking shooting weaponAbilities=[SUSTAINED HITS 1]
+5845-10af-ea52-4dd3 Misfortune (Psychic): defending any list ? woundModifier=-1
+5845-81f6-ba0d-3357 Fury of Titan: attacking any ? rerollHits=ones rerollWounds=ones
+5847-7994-39c6-20a2 Psionic Shield (Psychic): –
+5867-7a11-d8b4-b956 Vanguard Assault: attacking fight ? weaponAbilities=[LETHAL HITS]
+58a3-0194-214d-47da Wisdom of the Ancients [Aura]: attacking any list ? rerollHits=ones unitKeywords=ADEPTUS ASTARTES INFANTRY
+58d7-8724-689e-61f3 Righteous Smiting: attacking fight woundModifier=1
+58d8-e21c-c54c-04bb Spiritus Machina: attacking any ? rerollWounds=all
+58e9-0f61-d97e-78ad Indomitor Doctrines: attacking any ? hitModifier=1 woundModifier=1
+58fc-b6a-af01-1843 Rearm, Reload, Fire: attacking shooting ? ownModelsOnly=true weaponAbilities=[SUSTAINED HITS 1]
+5930-9630-6b27-3f78 Mindless Reaper: attacking any rerollHits=all
+5987-737b-1f07-76cd Spirit of Excess: attacking any ownModelsOnly=true weaponAbilities=[SUSTAINED HITS 1]
+59b7-88a6-8e96-f854 Kindred Sorcery: attacking any list ? unitKeywords=THOUSAND SONS woundModifier=1 | attacking any list ? unitKeywords=THOUSAND SONS weaponAbilities=[DEVASTATING WOUNDS] weaponFilter=PSYCHIC
+59ea-b848-236a-a368 Killer Reputation: –
+59fa-d89c-5b6e-83a7 Reaping Tally: attacking shooting ? apModifier=1
+5a40-93b3-6c2a-f7cb Unto the Anvil: attacking fight rerollWounds=ones | attacking fight ? rerollWounds=all
+5a4f-9341-88c9-9038 Angelic Visage: defending fight hitModifier=-1
+5a51-6971-8406-6bd7 Priority Target Acquisition: attacking shooting ? strengthModifier=1
+5a52-39cf-a782-aafc Tzeentch: –
+5a56-f3b9-e95e-99c2 Assault Commando: attacking shooting ? rerollHits=all
+5a7a-57fa-9801-4e25 Invulnerable Save (4+*): –
+5abc-becd-aac1-cc42 Prey of the Blood God: attacking fight ? rerollWounds=all
+5adc-8474-9ac1-2d23 Force Acuity: attacking fight apModifier=1
+5aff-abb1-f06d-23a5 Power Matrix: attacking any list ? rerollHits=ones unitKeywords=CRYPTEK, CANOPTEK
+5b1f-9dce-c4f9-dcf9 Krep'chak: –
+5b87-bb5a-0d26-0109 Gilded Guardians: defending shooting list ? excludeUnitKeywords=MONSTER, VEHICLE strengthVsToughness=gt unitKeywords=ADEPTUS CUSTODES woundModifier=-1
+5b90-2ff8-3fd5-83b4 Hatred Eternal (Pain): –
+5b90-43fc-7d4c-513e An Honourable Death in Combat: attacking any ? weaponAbilities=[SUSTAINED HITS 1]
+5b99-ce98-dc07-6089 Elite Crew: attacking any rerollHits=ones
+5bb-e17c-f1ac-9efc Honour Guard of Macragge: –
+5bd0-2b55-2bb6-cd42 Strength From Conviction: attacking fight strengthModifier=1
+5bd3-8be8-76c3-fab9 Stalker: attacking any ? hitModifier=1 ownModelsOnly=true
+5bdc-4b75-e322-2acf Tännhauser's Bones: defending any damageToOne=true ownModelsOnly=true
+5c21-b9d3-63f3-db33 Putrid Heart: –
+5c2b-69fe-f991-cbcc Relentless Crusaders: attacking fight ? rerollWounds=all
+5c2b-c399-3f02-0872 Eightfold Eyes: –
+5c3d-27e8-be23-15c3 Atomantic Arc-reactor: –
+5c4c-7d0c-a725-865b Brazen Form: –
+5c8e-e7f9-5ded-2a58 Grand Master of the Deathwing: attacking any vsKeywords=CHARACTER woundModifier=1
+5c9c-f3c4-d572-aa74 Broad‑spectrum Targeting Augurs: attacking any ? weaponAbilities=[SUSTAINED HITS 1]
+5ca0-fa4b-9ccf-aad5 Forge's Blessing: –
+5cd2-7b68-d2cb-e7e4 Aqullon Optics: –
+5cea-d2a8-a199-3ada Bio-acid Burns: –
+5cf1-da0b-da34-3342 Master of Mechanisms: –
+5cfb-f5b5-a838-4622 Conversion (Thunderkyn): –
+5d17-ba74-ee7f-058c Incubi Shrine: –
+5d2b-1237-8705-fb00 Warpfire Infusion: –
+5d34-3c85-ef6b-be87 Technological Trophies: attacking fight ? weaponAbilities=[LANCE]
+5d95-fc94-f268-c2ac Timesplinter Mantle: defending fight hitModifier=-1
+5da6-4abc-5e01-601d Miasmal Emissions: –
+5db3-7e86-5055-8397 Unholy Patronage: –
+5dcc-eb94-3958-01d2 Vile Precision: attacking shooting weaponAbilities=[LETHAL HITS]
+5def-c759-39f-94ca Purge and Cleanse: attacking any list ? weaponAbilities=[IGNORES COVER]
+5e10-6d62-2624-80a8 Feel No Pain 5+: –
+5e1d-719c-c675-6438 Sword of the Void's Eye: –
+5e37-69a6-b478-2cd5 Armoured Fist: attacking shooting list unitKeywords=ASTRA MILITARUM woundModifier=1
+5e85-e9c4-c88f-0403 Rain of Devastation: attacking any list ? hitModifier=1 unitKeywords=IMPERIAL KNIGHTS DOMINUS
+5e86-cb68-9205-16c4 Abbess Sanctorum: attacking any rerollHits=all rerollWounds=all
+5f15-8b4b-9437-2afc Aspiring - Harbinger: attacking any ? damageModifier=1
+5f57-0ced-63ca-76d0 Gaze of Ynnead: attacking any ownModelsOnly=true weaponAbilities=[DEVASTATING WOUNDS] weaponFilter=ELDRITCH STORM
+5f87-984b-e0e0-2125 Biological Warfare: –
+5fb6-8e08-f1f4-9d65 Augury Halo: attacking shooting ? ownModelsOnly=true weaponAbilities=[IGNORES COVER]
+5fba-bcd5-68e4-d3d8 Reaping Tally: attacking shooting ? apModifier=1
+5fc9-9ee8-8657-65b6 Relentless Rage: attacking fight list attacksModifier=1 unitKeywords=WORLD EATERS
+5fd9-3afc-fe70-7413 Armour of Faith: defending any damageModifier=-1 ownModelsOnly=true
+5fe0-afe2-451c-38d2 Volley Fire: attacking shooting attacksModifier=1
+603-dd8e-d3f3-6dc0 The Emperor's Grace: –
+6033-8abb-9299-a5dc Cold Fervour: attacking any list strengthModifier=2 unitKeywords=DESTROYER CULT
+6073-c1ae-e3d3-2311 Raging Fervour: attacking any rerollHits=ones | attacking any ? rerollWounds=ones
+60a4-507e-da36-683c Destructor Optics: attacking shooting ? apModifier=1
+60bb-029d-adde-8c64 Oathbound Speculator: attacking any rerollWounds=ones | attacking any ? woundModifier=1
+60c8-6152-4e9b-bda3 Army: Heliotrophos: –
+60dd-11ed-c7f5-8d9c Engrammatic Imprinting: attacking any ? rerollHits=ones
+6175-9078-fca3-8552 Bloodmarked: attacking any list ? apModifier=1 damageModifier=1 strengthModifier=1 unitKeywords=KHORNE
+6177-edd5-89f8-10f0 Drone Commander (Aura): attacking any list ? hitModifier=1 unitKeywords=SPINDLE DRONES
+61a8-eb62-856-ad73 Master of Blades (Pain): defending fight list ? woundModifier=1
+61b5-1d00-e20d-2e1d Warden's Duty (Bondsman): –
+61c9-1b37-b067-44ba Necrodermis: defending any damageModifier=-1 ownModelsOnly=true
+61ca-9227-7d3e-bb7d Gloam Rot: defending any strengthVsToughness=gt woundModifier=-1
+61db-fb59-d539-6ed7 Fire Discipline: attacking shooting ? rerollHits=ones
+61f1-6a68-83eb-c57c Paralysing Assault: attacking any ? hitModifier=-1
+61f3-7d93-a910-623c Soul Trap: attacking fight attacksModifier=1 ownModelsOnly=true strengthModifier=1
+6208-448c-dbf0-8e8a Genetor: –
+622d-aeba-2cd7-5577 Miasmic Fumes: defending any hitModifier=-1 ownModelsOnly=true woundModifier=-1
+6251-f857-24af-2a45 Gargantuan Rage: –
+6252-81ce-8997-74f3 Prioritisation Protocol: attacking fight ownModelsOnly=true weaponAbilities=[PRECISION]
+625a-8155-9dbc-661e Enhanced Senses: attacking shooting weaponAbilities=[IGNORES COVER]
+625f-a2b7-5cfc-e60d Blessing of the Dark Master: –
+627-120b-3ae8-df3b Optimised for Slaughter: attacking any ? rerollWounds=ones | attacking any ? rerollWounds=ones
+62a8-d797-4bb6-c406 Transient Madness: –
+62c2-b1f0-89ec-a3dc Cruel Example: attacking any ownModelsOnly=true vsKeywords=CHARACTER woundModifier=1
+62df-a9ee-3931-13d Suppression Volley: defending any list ? hitModifier=-1
+62f4-31f5-6561-bd7d Swallow Energy: defending any ? mortalFnp=4 psychicFnp=4
+631b-7490-d182-2e67 Damaged: 1-10 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+632f-3ad6-8238-792d Grav Talon: –
+6352-6f0c-617d-2c1c Deadly Stalkers: attacking any ? woundModifier=1
+6356-2345-a0cf-9555 Warp Field (Aura, Psychic): –
+635b-e654-8a00-ab63 Paired Krumpas: attacking any ownModelsOnly=true rerollHits=all weaponFilter=KUSTOM KRUMPA
+63b6-6d43-2592-7306 Lethal Caress: attacking fight apModifier=1
+63bd-684f-de32-06e7 Personal Grudge: attacking any ? weaponAbilities=[LETHAL HITS], [PRECISION]
+63c6-ed19-c7e5-638 Damaged: 1-10 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+63f5-e162-abaf-9a62 Purge and Cleanse: attacking any list ? weaponAbilities=[IGNORES COVER]
+641a-7557-7825-5b91 Esteemed - Noble Orator: –
+6472-9cab-4e9e-ccc2 Hunter's Eye: attacking shooting ownModelsOnly=true weaponAbilities=[IGNORES COVER]
+6482-3035-fed5-27d0 Robotic Bodyguard: –
+64b3-ccc4-58c1-c671 Shield of Calloson: –
+64c8-15a9-15a7-301c Point-blank Barrage: attacking shooting ? apModifier=1
+64f6-eac3-c95f-c8b8 Artisan: –
+650a-c3b2-3606-f927 Benediction of the Omnissiah: attacking shooting list ? apModifier=1 unitKeywords=CULT MECHANICUS | attacking fight ? attacksModifier=1 strengthModifier=1
+6536-90dc-a12d-cbb2 Reap a Terrible Tally: attacking any ? rerollHits=ones vsKeywords=INFANTRY | attacking any ? rerollWounds=ones vsKeywords=INFANTRY
+653d-148d-7c06-2436 Siege Captain: attacking any apModifier=2 damageModifier=2 ownModelsOnly=true strengthModifier=2 vsKeywords=FORTIFICATION, MONSTER, VEHICLE
+6563-fd19-91d4-8074 Tormentbringer (Aura): attacking any list ? unitKeywords=SLAANESH LEGIONS DAEMONICA weaponAbilities=[SUSTAINED HITS 1]
+6576-3106-a55a-4446 Synaptic Impetus: attacking any ? hitModifier=1 ownModelsOnly=true
+65b0-1aae-9190-2d6e Chance for Glory: attacking fight ? apModifier=1 attacksModifier=1 damageModifier=1 ownModelsOnly=true strengthModifier=1
+65b7-8f59-2648-ae5f Arisen Tyrant: attacking any rerollHits=ones
+65c9-f13a-0fb9-8c27 Ded 'Ard Armour: –
+660e-ccb9-65e7-19f Empyric Guidance (Psychic): attacking any weaponAbilities=[LETHAL HITS]
+6616-4095-388c-d5cc Pennant of Silvered Fury: –
+6661-26b2-c0eb-985 Assured Destruction: attacking shooting rerollDamage=true rerollHits=all rerollWounds=all vsKeywords=MONSTER, VEHICLE
+666e-a57a-9fe0-65e6 Technosorcerous Augmentations: attacking shooting list unitKeywords=CRYPTEK weaponAbilities=[ASSAULT]
+668-596e-1a32-97d7 Armoured Defender: –
+66bd-7c8d-e605-92b4 Malefic Impact: attacking fight weaponAbilities=[LANCE]
+66d7-e959-3438-5ca5 Sigismund's Seal: attacking fight ? weaponAbilities=[LETHAL HITS], [PRECISION]
+66e9-8db7-11ee-e176 Grimoire of True Names (Aura): –
+6700-6765-282f-f548 Frazzle Field Generator: –
+671f-b3f3-4a62-cb47 Psalm of Remorseless Persecution: attacking fight ? rerollHits=all
+672-a3ce-a316-9c18 Precision of the Patient Hunter: attacking shooting hitModifier=1 ownModelsOnly=true
+6725-fa7b-8a29-b00c Lord of Machines: defending any list ? hitModifier=-1
+672c-fcd1-2183-179c Crossfire: attacking any list ? apModifier=1 unitKeywords=GENESTEALER CULTS
+6740-17e8-4de2-551c Canticle of Rejection: defending any ? mortalFnp=5 psychicFnp=5
+6749-100f-5502-f40e Marked by Fate (Psychic): attacking any list ? hitModifier=1 unitKeywords=THOUSAND SONS
+674c-08f1-4a6a-2b29 Intolerant Zeal: –
+6756-c11b-0ac3-c4a1 Archon's Will: –
+676c-ecb5-d24d-3540 Feel No Pain 6+: –
+67b0-9549-34a5-63e5 Skirmish Fighters: –
+67c4-ee1f-58d4-1782 Psychic Barrier (Psychic): –
+67ed-2dd8-b9d9-b018 Standard of Righteous Hatred: attacking fight strengthModifier=1
+6809-73fc-986d-8110 Lord of the Pyrrhian Eternals: attacking any woundModifier=1
+6825-59bc-af03-4a19 Sumfin’ to Prove: attacking fight hitModifier=1
+685-c0a5-139e-a916 Mindlock: attacking any ? skillModifier=1
+6870-c759-ee6e-37b0 Weapon of the Matriarch: attacking fight apModifier=1 ownModelsOnly=true strengthModifier=1 weaponAbilities=[ANTI-CHARACTER 4+], [DEVASTATING WOUNDS], [PRECISION]
+6896-fcc7-13ac-117a Unholy Vigour: –
+68aa-ee31-9953-30b9 Breaching Team: attacking any rerollWounds=ones
+68ed-ed87-1f92-c6e6 Daemonforge: attacking any ? ownModelsOnly=true rerollWounds=ones
+68ef-4d8f-7fc-994f Parasitic Biomorphology: attacking fight strengthModifier=1 | attacking fight ? attacksModifier=1
+68fb-67e5-3675-c850 Bastion Shield: defending shooting ? apModifier=-1
+6910-f758-8d29-5166 Barrier Tech Repulsion: defending shooting hitModifier=-1
+699c-55ed-7fee-65ab Feel No Pain 4+*: –
+69a4-3159-581f-40ff Weapon Support System: attacking shooting ignoreHitModifiers=true
+69af-adfa-f28e-ae0d Empyric Tutelage: –
+69b7-b8ca-ea02-285c Desperate Protectors: –
+69c2-11d4-7d1e-5346 Psychic Hood (Ezekiel): defending any ? mortalFnp=4 psychicFnp=4
+6a33-178-237b-66f2 Damaged: 1-10 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+6a4d-7777-cded-5443 Arch Contaminator: attacking any ? rerollWounds=all
+6a64-5c0f-6b5f-15e2 Cult Demagogue: attacking any hitModifier=1
+6a66-66c0-9d13-46c9 Cegorach’s Favour: attacking fight ownModelsOnly=true rerollHits=ones woundModifier=1
+6a7f-5c47-38f0-87 Crystalline Targeting: attacking any list ? apModifier=1 unitKeywords=AELDARI
+6aa0-e151-22f-8d66 Master of Magicks (Psychic): –
+6aac-e9f9-6e71-977a Brutal But Kunnin': attacking fight damageModifier=1 ownModelsOnly=true
+6ae-e6e3-8715-618f Dead 'Ard: defending any damageModifier=-1
+6af2-170e-7977-4fc7 Roused to Fury: attacking any ? attacksModifier=1
+6b05-a57d-8ec0-e410 Fell the Mighty: attacking fight damageModifier=1 vsKeywords=MONSTER, VEHICLE
+6b52-8588-e3f-addc Armoured Spearhead: attacking any ? ownModelsOnly=true rerollHits=ones
+6b69-8f10-6d74-706c Visions of Heresy: attacking shooting ? rerollHits=all
+6b6c-34d4-6ad1-b0ab Trivârg Cyber Implant: –
+6b90-af7d-557d-c89b Saturation Fire: attacking shooting ? ownModelsOnly=true weaponAbilities=[IGNORES COVER]
+6bbd-9900-2b83-159d Drill Boss: attacking fight hitModifier=1
+6c1e-179e-a2dc-85d6 Targeting Array: –
+6c3d-88cb-6c39-716b Seeping Poisons: –
+6c59-e8ed-fb44-3ac2 Glovodan Psyber-eagle: attacking any list ? weaponAbilities=[IGNORES COVER]
+6c6a-f2e4-c539-242c Harker’s Hellraisers: defending shooting ? hitModifier=-1
+6c7e-c758-1a8c-429e The Watchers: defending any ? mortalFnp=4 psychicFnp=4
+6c9b-3ccc-ef75-6f19 Linebreakers: attacking fight ? weaponAbilities=[SUSTAINED HITS 1]
+6cd0-1e88-39cc-4009 Starfall Shells: –
+6d15-ae73-bc60-165b Defence Line: –
+6d2f-f39e-d284-3b7a Osseus Key: –
+6d36-0053-d930-d4b2 Totemic Infusions - Other: attacking fight ? hitModifier=1
+6d58-7c66-bbf9-8e79 Faultless Duellists: attacking fight apModifier=1
+6d80-d11e-231d-1014 Hood of Hellfire: defending any ? mortalFnp=4 psychicFnp=4
+6d94-9f73-4d47-2c68 Khorne: attacking any ownModelsOnly=true strengthModifier=2 weaponFilter=HELLFORGED
+6d9c-8c60-33e1-8eef Abomination: defending any ? ownModelsOnly=true psychicFnp=2
+6da8-e648-6af4-7d9f Incendiary Goad: attacking fight ? attacksModifier=1 strengthModifier=1
+6db2-5b25-f309-17df Grim Survivors: –
+6db9-da07-1c8b-8292 Beast Slayer: attacking fight ownModelsOnly=true rerollWounds=all vsKeywords=MONSTER, BEASTS
+6dc6-e465-e8ff-a4eb Pestilent Familiar (Psychic): –
+6dd8-33d2-6527-401e Damaged: 1-7 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+6ddb-b84a-eb3f-f119 Dat’s Our Loot: attacking shooting rerollHits=ones | attacking shooting ? rerollHits=all
+6dec-ae79-0afa-2d40 Point-blank Strike: attacking shooting ? ownModelsOnly=true rerollHits=all
+6dfe-fb8a-bb6b-fd88 Rend and Tear: attacking fight ? damageModifier=1 vsKeywords=MONSTER, VEHICLE
+6e01-88f9-87f0-d595 Gloom Prism (Aura): defending any list ? psychicFnp=4 unitKeywords=NECRONS
+6e30-67a0-e97d-3512 Martial Superiority: attacking fight ownModelsOnly=true rerollHits=all rerollWounds=all vsKeywords=CHARACTER
+6e41-bf9f-317c-e83f Aquilon Optics: –
+6e52-feca-f575-e5ae Spirit Thief: attacking any list ? rerollWounds=ones unitKeywords=HERETIC ASTARTES
+6e59-6cc9-5270-3482 Huntsman: attacking any ownModelsOnly=true rerollWounds=all vsKeywords=MONSTER, VEHICLE
+6e74-fe3e-7f84-91cd Suppression Bombardment: defending any list ? hitModifier=-1
+6e87-cc19-19cd-833f Awakened Spirit: attacking any ownModelsOnly=true rerollHits=ones rerollWounds=ones
+6f17-9599-9b67-f898 Delirium Cowl: –
+6f2f-8cf6-20e7-4c4c Focus of Hatred: attacking any list ? excludeUnitKeywords=DAMNED rerollHits=all unitKeywords=HERETIC ASTARTES
+6f31-0a5b-7d97-b385 [Psychic Abilities] - Might of Heroes (Psychic Level 1): attacking fight ? strengthModifier=2
+6f31-ba65-a5ad-1202 Aegis of Belief: –
+6f3a-c0f9-7c23-d607 Loyalty of Ambition: –
+6f4e-0c0e-71b1-d237 Daemon Hunter: –
+6f54-aab8-c031-cf5e Mantle of the Gnosticarch: defending any damageToOne=true ownModelsOnly=true
+6f63-9b2c-e75a-0a9a Precognisance (Psychic): –
+6ff5-66f5-8a9f-2834 Whirlwind of Rage: –
+7003-283b-1b84-c602 The Stars Are Right: –
+7019-ca5c-4d7e-7b83 Fated Hero: attacking any ? ownModelsOnly=true rerollHits=ones rerollWounds=ones
+701b-9655-4af1-e452 Shield of Sanguinius (Aura, Psychic): defending any list ? mortalFnp=5 psychicFnp=5 unitKeywords=ADEPTUS ASTARTES
+7049-403f-9c3d-c2cd Death to the Alien: attacking any rerollHits=ones | attacking any ? rerollHits=all
+708d-40bc-ecb7-75da Bellicose Machine Spirit: –
+7099-98be-d281-fe64 Ded Choppy: attacking fight ? rerollWounds=ones
+70a5-9f3d-4e2f-8eb3 Methodical Annihilation: attacking any list ? rerollWounds=ones unitKeywords=LEAGUES OF VOTANN | attacking any list ? apModifier=1 unitKeywords=LEAGUES OF VOTANN
+70c9-5565-956-5984 Mindlock: attacking any ? skillModifier=1
+70d0-48b9-4859-facc Psychotropic Aura: defending any ? hitModifier=-1
+711e-6ae9-712a-8365 Advanced Scouting: attacking shooting ? ownModelsOnly=true rerollHits=all
+712d-b14d-a795-ba99 Monarch of the Hunt: attacking fight ? ownModelsOnly=true rerollHits=all rerollWounds=all
+714b-fc26-1fdd-648f Brute Tactics: –
+714d-35e0-c526-f3ee Wyrmsplitter: attacking any damageModifier=1 ownModelsOnly=true vsKeywords=MONSTER, VEHICLE woundModifier=1
+7159-2551-fe79-c588 Craahdekh's Throne of Sacrifice: attacking any ? ownModelsOnly=true rerollWounds=all
+717f-8db9-3efd-b18a Titan's Bane: attacking any weaponAbilities=[ANTI-MONSTER 4+], [ANTI-VEHICLE 4+]
+71c0-36ae-b0f7-cdf2 Gore Frenzy: attacking fight ? attacksModifier=1
+71e1-9a9b-58e8-3849 Storm shield: –
+7205-6740-8868-3492 Vantage Point: –
+723f-1b4e-455d-839a Hailstrike: attacking shooting list ? unitKeywords=ADEPTUS ASTARTES weaponAbilities=[IGNORES COVER]
+725-b02-c08c-f668 Sentinel Protocols: –
+726c-8c32-9fa2-6c2e Paradox of Duality: defending any hitModifier=-1 woundModifier=-1
+727c-b62e-0603-2f54 Rage Embodied (Aura): attacking fight list ? attacksModifier=1 unitKeywords=BLOOD LEGIONS
+729-3c0a-779b-e740 Through Suffering, Strength: attacking fight attacksModifier=1 damageModifier=1 ownModelsOnly=true strengthModifier=1 | attacking fight ? attacksModifier=2 damageModifier=2 ownModelsOnly=true strengthModifier=2
+7298-a7da-114-92b0 Prototype Weapon System: –
+72c3-6768-b2e4-cbcc Mind Control (Psychic): –
+72c3-d3f3-5ba8-3c67 Tank Commander: –
+72dc-7dd9-dd5c-19f4 Furious Assault: attacking fight weaponAbilities=[SUSTAINED HITS 1: NON-MONSTER/VEHICLE]
+72f0-1c3a-5baf-6a65 Damaged: 1-5 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+72fc-39c0-9308-cad6 Oath of Vengeance: attacking fight ownModelsOnly=true rerollHits=all
+731d-26c2-a9e8-d336 Duty Eternal: defending any damageModifier=-1 ownModelsOnly=true
+7353-c371-3a7e-bb6 Clever Know-wotz: –
+735b-f532-a22f-da46 Bladestorm: attacking shooting ? weaponAbilities=[SUSTAINED HITS 1]
+736f-4ff3-c090-9a51 Gore-stained Veterans: attacking fight skillModifier=1
+7376-d1ad-1ed5-8c11 Molten Form: defending any halveDamage=true ownModelsOnly=true
+7391-4352-7193-9a16 Ensorcelled Destruction: attacking shooting ? apModifier=1 ownModelsOnly=true strengthModifier=1
+73af-ab1f-6d21-3645 Close-quarters Killer: attacking fight ownModelsOnly=true rerollWounds=all
+73b0-8e70-6937-071f Eye of the Hunt: attacking shooting list ? hitModifier=1 unitKeywords=HERNKYN
+73c3-ce4a-7fb7-3fcf Drawback: attacking any ownModelsOnly=true strengthModifier=-3
+73c5-c517-7aa5-96fc Rampart crest: –
+73ca-d5c2-f38-6dbf Icon of Flame: attacking shooting ? weaponAbilities=[IGNORES COVER]
+73f9-655d-1321-73d2 Half-glimpsed Shadows: defending shooting list ? hitModifier=-1 unitKeywords=GREAT DEVOURER
+7400-7387-dae-781f Damaged: 1-10 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+7403-4ad3-f2b0-cf99 Inviolable Transport: –
+7414-1762-a008-9828 Foesight (Psychic): attacking any ownModelsOnly=true rerollHits=all vsKeywords=CHARACTER
+7438-166c-2a79-f18d Sadistic Raiders (Pain): attacking any ? rerollWounds=ones
+74b9-79ed-1790-3127 Mischief and Confusion: –
+74be-cde5-76f4-9bfb Blinding Light: –
+74e3-eceb-df64-82dd Mantle of the Seneschal: attacking fight attacksModifier=1 ownModelsOnly=true strengthModifier=1 | attacking any hitModifier=1
+7505-6738-c29a-e173 Suppression Bombardment: defending any list ? hitModifier=-1
+7520-6990-1892-5239 Big-game Hunters: attacking shooting ? rerollHits=ones rerollWounds=ones
+7528-5be2-2f37-a809 Wreckin' and Lootin': attacking any ? rerollHits=ones | attacking any ? rerollHits=ones | attacking any ? rerollHits=ones
+7573-3f6e-e5ee-7e55 Tome of True Names: –
+7588-ae4f-208e-e049 Deep Scars: –
+758b-f18b-98a9-0fe4 Daemonbreaker: attacking any ownModelsOnly=true rerollHits=all rerollWounds=all vsKeywords=DAEMON
+758f-0503-c9ac-db2f Martial Mastery: –
+7598-f5d0-f953-0acb Trygon Prime: attacking fight ownModelsOnly=true skillModifier=1 strengthModifier=1
+75a9-e88c-6dde-16e6 Expert Bombardiers: attacking any ? apModifier=1
+75c5-5a9-b3a-c568 Damaged: 1-4 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+75cb-f288-a178-f6bb Mindlock: attacking any ? skillModifier=1
+75d5-d9e0-5f01-60bf Hypnotic Gaze (Psychic): defending any list ? hitModifier=-1
+75d7-ced9-0114-84fc Duellist: attacking fight attacksModifier=1 damageModifier=1 ownModelsOnly=true skillModifier=1 | attacking fight ownModelsOnly=true weaponAbilities=[PRECISION]
+75f4-754b-632e-ccb7 Offerings for the Dark Gods (Aura): attacking any list ? unitKeywords=WAR DOG weaponAbilities=[SUSTAINED HITS 1]
+762c-3127-9381-5daa Knights of Legend: –
+762d-28f4-b9c1-b28f Empyromancer's Focus: attacking any ownModelsOnly=true weaponAbilities=[SUSTAINED HITS 2] weaponFilter=PSYCHIC
+7634-2d39-6144-eece Vanquish the Foe: attacking any ? hitModifier=1 ownModelsOnly=true woundModifier=1
+7634-617a-fc22-593b Defend at All Costs: attacking any list ? hitModifier=1 unitKeywords=DIRE AVENGER, GUARDIAN, SUPPORT WEAPON, WAR WALKER
+7680-73aa-dbc8-b009 Enhanced Warriors: attacking fight ? strengthModifier=1 toughnessChange=1
+768e-65e8-0015-2a6b Storm Shield: –
+7697-fdc6-4658-3f1c Brood Progenitor (Aura, Psychic): attacking shooting list ? unitKeywords=TERMAGANTS weaponAbilities=[LETHAL HITS]
+76bb-cf93-ffc5-a6a4 Grimoire of Conjunctions: attacking fight ? ownModelsOnly=true strengthModifier=4
+76e2-fa16-cbc9-d420 Virtue of Intolerance: attacking any ? rerollHits=all weaponAbilities=[PRECISION]
+771a-1aba-68fe-7684 Master of Magicks (Psychic): –
+771a-49af-ce6c-6757 Damaged: 1-8 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+7739-b230-6835-8caf Exemplars of Mont’ka: attacking shooting ? weaponAbilities=[SUSTAINED HITS 1], [IGNORES COVER]
+774d-c85d-338d-0865 Machine Lord: attacking any list ? rerollWounds=ones unitKeywords=HERETIC ASTARTES VEHICLE
+7776-05a6-2fb6-6d96 From the Hall of Armouries: attacking fight ownModelsOnly=true weaponAbilities=[DEVASTATING WOUNDS]
+7797-8174-31bb-6e9f Captain-General (Aura): attacking any list ? excludeUnitKeywords=MONSTER, VEHICLE rerollHits=ones unitKeywords=ADEPTUS CUSTODES | attacking any list ? excludeUnitKeywords=MONSTER, VEHICLE rerollWounds=ones unitKeywords=ADEPTUS CUSTODES
+77a0-3cc8-dacf-bbdf Failure Is Not an Option: defending any fnp=5
+77ff-2463-354-23fd Null Rod: defending any ? mortalFnp=4 psychicFnp=4
+782f-6fe4-1d53-90a9 Chosen Companions: attacking any ? hitModifier=1
+7856-3aa3-75b7-cdf7 Aspiring - A Duty of Censure: –
+785c-13fd-8102-bbaf Etacarn SB9 Targeting Implant: attacking any rerollHits=ones | attacking any ? weaponAbilities=[SUSTAINED HITS 1]
+785d-95b4-30f3-f71f Atomic Disintegrators: –
+7869-a23a-8332-6df1 Weavefield crest: –
+7874-c52e-0cfb-3506 Primarch of the XIII (Aura): attacking any list ? rerollHits=ones unitKeywords=ADEPTUS ASTARTES | attacking any list ? rerollWounds=ones unitKeywords=ADEPTUS ASTARTES
+7899-d388-f303-592 Bounty Hunters: attacking any ? weaponAbilities=[LETHAL HITS], [PRECISION]
+7908-889b-da96-715d Executioner: attacking shooting ? hitModifier=1
+7931-826c-80c8-67c9 Harassment Swarm (Aura): defending any list ? excludeVsKeywords=MONSTERS, VEHICLES hitModifier=-1
+795c-9a7f-fc73-3380 Judged for Execution: attacking any list ? unitKeywords=ADEPTA SORORITAS weaponAbilities=[LETHAL HITS]
+7960-6ca0-861d-2669 Preservation Commendation: –
+796a-7701-6f9-7496 Rotating Death: –
+7974-f931-6a81-8b1f Skyborne Loons: attacking shooting list ? hitModifier=1 unitKeywords=ORKS AIRCRAFT, DEFFKOPTAS
+798a-4314-bcfe-43f9 Bounding Assault: –
+7990-644c-a395-eea5 Dodge Dis!: attacking any hitModifier=1
+79a0-1a2e-d00f-b128 Inhuman Integration: attacking any ? weaponAbilities=[SUSTAINED HITS 1]
+79b6-f74e-253c-153f Relic of the Matriarch - Icon of the Valorous Heart (Aura): defending any list ? fnp=6 unitKeywords=ADEPTA SORORITAS
+79cd-83b3-1bc7-7f29 Damaged: 1-7 wounds remaining: –
+79da-5176-247b-c631 Agonising Suppression (Pain): defending any list ? hitModifier=-1
+79eb-dc72-f455-0f20 Murderous Charge: attacking fight ? strengthModifier=1
+7a21-a958-e47d-5c0d Doctrina Imperatives: attacking shooting ? weaponAbilities=[HEAVY] | attacking shooting ? skillModifier=1 | defending fight ? hitModifier=-1 | attacking shooting ? weaponAbilities=[ASSAULT] | attacking fight ? skillModifier=1 | attacking any ? apModifier=1
+7a21-d7fb-1f83-f292 Runes of the Blood God: defending any ? mortalFnp=4 ownModelsOnly=true psychicFnp=4
+7a4d-f2b7-34a5-8d8d Eternal Conqueror: attacking any ? rerollHits=all
+7a52-1ecc-80ec-c0a6 Watcher in the Dark: defending any ? mortalFnp=4
+7a67-9623-c55d-3447 Phantasmal Smoke: –
+7a87-a49b-d988-37e7 Genalchemic Warding: –
+7a96-3999-3c95-cfa8 Braziers of Judgement: defending fight hitModifier=-1
+7ab0-33b1-8e81-dc6b Oath of Glory: attacking fight ? attacksModifier=2 ownModelsOnly=true strengthModifier=1
+7abf-3fe8-dc7d-1522 Obsessive Huntsman: attacking fight ownModelsOnly=true weaponAbilities=[PRECISION]
+7b1d-a695-6077-3173 Murderous Agenda: –
+7b32-dc36-258c-1b9c Targeting Relay: attacking any list ? weaponAbilities=[IGNORES COVER]
+7b7f-d6bd-f7a8-4567 Sanctus Gem: –
+7b9a-baf9-9366-459c Holy Quest: attacking any list skillModifier=1 unitKeywords=CELESTIAN
+7bca-e35e-69d1-1135 Line-breaker: –
+7c07-caef-fd39-2d73 Enhanced Stabilisers: –
+7c13-8707-b827-3d35 Guardian Drone: –
+7c39-79a3-1f05-dae0 Berzerker Glaive: –
+7c3d-f406-1c82-3f2d Eye of Affliction: –
+7c62-2af0-873f-4f0a Silver Talon: –
+7c66-4f14-4eaa-3504 Daemon Lord of Slaanesh (Aura): –
+7c7d-7bdf-49c3-f691 Tactical Precision: attacking any weaponAbilities=[LETHAL HITS]
+7c91-fe45-cd-7abc Crack Shot: –
+7ca5-2e19-88e2-c948 Stave Abominus: attacking fight ownModelsOnly=true weaponAbilities=[SUSTAINED HITS D3], [DEVASTATING WOUNDS]
+7cb-2ac3-fef5-f533 Fury of the Righteous: attacking any weaponAbilities=[LETHAL HITS]
+7cb0-c48b-baa6-7e9e Black Pearl Rosarius: attacking fight ownModelsOnly=true rerollHits=all vsKeywords=CHARACTER | attacking fight ? ownModelsOnly=true weaponAbilities=[LETHAL HITS]
+7cb2-5e51-6a7a-a8e8 Exemplar Warrior: attacking any ? ownModelsOnly=true rerollWounds=all
+7ce3-043e-c2e6-1ea1 Assassin's Eye: attacking shooting apModifier=1 vsKeywords=CHARACTER
+7cf4-aa2d-cb16-d292 Tip of the Talon: attacking shooting ? strengthModifier=1
+7cf4-e9f0-bb9c-c259 Advanced Firepower: –
+7d00-f80f-c11-4992 Headstrong: attacking fight ? hitModifier=1
+7d00-fa62-40b6-1adf Personal: Thyrnicine: –
+7d03-829f-56a1-940d Diseased Cover: –
+7d19-b18b-c149-6093 Perfectionists: attacking any weaponAbilities=[LETHAL HITS]
+7d88-fb67-ac56-ec9 Get Stuck In: attacking fight list unitKeywords=ORKS weaponAbilities=[SUSTAINED HITS 1]
+7d92-20c4-91fa-38aa Noctilith Armament: –
+7d94-8e40-fde1-8179 Executioner: attacking shooting ? hitModifier=1
+7dca-122a-7f55-9007 Power of the Machine Spirit: –
+7e04-d62e-bf1e-8abb No Foe Shall Stand: attacking shooting ? weaponAbilities=[LETHAL HITS], [IGNORES COVER]
+7e16-a29d-c436-5a2f Sonic Destruction: attacking any ? apModifier=1 damageModifier=1 ownModelsOnly=true strengthModifier=1
+7e36-46d2-4914-c4af Executioner: attacking any ? hitModifier=1 ownModelsOnly=true
+7e37-cdf1-4e74-6525 Possessed Lord: attacking fight ? attacksModifier=3 ownModelsOnly=true weaponAbilities=[DEVASTATING WOUNDS]
+7e48-799f-d858-121a Contempt For Rivals: attacking any weaponAbilities=[PRECISION]
+7e9d-2b0a-086d-cfde Eyes of the Hunter: attacking shooting weaponAbilities=[IGNORES COVER]
+7eaa-f4a5-901d-2420 Implacable Resilience: –
+7ed5-5030-b90e-4626 Sentinel Construct: –
+7ef7-dca6-e2ea-ecc8 Acts of Faith: –
+7f27-b6e7-8a54-0b32 Oath of Macragge: attacking fight apModifier=1 ownModelsOnly=true strengthModifier=1
+7f3b-ae52-f288-1fef Conversion (Moirax): –
+7f43-5ba3-3289-0781 Old Grudges: –
+7f52-4beb-1d87-866b Chalice of Baal: attacking fight ? weaponAbilities=[SUSTAINED HITS 1]
+7f56-a990-4975-a998 Master of Magicks (Aura): –
+7f5f-f0c0-a920-3b8 Tactical Precision: attacking any weaponAbilities=[LETHAL HITS]
+7f7a-16b9-b85b-d930 Purge-sweep Protocols: –
+7f83-56b6-5344-3399 Raiders: attacking any ? rerollHits=ones
+7fdd-aa75-3965-5f20 Universal Anathema: attacking fight ownModelsOnly=true weaponAbilities=[ANTI-INFANTRY 2+], [ANTI-MONSTER 4+]
+7ff6-fefc-51c-4818 Thunderous Charge: –
+7ffd-04d2-3e99-1661 Psychic Shadow: defending shooting cover=true fnp=5 weaponFilter=PSYCHIC
+800b-10bd-2823-8a38 Dark Ritual: attacking any ? hitModifier=1 woundModifier=1
+8024-526b-d055-1551 Advanced Quantum Shielding: defending any ownModelsOnly=true strengthVsToughness=gt woundModifier=-1
+8030-1b98-3c3c-4afb Feel No Pain 5+: –
+808c-6c15-dd55-c5b Adaptive Biology: –
+80ac-4df5-dde4-d668 Martial Exemplar: –
+80bc-eca8-f505-af8f Fates in Flux: –
+80d8-2549-f78-46ba Brides of Death (Pain): defending fight list ? apModifier=1 strengthModifier=1
+80e9-b186-e4ce-2ae5 Deeds of Legend: attacking fight ? attacksModifier=1
+80ea-c6e-ee51-da61 Damaged: 1-6 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+8107-cbfe-4bc2-99e1 Sunderer of Fortresses: attacking any ? damageModifier=1 ownModelsOnly=true strengthModifier=1
+811b-7058-53f6-a7f5 Rage-fuelled Strength: attacking any woundModifier=1
+813e-e1e-3766-c3f8 Paladin’s Duty (Bondsman): –
+8150-5c01-b83e-e182 Prescience (Psychic): defending any hitModifier=-1
+8156-baa8-774d-c7dd Father of Pain: –
+8194-3dbb-f3be-90e7 Thrice-blessed Hull: defending any ? mortalFnp=4
+8198-4da3-7b59-42f5 Stimm-needler: –
+81a6-e01e-03b3-4125 Null-field Disruptor: –
+81cc-8656-276a-d140 Skullmaster’s Fury: –
+81f0-f974-8bce-048c Purgation's Hand: attacking fight ? ownModelsOnly=true rerollHits=ones rerollWounds=ones
+81f4-f16c-6712-c872 Storm Shield: –
+8214-2942-7876-9ce9 A Perfect Ambush: attacking any ? weaponAbilities=[SUSTAINED HITS 1], [IGNORES COVER]
+821f-8d85-9055-3676 Slayer of Champions: attacking fight apModifier=1 ownModelsOnly=true strengthModifier=1 vsKeywords=CHARACTER weaponAbilities=[PRECISION]
+8232-5e8b-c39e-ed35 Swallow Energy (Psychic): defending any ? mortalFnp=4 psychicFnp=4
+8239-ce8a-d631-2641 Blazing Salvos: defending any list ? hitModifier=-1
+8283-b27a-ec85-6670 Damaged: 1-4 Wounds Remaining: –
+828a-cdf4-e64a-cf75 Euphoric Strikes: attacking fight ? apModifier=1 attacksModifier=3 ownModelsOnly=true
+82af-7e9a-2d1a-5637 Shield Generator: –
+82fd-0d82-9969-531f Targeting Relay: attacking any list ? weaponAbilities=[IGNORES COVER]
+8307-fd06-3bdf-7621 Runes of Warding: defending any ? mortalFnp=4 psychicFnp=4
+8344-2f14-e790-be5e Withering Hail: attacking any list ? apModifier=1 unitKeywords=ASTRA MILITARUM
+839a-dbe6-f30a-20a1 Threat Level Rising: attacking any ? hitModifier=1 woundModifier=1
+83a1-444d-0e59-c682 Fully Loaded Butchery: –
+83bf-8a1a-e55b-a261 Fate-woven Knot: –
+83da-5183-e99-e251 Bearer of the Judicant's Helm: –
+83e4-fab8-e77c-b285 Righteous Repugnance: –
+840f-8b1c-b15b-0bdf Vengeful: attacking any ? hitModifier=1
+8434-68c8-f8dc-ae36 The Everstave: attacking shooting ? ownModelsOnly=true strengthModifier=1 | attacking shooting ? ownModelsOnly=true strengthModifier=2
+8458-291c-f29f-6f4b Daemon Slayer: attacking fight attacksModifier=1 ownModelsOnly=true weaponAbilities=[ANTI-DAEMON 3+]
+845c-cf75-5a95-b148 Elusive Raiders: –
+847c-923b-69ef-55ac Nexus of Devotion: defending any fnp=5
+8493-8c52-58ec-11ca Ravenwing Bike: –
+84a7-ad58-2a81-91b0 Blade of the Dynast: attacking fight apModifier=1 damageModifier=1 ownModelsOnly=true strengthModifier=1
+84ea-8143-1132-904c Indefatigable Will: attacking fight ? hitModifier=1 woundModifier=1
+8533-7950-54bf-5bba The Armour Memoriam: –
+8541-0803-dadb-b6dd Precision Insertion: –
+8545-2084-8eb8-39f3 Casket of Heshkefnet: –
+854d-681e-dea4-f84a Vortimaran Incensors: –
+8552-862d-6a49-4879 Invulnerable Save (5+*): –
+8588-e644-dec8-3265 Blade of Saint Ellynor: attacking fight apModifier=1 ownModelsOnly=true strengthModifier=1 weaponAbilities=[PRECISION]
+85a2-7294-a223-c609 Hypervector: –
+85b6-dc61-b59d-2e99 Mortis Strike: attacking shooting ? ownModelsOnly=true rerollHits=all
+85b7-6da7-e356-82e5 Target Uploaded: attacking any ? skillModifier=1 weaponAbilities=[IGNORES COVER]
+85d7-f209-acae-3353 Disintegration Beams: attacking shooting ? weaponAbilities=[DEVASTATING WOUNDS]
+85fa-6123-385d-3da0 Malefic Deceit: –
+8639-6848-43d7-63e7 Lightning-fast Manoeuvres: defending shooting woundModifier=-1
+868e-a481-1f04-4657 Deeds, Not Words: attacking any ownModelsOnly=true rerollHits=all rerollWounds=all
+8690-21a6-1833-a7e9 Bionik Targeters: attacking shooting hitModifier=1
+86aa-437f-260b-5cad Synapse: attacking fight list ? strengthModifier=1 unitKeywords=TYRANIDS
+86c1-944-cb8c-e6f Cutting Down the Foe: attacking fight ? damageModifier=1 strengthModifier=1
+86c1-cd9d-66fe-7125 Mortrexite Implant Attack: attacking fight ownModelsOnly=true weaponAbilities=[DEVASTATING WOUNDS]
+86c3-f40-66e8-f70c Acrobatic Grace: defending fight hitModifier=-1
+86f1-5ce7-4ff3-a2c0 Ancestral Fury: attacking fight weaponAbilities=[SUSTAINED HITS 1]
+870c-1f3e-7597-9ecc Virtuous - High Denunciator: –
+8714-80fe-8740-c08b Tempestor Prime: attacking shooting ? weaponAbilities=[SUSTAINED HITS 1]
+8733-1b5b-a5b8-deaf Death Blow: attacking fight ? apModifier=1
+875a-bbfc-8184-0f73 Ruthless Discipline: attacking any list ? rerollHits=ones unitKeywords=ASTRA MILITARUM
+875d-2faf-5c2e-4b9 Fury of the First: attacking any ignoreHitModifiers=true | attacking any ? hitModifier=1
+876c-7ff5-9687-e92d Warp Optics: attacking shooting ownModelsOnly=true weaponAbilities=[IGNORES COVER]
+879f-7a62-1926-b2c5 Cunning Hunters: attacking fight ? strengthModifier=1 | attacking fight ? apModifier=1
+87a6-3ff2-cea4-2c34 Infernal Aegis (Aura): defending any list ? cover=true unitKeywords=WAR DOG
+87e2-fd19-7923-c24 Searing Flames: attacking any list ? weaponAbilities=[IGNORES COVER]
+87f0-92ab-be8a-4df1 Avatars of the Ancestors: –
+882a-abc5-f5cf-ae5 Thunderous Pounce: –
+883e-96af-3014-6550 Sunforge: attacking shooting rerollDamage=true rerollWounds=all vsKeywords=MONSTER, VEHICLE
+884d-4284-89ea-32d5 Emnity for the Unworthy: attacking any hitModifier=1 vsKeywords=CHARACTER
+8852-1c83-5e1e-7418 Thrilling Spectacle: –
+8880-6ed8-900d-b348 Loyal Henchmen: defending any ? woundModifier=-1
+88a5-7db5-fba3-cf36 All is Dust: –
+88a6-c24b-d663-6157 Mistshield: –
+88f4-7da8-b865-265b Refuse to Accept Defeat: attacking any ? hitModifier=1 woundModifier=1
+890e-3ea5-7d83-e665 Plasmacyte: attacking fight ? weaponAbilities=[DEVASTATING WOUNDS]
+8923-5cdb-c97d-09ba Living Carapace: –
+892e-e88e-18bb-e77b Even More Dakka: attacking shooting ? weaponAbilities=[SUSTAINED HITS 1]
+893d-676e-60f7-b791 Tactical Precision: attacking shooting vsKeywords=CHARACTER weaponAbilities=[PRECISION]
+896e-e353-27f1-83f1 Reliquary Weapon: –
+898e-b8e5-c1c1-93b2 Aquilan Eye: attacking shooting ? apModifier=1
+89a6-52b4-cba8-4f11 Crusade of Wrath: attacking fight attacksModifier=1 | attacking fight strengthModifier=1
+89b3-3271-b8ac-723b Fire Support: –
+89bb-91cf-2e76-ae69 Velocity Tracker: attacking any ? ownModelsOnly=true rerollHits=all vsKeywords=FLY
+89bf-e6e6-eb77-b355 Blessed by the Plague God: –
+89d2-b407-a1b5-a14f Trench Fighters: attacking fight weaponAbilities=[LETHAL HITS]
+8a3c-df78-6d77-f5e2 Ministorum Sermon: attacking fight ? weaponAbilities=[SUSTAINED HITS 1]
+8aa0-92d7-7749-461d Targeter Optics: attacking shooting ? weaponAbilities=[IGNORES COVER]
+8aac-f21c-5602-29fe United in Destruction: attacking fight weaponAbilities=[LETHAL HITS]
+8ac2-475f-7e2d-4a59 Termination: attacking any ? hitModifier=1
+8ae2-0f9c-05f1-da94 Astartes Shield: –
+8aeb-68be-7ef8-92e7 Pulsa Rokkit (Once per battle, per unit): –
+8b1b-ebfa-1032-f615 The Eternal Dance: attacking fight list ? unitKeywords=SLAANESH LEGIONES DAEMONICA woundModifier=1
+8b66-9566-b3ef-5f11 Animus Damper: defending any list ? hitModifier=-1 woundModifier=-1
+8bad-50a7-977e-98d Storm of Blades: attacking fight weaponAbilities=[SUSTAINED HITS 1]
+8bb0-e954-199b-d118 Refrain of Enduring Faith: –
+8bdb-c6d8-ac14-5291 Runes of Scorn: –
+8be1-4e32-1691-ac7a Proper Killy: –
+8c16-ad39-4fb9-7730 Wyrmslayer Divination: attacking any ? ownModelsOnly=true rerollHits=all vsKeywords=FLY
+8c2e-cb8c-57b1-729f Dutiful Tenacity: defending any list strengthVsToughness=gt unitKeywords=ADEPTUS ASTARTES INFANTRY, ADEPTUS ASTARTES MOUNTED woundModifier=-1
+8c5-b461-8a6c-4b23 Reaper of Souls: attacking any hitModifier=1
+8c56-bbd9-5aa5-21f0 Marked by Fate (Psychic): attacking any ? hitModifier=1
+8c64-1c06-0cdc-ed8d Aspect Shrine Token: –
+8c70-416b-87ca-936e Skyhunter: attacking shooting hitModifier=1 ownModelsOnly=true vsKeywords=FLY woundModifier=1
+8c83-239d-e097-cd0 Rearm, Reload, Fire: attacking any ? weaponAbilities=[SUSTAINED HITS 1] weaponFilter=HEAVY
+8c94-815a-b8ea-6c0e Epoch Auspice: defending any ? woundModifier=-1
+8cb6-7c7a-4313-a7c0 Augury Uplink: –
+8d0d-e90d-b26b-1a8d Cry of the Wind: attacking shooting ? critHitOn=2 ownModelsOnly=true
+8d34-d242-a338-8e60 Drop Zone Veterans: attacking any ? rerollHits=ones rerollWounds=ones
+8d65-776a-67a4-e925 Seething Hatred: –
+8d68-5238-1410-fed4 Gung-ho Executioners: attacking any ? hitModifier=1 ownModelsOnly=true
+8d74-c7e8-9992-a0b0 Automated Defences: attacking shooting ? hitModifier=1 ownModelsOnly=true | attacking shooting ? hitModifier=1 ownModelsOnly=true | attacking shooting ? hitModifier=1 ownModelsOnly=true
+8d8d-7fd1-5b4f-9fcb Companion's Watch: –
+8db4-851f-477e-325e Psionic Parasitism: attacking any list ? hitModifier=1 unitKeywords=GENESTEALER CULTS
+8e0e-eb2b-f9b2-c100 Storm of Blades: attacking fight weaponAbilities=[SUSTAINED HITS 1]
+8e12-af7c-5f2c-50d5 Overwhelming Obliteration: –
+8e13-1b98-8d67-acf0 Electromagnetic Cascade (Pain): attacking shooting ? ownModelsOnly=true vsKeywords=VEHICLE weaponAbilities=[SUSTAINED HITS 2] | attacking shooting ? ownModelsOnly=true vsKeywords=NON-VEHICLE weaponAbilities=[SUSTAINED HITS 1]
+8e52-4874-7ed0-287d Reinforced Cover: –
+8e60-f05f-2e77-285a Dok's Toolz: defending any fnp=5
+8ea7-370b-e992-49e0 Stalwart Protector: –
+8ed5-4270-6a08-16d2 Altered Reality (Psychic): –
+8ee2-d7a7-c821-24fa Storm of Bolts: defending any list ? hitModifier=-1
+8eef-f65c-7895-183f Storm of Retribution: attacking shooting rerollHits=ones rerollWounds=ones
+8ef2-30ad-3fc1-f7e4 Feel No Pain 3+*: –
+8f17-1445-ef92-bbd1 Mutant Musculature: attacking fight ? ownModelsOnly=true strengthModifier=2
+8f5b-9d94-041d-f234 Fratricidal Trophies: attacking any ? rerollHits=all
+8fb3-08fd-fcc6-fee1 Aggressive Reconnaissance: attacking shooting ? woundModifier=1
+8fb4-84bc-9a15-e4f4 Spotter: –
+8fb6-aff7-75ac-f206 Nova Charge: –
+8fb9-b7c1-f44d-8505 Mortis Gyre: –
+8fcc-7183-e211-b017 Alpha Warrior: attacking any weaponAbilities=[SUSTAINED HITS 1]
+8fd8-f791-a040-3bde Brute Shield: –
+8fdb-0d21-37f4-ecca Obsessive Annunciation: attacking shooting weaponAbilities=[SUSTAINED HITS 1]
+8ffa-2ecb-deac-6e59 Blade of the Ordo: –
+8ffb-f801-cd2f-d05e Tormentors: attacking fight ? hitModifier=1 vsKeywords=BATTLE-SHOCKED
+9062-6510-02a7-5b06 Adaptable Executioner: –
+907f-21a6-8734-3466 Scythed Impact: attacking fight ? weaponAbilities=[ANTI-INFANTRY 4+]
+909a-664e-ff1a-1985 Desperate for Redemption: attacking fight ? attacksModifier=1 strengthModifier=1
+90a0-3df7-f2bf-4ce2 Flawless Bladework: attacking fight rerollHits=ones
+90a7-b7d3-b219-0a89 Aggressive Charge: attacking fight ? ownModelsOnly=true weaponAbilities=[DEVASTATING WOUNDS]
+90b9-635e-d3e3-7701 Malign Wardings (Psychic): defending any ? psychicFnp=4
+90bf-b23a-9e66-085c Mantra of Strength: attacking fight ? attacksModifier=2 damageModifier=2 ownModelsOnly=true strengthModifier=2
+90e0-c20e-67c4-e0c2 High-speed Dakka: attacking shooting hitModifier=1
+90fa-2921-2676-8ef2 Lord of Fate: defending any ? mortalFnp=5
+913e-136d-35d5-5c63 Stimulated by Pain: defending any damageModifier=-1 ownModelsOnly=true
+9143-31ae-e0a6-6007 Precision: –
+9170-d93b-8efe-8a7a Nullyn Cloneskein: defending any ? mortalFnp=4
+918c-33eb-333f-4d04 Fires of Devotion: attacking fight weaponAbilities=[SUSTAINED HITS 1]
+91a7-62dc-3c81-cebb Cyber-static Canticles: attacking shooting list unitKeywords=CORPUSCARII weaponAbilities=[LETHAL HITS]
+91af-699e-4581-5394 Sanctuary: –
+91b9-9efa-604e-5a85 Ammo Runts (Once per battle, per unit): attacking shooting ? hitModifier=1
+91da-72d3-657b-ee7c Decisive Destruction: attacking shooting ? rerollHits=ones
+9220-7fa3-aa90-ce25 Flame-wreathed: attacking any list ? weaponAbilities=[IGNORES COVER]
+9246-d8d2-86cf-3a3d KV-Ceramide Undersuits: –
+9258-3a36-5e40-f185 Feel No Pain 6+*: –
+9260-be63-1022-bb17 Altered Reality (Psychic): –
+926f-2027-3e35-aa82 Destabilising Predation: attacking shooting weaponAbilities=[ANTI-CHARACTER 2+]
+9288-c3f1-6d75-c23e Titan Slayer: attacking any rerollHits=ones vsKeywords=MONSTER, VEHICLE
+92bf-dcb5-53a9-21e3 Reinforced Armour: –
+92e4-b021-62ca-e120 Timesplinter Mantle: defending any hitModifier=-1
+92f3-f963-1008-10a5 Monstrous Nemesis: attacking fight ownModelsOnly=true vsKeywords=MONSTER, VEHICLE woundModifier=1
+9320-4c37-14b9-d6e3 Gloom Prism (Aura): defending any list ? mortalFnp=5 psychicFnp=5 unitKeywords=NECRONS
+932f-b171-4eea-76a1 Sworn Protectors: defending any ? woundModifier=-1
+9359-87bf-5148-e6d2 Vehement Aggression: attacking fight ? rerollHits=ones | attacking fight ? rerollHits=ones | attacking fight ? rerollWounds=ones
+935d-fb65-54d-274f Attuned Onslaught (Psychic): attacking fight ? damageModifier=1
+9369-afe3-1918-fc57 Echoes of the Primarch: attacking any ? weaponAbilities=[SUSTAINED HITS 1]
+9379-cb84-2ddf-7e47 Aggressor Guardian: defending any ? apModifier=-1 ownModelsOnly=true | attacking any ? apModifier=1 ownModelsOnly=true
+9381-919e-8dfd-3e1a Howling Plate: attacking shooting apModifier=1
+939c-b956-ee68-8ff5 Fury of the Void (Psychic): attacking any list ? strengthModifier=1 unitKeywords=AELDARI vsKeywords=RIVEN
+93be-2ff0-7890-946b Meteoric Descent: attacking shooting ? hitModifier=1
+9415-e594-9a27-1f93 Court of the Archon: –
+9435-655b-7c9-bbf0 Wall of Muscle: defending any damageModifier=-1
+944e-9053-88db-187d War Hymns: attacking fight weaponAbilities=[SUSTAINED HITS 1]
+946d-6991-50ea-72c1 Instrument of the Emperor's Wrath: attacking fight ? attacksModifier=3 ownModelsOnly=true weaponAbilities=[DEVASTATING WOUNDS]
+948a-0d9e-3963-c5d6 Veteran Bodyguard: –
+94a3-e708-3ed3-de41 Ratling Battlemutt: attacking shooting ? weaponAbilities=[LETHAL HITS]
+94c1-794a-6863-5228 Ignis Judicium: attacking shooting ownModelsOnly=true weaponAbilities=[DEVASTATING WOUNDS], [MELTA 1], [PRECISION]
+94c4-dbc1-fc4f-8ef0 Death's Own Shadow: defending shooting cover=true
+950a-82f7-79fd-342a Super Runts: –
+9553-7b3a-df3e-15de Jagged Horns: attacking fight ownModelsOnly=true weaponAbilities=[LANCE]
+9554-75c1-895-c090 Damaged: 1-9 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+957b-c7cc-39c8-ba8c Protector of the Paths: –
+9580-d888-889-27f2 The Ratling Twins: attacking shooting ? rerollHits=all rerollWounds=all
+9591-6a18-3373-5ab0 Conversion: –
+95af-32ae-79e8-eb4c Iconic Accoutrements: –
+95c7-4eee-ea16-cdac Warp Strength: attacking fight ownModelsOnly=true strengthModifier=2
+9609-45b8-af09-de5b Psychic Barrier (Psychic): –
+965d-bce2-021d-f3e2 Spoor Seeker: attacking any list ? hitModifier=1 woundModifier=1
+9686-67e4-3987-8d53 Blind Barrage: defending any list ? hitModifier=-1
+96ee-97c4-3b67-e45 Inflamed Infections: attacking any ? critHitOn=5 ownModelsOnly=true
+96f0-f77f-527d-7554 Vanguard Predator: attacking any rerollHits=ones
+96f9-bd49-940a-6131 **Ensorcelled Shield: –
+97b5-36db-6062-3092 Powerful Volley: attacking any ? weaponAbilities=[LETHAL HITS]
+97ba-f037-a93d-caf4 Guidance of the Ancients: attacking any list ? hitModifier=1 unitKeywords=GREY KNIGHTS
+97d2-25ee-4feb-5e83 Root-carved Weapons: attacking any ownModelsOnly=true weaponAbilities=[PRECISION], [DEVASTATING WOUNDS]
+97fb-dd9a-9db6-c77f High-speed Carnage: attacking fight ? damageModifier=1 strengthModifier=1
+97fd-09c5-60a8-63c4 Damaged: 1-5 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+982c-cb4c-5e4a-5d2c Talisman of Burning Blood: attacking fight attacksModifier=1 ownModelsOnly=true strengthModifier=1
+983b-3e69-e5a5-3ccd Proteus Doctrines: attacking any ? hitModifier=1
+9872-36bc-6295-dd34 Hallowed Ground: –
+988d-b648-3ebe-8168 Damaged: 1-4 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+9896-b356-2ad8-2fb9 Quicksilver Execution: attacking fight ? weaponAbilities=[SUSTAINED HITS 1]
+98aa-81a5-6eaf-b4d1 Doom (Psychic): attacking any list ? unitKeywords=AELDARI woundModifier=1
+98b9-3159-d905-a9d1 Eldritch Flames (Psychic): attacking any list ? weaponAbilities=[IGNORES COVER]
+98c2-7b0f-ee62-9139 Red Haze: –
+9912-df39-d06d-33e0 Vengeance Before Death: –
+9946-99c9-bf5b-b03f Blessed Hull: –
+995c-124a-0d6b-f011 Blistering Salvoes: attacking any ? hitModifier=1 ownModelsOnly=true vsKeywords=INFANTRY | attacking any ? hitModifier=1 ownModelsOnly=true vsKeywords=MONSTER, VEHICLE
+9963-3c71-2527-6d0c Close-quarters Warfare: –
+9965-830e-2428-6051 [Psychic Abilities] - Soul Sight (Psychic Level 1): –
+996d-a625-abdd-856c Conversion: –
+997a-75ae-da4b-a534 Sanguinary Priest: defending any fnp=5
+99fc-06f4-f204-3524 Headhunters: attacking any ? rerollHits=ones rerollWounds=ones
+9a87-bb69-19da-2528 Resilient Organism: –
+9a9a-2ac8-c4f6-1f2e The Tyrant's Standard: attacking any attacksModifier=1 ownModelsOnly=true rerollWounds=all
+9aa5-e161-4264-9617 Guide (Psychic): attacking any list ? hitModifier=1 unitKeywords=AELDARI
+9aa9-7a1a-e930-a53b Knights of Caliban: attacking fight ? weaponAbilities=[ANTI-MONSTER/VEHICLE 4+]
+9ab1-2eb7-a100-ab90 Stand Vigil: attacking any rerollWounds=ones | attacking any ? rerollWounds=all
+9aca-bf2a-148d-b019 Sacrificial Dagger: attacking any ? hitModifier=1 ownModelsOnly=true weaponFilter=PSYCHIC woundModifier=1
+9aed-b4af-dc99-cf97 Vector of Disease: attacking fight weaponAbilities=[SUSTAINED HITS 1], [LANCE]
+9b01-d3c9-54d8-2529 Masterwork Maladies: –
+9b12-3d8f-7b51-eb52 Banner of Macragge: attacking fight ? attacksModifier=1 strengthModifier=1
+9b1b-c1c9-2f94-c66f Legendary Slayers: –
+9b1c-a931-479e-7222 Destroyer Cult: attacking shooting critHitOn=5
+9b21-f9e4-2fe9-7895 Damaged: 1-5 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+9b3c-49ee-2ca0-7bcf Guidance of the Ancients (Psychic): attacking any list ? hitModifier=1 unitKeywords=GREY KNIGHTS
+9b6f-5790-3573-45c7 Ogryn Bodyguard: –
+9b71-a898-4bdd-e80d Strafing Run: attacking shooting ? hitModifier=1 ownModelsOnly=true
+9b81-c373-dd9f-8fa6 Sanctuary: –
+9b81-e167-c93c-61d4 Bringers of Change: attacking shooting rerollWounds=ones
+9bf4-280f-bbe2-6fbb Feel No Pain: –
+9bf6-79b0-a430-7e1e Vendetta: attacking any list ? excludeUnitKeywords=DAMNED rerollHits=all unitKeywords=HERETIC ASTARTES
+9c28-c7d5-7430-5325 Obscuroptikon: –
+9c36-d98a-7612-eb7f Coordinated Exploitation: –
+9c6a-322a-b96d-8f60 Piratical Hero: attacking any hitModifier=1 weaponAbilities=[SUSTAINED HITS 1]
+9c7f-c4db-6a88-a531 Scabhide: –
+9cd1-f3fe-62a1-ffb7 Litany of Divine Protection: defending shooting cover=true
+9ce3-c1f0-ec93-d409 Saturation Volleys: attacking any ? hitModifier=-1
+9cee-b567-8106-880a Unbreakable Duty: –
+9cef-5b49-7f6c-e17c Infernal Pacts: –
+9cf3-5565-3b5f-3d9d Mindlock: attacking any ? skillModifier=1
+9d16-b590-9d37-e361 Murder's Jest: –
+9d27-47cb-a7bd-c93a Razor's Edge (Pain): attacking shooting ? weaponAbilities=[SUSTAINED HITS 1]
+9d41-eb97-8f61-fb85 Sanctic Hood: defending any ? psychicFnp=4
+9d4f-03c1-e39d-d390 Splinter Racks (Pain): attacking any ? ownModelsOnly=true rerollHits=all
+9dc8-c377-559a-94e1 Target Optimisation Microdrones: attacking shooting ? apModifier=1
+9e60-00d6-ecf7-929f Root Out Heresy: attacking shooting list unitKeywords=ADEPTUS ARBITES, INQUISITOR, INQUISITORIAL AGENTS, ORDO HERETICUS weaponAbilities=[IGNORES COVER] | attacking any list unitKeywords=ADEPTUS ARBITES, INQUISITOR, INQUISITORIAL AGENTS, ORDO HERETICUS vsKeywords=CHAOS weaponAbilities=[SUSTAINED HITS 1]
+9e99-0aa1-2c11-33ca Canticles of the Omnissiah: –
+9e9a-b09f-1a55-1d27 Enraged Behemoths: attacking any list ? hitModifier=1 unitKeywords=TYRANIDS MONSTER woundModifier=1
+9e9a-de78-65c5-167a Transdimensional Deployment: attacking shooting list ? hitModifier=1 unitKeywords=TOMB BLADES
+9ea8-c4dd-d536-1929 Null Nodules: defending any ? ownModelsOnly=true psychicFnp=5
+9eb2-2cdd-3df7-a94e Assemblage of Might: –
+9eb2-afd9-2ff6-ccb Damaged: 1-13 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+9ec4-2cfc-cfb5-ce12 Hatred Eternal (Pain): –
+9ed1-f3be-5e40-c586 Timed Defence: –
+9ed6-ae2a-117d-e475 Swallow Whole: –
+9f16-c77e-568e-a88a Cosmic Distortion: attacking any list ? apModifier=1
+9f37-2936-02ea-8ffe Martial Apotheosis: attacking any ownModelsOnly=true rerollHits=ones rerollWounds=ones
+9f3f-7309-b948-66c7 Not a Shell Wasted: attacking shooting attacksModifier=1
+9f8c-e003-9e79-6e2d Venerable Death Companion: –
+9fa6-3128-6c5b-55f6 Invulnerable Save (4+*): –
+9fa6-3c29-04b1-b428 Flow of Magic: attacking any list ? rerollWounds=ones unitKeywords=THOUSAND SONS weaponFilter=PSYCHIC | attacking any ? ownModelsOnly=true weaponFilter=PSYCHIC woundModifier=1
+9faa-bec0-9a4e-901e Hyper Adaptions: –
+9fbd-b418-0008-f58d Dreaming Crown (Aura): attacking fight list ? excludeUnitKeywords=MONSTERS hitModifier=1 unitKeywords=LEGIONES DAEMONICA SLAANESH
+9fc1-6072-30f8-21c8 Mantle of Ophelia: defending any damageToOne=true ownModelsOnly=true
+9fd3-61f8-95ae-118a Devastating Assault: –
+9fe1-7e3d-5376-6a46 Blazing Soulfire: attacking fight ? ownModelsOnly=true weaponAbilities=[DEVASTATING WOUNDS]
+a008-c2d4-754c-2617 Target Augury Web: –
+a064-20c3-371a-261f Vengeance of the Omnissiah: –
+a06d-1a78-a0e3-8b0d Vivispectral Analysis Targeting: attacking any weaponAbilities=[LETHAL HITS: NON-VEHICLE]
+a07b-d883-9916-4288 Conversion: –
+a089-6159-0e33-cdad Bladeweave: defending fight woundModifier=-1
+a0a0-0798-6949-82f4 Distortion Fields (Aura): attacking any list ? apModifier=1
+a0c-34d4-cdc0-6e62 Defensive Stance: –
+a0cf-fc94-c5f2-83a0 Possessed Blade: –
+a0e2-31bc-54e1-e3ac Geomantic Hunters: attacking any ? rerollWounds=all
+a0f8-2836-4418-50a4 Worthy Foes: attacking any list ? unitKeywords=NOBLE, LYCHGUARD, TRIARCH woundModifier=1
+a10e-6c3e-3b06-91f1 Shadow of Abomination: attacking fight ? damageModifier=1 ownModelsOnly=true
+a11b-d88f-224b-7bd7 Reinforced Cover: –
+a161-0012-0894-e263 Rune of Mists: defending shooting list ? cover=true unitKeywords=WRAITH CONSTRUCT
+a16e-406b-5111-da3f Idols of Khorne: attacking any ? hitModifier=1 woundModifier=1
+a192-ef4c-34c0-7790 Halo Indomitus: defending any ? mortalFnp=4 ownModelsOnly=true
+a19f-21a9-4bec-2ddd Marked by the Dark Gods: attacking any critHitOn=5 ownModelsOnly=true
+a1bc-d961-dde5-52c4 Overgrown Barbs: defending any list ? hitModifier=-1
+a1de-4afc-f922-ff9f Implacable Eradication: attacking any rerollWounds=ones
+a1e3-4ac3-299c-1417 Foul Infusion: attacking any weaponAbilities=[LETHAL HITS] | attacking any ? critHitOn=5
+a209-ec97-7374-3ece Shadow Hunter: attacking any hitModifier=1
+a216-c39c-a363-3186 Reinforced Cover: –
+a22d-294f-6401-5dfe Boss' Ammo Runt (Once per battle, per unit): attacking shooting ? hitModifier=1 ownModelsOnly=true
+a250-b992-5675-0246 G'rmakht the Destroyer: attacking fight apModifier=1 attacksModifier=1 damageModifier=1 ownModelsOnly=true strengthModifier=1
+a253-e206-4696-4052 Collar of Khorne: defending any ? ownModelsOnly=true psychicFnp=3
+a274-b647-186a-54ee Damaged: 1-9 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+a277-c32c-c86d-654a Terminatus Assault: –
+a2d2-a5b6-17a8-552f Channeler stones: –
+a2d3-2ad-5805-8a37 Enforcer Commander: defending shooting apModifier=-1
+a2fd-5087-db42-4a00 Headwoppa’s Killchoppa: attacking fight ? apModifier=1 ownModelsOnly=true
+a326-99df-85de-947f Mark of the Nekrosor: attacking any hitModifier=1
+a372-8f4-cc33-ec1c Encephalic Diffusion (Aura, Psychic): defending any list ? hitModifier=-1 woundModifier=-1
+a398-0a1d-ef92-162b Aegis of the Emperor: –
+a3bb-3f9-8b2d-d641 Fortification: –
+a3d6-c70c-8308-e9c1 Hood of Baal: attacking any ownModelsOnly=true rerollWounds=all weaponFilter=PSYCHIC
+a3dc-6461-d829-8416 Bringer of the True Death: attacking any rerollWounds=all
+a40d-50a1-cd02-32c0 Breaching Fire: attacking any list ? weaponAbilities=[IGNORES COVER]
+a47d-0470-6504-2738 Hammerhand (Psychic): attacking fight weaponAbilities=[LETHAL HITS]
+a491-eea4-fb9c-0ad9 Deadly Predators: attacking fight strengthModifier=2
+a4ac-68a4-3849-3695 Silent Bodyguard: –
+a4ec-5941-e494-6ed0 Alpha Warrior: attacking any weaponAbilities=[SUSTAINED HITS 1]
+a548-10fb-4499-c1ed Ground-attack Craft: attacking shooting ? hitModifier=1
+a552-7050-74da-c344 Glowy Gizmo Upgrade: attacking shooting ownModelsOnly=true skillModifier=1 strengthModifier=1
+a55b-0139-b058-6b72 Storm Speaker: attacking any ownModelsOnly=true weaponAbilities=[SUSTAINED HITS 2] weaponFilter=PSYCHIC
+a590-61d3-a58b-ddc8 Vector Talon: attacking fight apModifier=1 damageModifier=1 ownModelsOnly=true
+a5aa-0218-785c-fd53 A Chink in Their Armour: –
+a5af-ce08-2cbd-5bef Twisting the Knife: attacking any ? ownModelsOnly=true rerollHits=all
+a5b6-7563-3cba-8fff Vox-skull: attacking any list ? weaponAbilities=[IGNORES COVER]
+a5bc-5224-a2e5-6173 Litanies of the Devout: attacking fight rerollHits=all
+a5e1-ca7f-aaef-7fda Vicious Insight: attacking any weaponAbilities=[DEVASTATING WOUNDS]
+a5fc-ae22-d48f-7687 Ka'tah Master: –
+a630-3650-0461-51a2 Hammer Blow: attacking any ? hitModifier=-1
+a661-be27-a2d2-caa7 Death Totem: attacking fight rerollHits=ones
+a672-a91d-2dc5-d41a Killcode Gear Switches: attacking fight strengthModifier=1
+a6d2-c5ec-a163-159e Frenzied Focus: attacking any critHitOn=5
+a6f0-21b3-6de8-de34 Spreading Pox: –
+a70a-bec9-6946-39fe Thermoneutronic Projector: –
+a725-e5c6-f06f-aebf Guerrillas: defending shooting cover=true
+a74b-9224-a762-2be2 Sunderer of Fortresses: attacking any ? damageModifier=3 ownModelsOnly=true strengthModifier=3
+a752-2aba-3ea3-4da8 Sanguinary Priest: defending any fnp=5
+a75b-c4fb-aef5-6f32 Yvraine's Champion: –
+a768-f399-5214-dfff Ancestral Fortune: –
+a776-6748-4495-f72e Selfless Healer: defending any fnp=5
+a795-478d-7553-4dcc Defence Searchlight: attacking any list ? weaponAbilities=[IGNORES COVER]
+a7f5-adb8-d1c9-2a2d Senior Officer: attacking shooting weaponAbilities=[SUSTAINED HITS 1]
+a808-aebe-b6d1-4f1e Smoke Grenades: –
+a856-9b1d-a0a7-471c Hunter Missile Targeting: –
+a864-3776-d243-adcd Fortis Doctrines: attacking any ? hitModifier=1
+a86e-07c1-9af5-c151 Praesidium Rosarius: –
+a8c6-6db8-cabd-6683 Imperial Law: attacking any ? weaponAbilities=[LETHAL HITS], [PRECISION]
+a8e5-75ce-78-c222 Mobile Hunter-killers: attacking any rerollWounds=all vsKeywords=MONSTER, VEHICLE
+a928-ecf7-5287-dc87 Spiritsliver: attacking fight attacksModifier=1 ownModelsOnly=true strengthModifier=1
+a950-438c-4b54-9673 Mobile Arsenal: attacking shooting rerollHits=ones
+a950-ab59-3c2d-a39b Urban Warfare: defending shooting ? cover=true damageModifier=-1 ownModelsOnly=true
+a95a-9202-e8bb-055f Shielded by the Machine God: –
+a983-8edb-d6ae-96ab Choppa of Da Great Waaagh!: –
+a9ac-1fd2-b697-e20a Collar of Khorne: defending any ? ownModelsOnly=true psychicFnp=3
+a9fb-fba8-1ef8-d7d6 Covering Fire: –
+aa53-101f-7e51-2f50 Warmaster's Gift: attacking any ? critWoundOn=5 ownModelsOnly=true
+aa95-5ab8-9b69-cbb1 Infectious Murder‑madness (Aura): attacking any list ? excludeUnitKeywords=MONSTER, TITANIC unitKeywords=NECRONS weaponAbilities=[SUSTAINED HITS 1]
+aaf-ca1a-79f3-94c3 Airborne Predator: attacking shooting hitModifier=1 ownModelsOnly=true vsKeywords=FLY
+ab0d-df71-97e0-38b7 Dead-eye Shots: attacking shooting weaponAbilities=[PRECISION]
+ab2c-0599-3bf5-22a2 Iron Surplice of Saint Istalela: –
+ab33-4f68-3690-fd22 Stitchflesh Abominations: defending any list ? unitKeywords=HAEMONCULUS COVENS woundModifier=-1
+ab94-6f80-af0b-a719 Mission Tactics: –
+aba5-2733-6f8-21c3 Hyperphasic Fulcrum: attacking any ? rerollWounds=ones
+abda-4d48-8c25-5c9e Support Vehicle: –
+abf6-e340-d8e8-5486 Damaged: 1-4 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+ac00-8588-a8be-0c3e Star of Terra: –
+ac7c-2faf-a4ba-1a7b Skyshield: –
+acca-1ed4-d8d2-99d8 Accelerator Mandible: attacking any list ? skillModifier=1 unitKeywords=CANOPTEK
+accc-4cc2-b9f-d892 Sustained Assault: attacking fight ? critHitOn=4 ownModelsOnly=true
+ace3-d756-2663-36e2 Edge of the Blade: attacking any ? ownModelsOnly=true rerollHits=ones | attacking any ? ownModelsOnly=true rerollWounds=ones
+acf6-28b1-da63-60be Battle-lust: attacking fight ? attacksModifier=2 ownModelsOnly=true
+ad4a-eca7-8c44-3e5d Storm Shield: –
+ad6b-ebb2-a929-8c9a Tox‑cycler: –
+adc1-e09a-fcd4-8d77 Kill Team: –
+adc9-df4f-74e6-1e15 Rapid Assault: attacking fight ? strengthModifier=1
+ae25-dce3-9c2e-2e38 Hulking Bodyguards: defending any ? strengthVsToughness=gt woundModifier=-1
+ae52-f631-b301-c1f3 More Dakka: –
+ae61-c8d4-2a51-9793 Bound Creation: –
+ae6f-18f-928c-3862 Isolate and Destroy: attacking any ? ownModelsOnly=true woundModifier=1
+ae7a-3243-f314-dd6c Forged in Battle: –
+ae8f-82c1-8730-21fa Pious Fervour: attacking fight ? attacksModifier=1 ownModelsOnly=true
+aec0-8e4d-caac-ba64 Enhanced Bionics: –
+aee6-81be-fb90-7ea5 Through Unity, Devastation: –
+af2c-582b-6a94-dc39 Rolling Fortress: defending shooting list ? cover=true unitKeywords=ASTRA MILITARUM
+af3-a64b-b015-d55e Strafing Run: attacking shooting ? hitModifier=1 ownModelsOnly=true
+af40-cad6-ca86-a3bd Flawless Perfection: attacking any ? rerollHits=all
+af51-9630-82a3-172d Selfless Protector: –
+af7e-8be6-b5d7-31a Arcane Cover: –
+af7f-a1a3-d20e-9c Froth-spattered Frenzy: –
+afa4-169c-3aaa-650 The Blood of Martyrs: attacking any list ? hitModifier=1 unitKeywords=ADEPTA SORORITAS woundModifier=1
+afa4-c009-a8fa-5484 Bodyguard: –
+afe4-8b02-7903-e98c Frost Weapon: attacking fight apModifier=1 ownModelsOnly=true strengthModifier=1 weaponAbilities=[LETHAL HITS]
+aff0-7948-de63-7da5 Eradicate the Foe: attacking any ? ownModelsOnly=true rerollHits=ones
+aff3-1dba-b4f6-3f28 Fire and Fury: attacking any attacksModifier=1 weaponAbilities=[SUSTAINED HITS 1] weaponFilter=TORRENT
+b-b5eb-2ac6-b6df Blight Bombardment: attacking shooting list ? rerollHits=ones unitKeywords=DEATH GUARD
+b006-d9ab-238f-fbe5 Pyromaniaks: attacking any ? rerollWounds=ones
+b015-c548-af7c-69f1 On My Signal, Fire!: attacking any list ? rerollHits=all unitKeywords=AGENTS OF THE IMPERIUM, IMPERIUM INFANTRY BATTLELINE
+b041-0c01-ff9f-6a19 Vector of the Omnissiah's Wrath: attacking shooting ownModelsOnly=true weaponAbilities=[IGNORES COVER]
+b05-d2dc-4dd4-81ee Suppression Fire: defending any list ? hitModifier=-1
+b06c-8cf7-5125-6f4c Master of Mechanisms: –
+b079-93cd-5595-103b Elevated Might: attacking fight ownModelsOnly=true rerollWounds=all | attacking fight apModifier=1 ownModelsOnly=true
+b07f-3052-e85f-d6d3 Tactical Precision: attacking any weaponAbilities=[LETHAL HITS: NON-MONSTER/VEHICLE]
+b0c5-fa65-7403-f2a6 Favoured Servants: –
+b12c-10be-1d5f-7793 The Be'gel Hunter's Plate: –
+b13-dc2f-2104-2ba2 Hero of the Empire (Aura): attacking shooting list ? rerollHits=ones unitKeywords=T'AU EMPIRE
+b13b-8579-e74d-5e09 Mobile Fortress: defending shooting damageModifier=-1
+b141-8e24-fab3-30d7 Plasma Accelerator Rifle: –
+b147-cef6-450f-b85e Infectious Bloodshed: attacking any ? weaponAbilities=[SUSTAINED HITS 1]
+b14f-7290-da41-f865 Baggage Harness (Aura): attacking shooting list ? unitKeywords=KROOT weaponAbilities=[SUSTAINED HITS 1]
+b17a-783c-cd7d-a787 Conversion: –
+b189-598-858c-49fe Dreadherder: attacking any list ? rerollHits=ones unitKeywords=ORKS WALKER
+b18b-1cff-ce93-3eb1 Tripwires: defending any list ? hitModifier=-1
+b1b8-585c-e5c8-3f5b Against the Horde: attacking any ? ignoreHitModifiers=true weaponAbilities=[SUSTAINED HITS 1]
+b1c1-d1fc-c3b8-e455 Catechism of Fire: –
+b1cf-fb69-d781-b181 Dour Survivalist: –
+b1e4-de83-b5de-79d9 Shredding Fire (Pain): –
+b20-ca96-c186-27dc To the Last: attacking any ? hitModifier=1 woundModifier=1
+b20f-73b0-988b-c053 Damaged: 1-15 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+b232-1553-cf5c-7e7c Nowhere to Hide (Pain): attacking any list ? weaponAbilities=[IGNORES COVER]
+b23d-0749-06dc-a4d6 The Be'gel Hunter's Plate: –
+b24d-f2a5-2be-8b59 Necromechanic: –
+b251-fadb-fc18-4753 The Armoury's Artifice: attacking any ? apModifier=1
+b252-8a62-624c-88b7 Aeronautica Commander: attacking shooting list ? hitModifier=1 unitKeywords=ASTRA MILITARUM AIRCRAFT
+b25a-880d-ef4f-629b Consumed By Rage: attacking fight ? attacksModifier=1
+b262-6252-ce59-4b30 Nemesis Rounds: –
+b26d-f768-30b7-9556 Sensational Performance: attacking fight ? apModifier=1 strengthModifier=1
+b2a9-fcc3-5662-e61d P’tarix’s Sorcerous Syphon (Aura): defending any list ? weaponFilter=PSYCHIC woundModifier=-1
+b2ea-319f-b86-ab13 Rugged Resilience: defending any strengthVsToughness=gt woundModifier=-1
+b308-936f-547b-e765 Chaos Familiar: –
+b31b-9dfe-2cde-9e3a Personal: Sanctus vi: –
+b32a-7c31-93f5-e663 Borrowed Vigour: attacking fight attacksModifier=2 ownModelsOnly=true
+b3bc-461f-e5b5-2e0b Transport Support: –
+b3c7-e6c3-c500-616a Driven from Cover: attacking shooting list ? unitKeywords=ADEPTUS ASTARTES weaponAbilities=[IGNORES COVER]
+b3d3-39f2-9432-a856 Gift of Contagion (Psychic): attacking any ? weaponAbilities=[SUSTAINED HITS 1]
+b3d5-7147-f1be-36b6 Forgestar: attacking shooting ? critHitOn=5 ownModelsOnly=true weaponAbilities=[LETHAL HITS] weaponFilter=PSYCHIC
+b3e2-5880-7bec-cc20 Prey Adaptation: –
+b3f3-dac8-f2ac-2a06 Veil of Ancients: –
+b404-720d-3391-4b5c The Scorpion's Bite: attacking fight ? ownModelsOnly=true weaponAbilities=[DEVASTATING WOUNDS]
+b423-2ef4-b87c-b65d Forgefather: –
+b48b-4abf-d24a-f78c Nowhere to Hide: attacking shooting weaponAbilities=[LETHAL HITS]
+b499-efe6-b9ad-6e1e Damaged: 1-7 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+b4bd-e247-b596-4db2 Full-throttle Assault: –
+b4c1-7511-e999-2538 Blessing of the Omnissiah: –
+b4c2-3274-c890-bc8b Savage Orator: attacking fight hitModifier=1
+b4f3-4f66-05a4-35a7 Razor Claws: attacking fight apModifier=1 ownModelsOnly=true
+b4fd-44c8-e9f5-2787 Magallian's Mantle: –
+b50c-2f43-eda4-6b6b Knife Dancers (Pain): attacking fight ? vsKeywords=INFANTRY weaponAbilities=[LETHAL HITS]
+b513-f80c-9d48-db05 Sanctuary (Psychic): defending fight hitModifier=-1
+b518-dfb4-ed41-6393 Way of the Short Blade: attacking any ? woundModifier=1
+b56-d882-46c2-f3f1 Harbinger of Destruction: attacking shooting critHitOn=5
+b564-7fc-6ab2-a9c Siege Shield: –
+b584-c327-fdf5-2b8b Titan Hunter: –
+b5ca-38bb-caa8-799a Indomitable Defence: defending any list ? strengthVsToughness=gt unitKeywords=GRAVIS woundModifier=-1
+b5e7-392a-7d2d-670b First Knife: attacking fight ownModelsOnly=true rerollHits=all rerollWounds=all
+b5ee-e208-d8bc-8fad Tendrilous Emissions: –
+b629-d896-a9a8-0c82 Biomorph Adaption: attacking fight apModifier=1 damageModifier=1 ownModelsOnly=true
+b63b-a0eb-d7c-89be Masters of Close Confines: attacking shooting ? weaponAbilities=[LETHAL HITS]
+b63e-3e8a-aec4-eeda Malefic Will: attacking any weaponAbilities=[SUSTAINED HITS 1]
+b65e-c54b-b8fe-e8e2 Born Soldiers: attacking shooting list ? unitKeywords=REGIMENT vsKeywords=VISIBLE weaponAbilities=[LETHAL HITS] | attacking shooting list ? unitKeywords=SQUADRON weaponAbilities=[LETHAL HITS]
+b671-ba7f-7668-9c08 Malefic Surge: –
+b698-3b5c-4503-4ed Rites of Feasting: –
+b69d-41f0-d640-64 Might is Right: attacking fight ? attacksModifier=3 ownModelsOnly=true | attacking fight ? ownModelsOnly=true strengthModifier=2
+b6db-35b5-dc12-881d Stave of Kurnous: attacking any list ? unitKeywords=WRAITH CONSTRUCT weaponAbilities=[PRECISION]
+b6e7-8b81-2a5f-e908 Flawless Bladework: attacking fight ownModelsOnly=true weaponAbilities=[SUSTAINED HITS 1]
+b6f4-e06f-b85d-c3f2 Conversion: –
+b767-e5f2-4f28-f881 Unholy Power: attacking any ? ownModelsOnly=true weaponFilter=PSYCHIC woundModifier=1
+b7a4-894b-e10b-8ae3 Skorflense: –
+b7a9-d68a-4c71-cb8c Not A Shell Wasted: –
+b7b7-8ee8-ef19-eefd High-intensity Markerlights: –
+b7de-7b7f-8dbc-76b4 Battlefield Dominance: attacking shooting ? ownModelsOnly=true weaponAbilities=[IGNORES COVER]
+b7f2-7b8d-d56c-dbf7 Writhing Tentacles: attacking fight attacksModifier=1 ownModelsOnly=true
+b7f8-7460-1eb0-739b Flesh Sigils: –
+b826-b4c7-cfde-0637 Inescapable (Pain): attacking shooting ? weaponAbilities=[IGNORES COVER]
+b82f-6b0d-7564-87df Da Hunt Is On: attacking any list apModifier=1 unitKeywords=BEAST SNAGGA vsKeywords=MONSTER, VEHICLE
+b86b-1054-ccc5-a0e9 Psychic Guidance: –
+b87c-23ef-0d33-a86e Bane of Abominations: attacking any ownModelsOnly=true vsKeywords=CHARACTER, MONSTER, VEHICLE woundModifier=1
+b88c-fc60-1872-a00a Auto-medicae: –
+b892-cb5a-c93c-96fd Adept of the Omnissiah: –
+b8cd-fab9-ade8-208b War-wrought: –
+b8f6-f345-fea-2bd6 Ablative Plating: –
+b908-3bd8-a3e8-14b1 Terminator Honours: –
+b91b-e2eb-4678-72c7 Extremis Trigger Word: –
+b91e-a6de-9238-9ee1 Book of Salvation: attacking fight attacksModifier=1
+b946-1c12-5192-5d2f Blood-hungry Annihilator: attacking shooting ? ownModelsOnly=true rerollDamage=true rerollWounds=all
+b94f-5371-af5b-c2c6 Mekanikal Mekaniak: –
+b95d-04e9-97fd-4125 Daughter of the Abyss: defending any ? mortalFnp=3 ownModelsOnly=true psychicFnp=3
+b96e-763e-ecc7-e9eb Companion's Watch: attacking any list ? rerollWounds=ones unitKeywords=TRUSTED SENTINEL
+b971-0b07-93c3-8e4b Lord of the Rubricae: –
+b97d-4870-fc6a-48de Titan-killer: attacking shooting ? ownModelsOnly=true vsKeywords=MONSTER, VEHICLE weaponAbilities=[DEVASTATING WOUNDS]
+b9a3-9db8-fd2f-7e43 Damaged: 1-5 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+b9ea-1a55-a55e-4ab5 Sixty-sixth Seal: attacking any apModifier=1
+b9ef-7dad-f618-13f4 Epitome of Piety: defending any ? mortalFnp=4 ownModelsOnly=true psychicFnp=4
+b9fd-80d9-a165-1812 Fire Focus: –
+ba05-359b-e969-76c2 Eager for Vengeance: attacking any ? hitModifier=1
+ba09-05d6-3d24-7122 Inhuman Savagery: attacking fight ? attacksModifier=1 strengthModifier=1
+ba2d-d63f-9419-8c2b Interceptor: attacking shooting hitModifier=1 ownModelsOnly=true vsKeywords=FLY
+ba2f-e69c-95b4-cc4d Whirling Onslaught: attacking fight rerollHits=ones
+ba51-e749-8362-b9af Relic of the Matriarch - Simulacrum of the Argent Shroud (Aura): attacking shooting list ? rerollWounds=ones unitKeywords=ADEPTA SORORITAS
+ba55-e254-37de-d5a1 Bladesman's Honour: attacking fight skillModifier=1
+ba5c-785b-b694-3943 The Red Grail: attacking fight attacksModifier=1
+ba5d-c71b-b708-1000 Piratical Raiders: attacking any ? weaponAbilities=[LETHAL HITS], [PRECISION]
+ba73-e7d0-22ea-1c8f Deft Parry: defending fight hitModifier=-1
+ba7c-37f1-eab5-21bb Ground-attack Craft: attacking shooting ? hitModifier=1
+ba94-15fe-27b1-fe9 Damaged: 1-6 wounds remaining: attacking any ? hitModifier=-1
+ba9b-cf12-e565-f084 Mentor's Pride: –
+baec-58bb-7156-3bde Creations of Bile: attacking fight ? attacksModifier=1 ownModelsOnly=true | attacking fight ? ownModelsOnly=true skillModifier=1 | defending any ? ownModelsOnly=true toughnessChange=1 | attacking fight ? ownModelsOnly=true strengthModifier=1 | attacking shooting ? ownModelsOnly=true skillModifier=1
+bb60-f780-ef5f-7987 Malefic Warding: –
+bb67-4c61-3acb-3984 Death Hex (Psychic): –
+bb74-6a3f-1153-d563 Empyric Castellan: –
+bb97-a2dd-c81c-683d Ensorcelled Animus: attacking any list ? unitKeywords=SEKHETAR ROBOTS weaponAbilities=[PSYCHIC] | attacking fight ? skillModifier=1
+bb98-6dc7-022b-fff1 Hunters' Strike: attacking fight ? attacksModifier=1
+bbae-bbe1-fa63-7f69 Singular Expertise: attacking fight ? ownModelsOnly=true rerollHits=all rerollWounds=all
+bbb5-617e-a254-8463 Trophy Taker: attacking any ? rerollHits=ones vsKeywords=CHARACTER | attacking any ? rerollWounds=ones vsKeywords=CHARACTER
+bc26-17cc-b18f-6a37 Conversion Eradicator: attacking shooting apModifier=1 ownModelsOnly=true strengthModifier=1
+bc44-3f7c-68ef-ba0b Mark of the Soul Forges: attacking any critHitOn=5 ownModelsOnly=true
+bc4d-c9cb-320d-97ac Tyrannical Motivation: attacking any ? hitModifier=1
+bc7f-0ec2-0362-718e Revel in Desecration: attacking any ? hitModifier=1 ownModelsOnly=true
+bcae-4a47-f5e0-c4a Agile Dogfighter: defending any hitModifier=-1 ownModelsOnly=true
+bcff-d655-2af7-c51a The Vargard’s Duty: –
+bd10-21c8-3be1-2e74 Aspire to Glory: –
+bd1a-e141-ec72-8757 Marksman's Honours: attacking shooting skillModifier=1
+bd49-399b-926c-936d Miniaturised Nebuloscope: attacking shooting weaponAbilities=[IGNORES COVER]
+bd6a-144a-e94-92ae Flesh Hunger: attacking fight ? critHitOn=2
+bd8f-9ac9-06a3-dfea Enthralling Soul-mark: attacking fight ? weaponAbilities=[SUSTAINED HITS 1], [PRECISION]
+bdde-42c4-6ef1-e077 Keep Counting!: attacking fight weaponAbilities=[SUSTAINED HITS 1]
+bde3-2380-e35d-4b9f Break the Foe: attacking fight weaponAbilities=[SUSTAINED HITS 1]
+be11-dfc5-c59f-16d1 **Veil of Medrengard: –
+be18-6e02-45c7-9ffd Fortune's Favoured: –
+be1e-ac8e-1e2c-3528 Devastating Wounds: –
+be3e-6c87-63e2-fed7 Hunter's Eye: attacking shooting weaponAbilities=[IGNORES COVER] | attacking shooting weaponAbilities=[SUSTAINED HITS 1]
+be43-2d11-65f8-aedb Aggressive Assault: attacking shooting ? hitModifier=1 ownModelsOnly=true
+be4f-ed18-77be-ed64 Damaged: 1-6 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+be52-2414-896d-55fc Sword of the Throne: –
+be58-26c9-487b-41de Hardened Defences: –
+be59-ac64-15c1-e804 Flak Battery: attacking any ownModelsOnly=true rerollHits=all vsKeywords=FLY
+be93-1a4e-29a9-298f Psy-prism: attacking any weaponAbilities=[SUSTAINED HITS 2] weaponFilter=PSYCHIC
+bea8-b748-6343-9132 Book of Fate: attacking any ? apModifier=1 damageModifier=1 ownModelsOnly=true weaponFilter=PSYCHIC
+bec5-4288-34a6-ccfa Stealth: defending shooting ? cover=true
+bf07-1fc3-a51f-b9f2 Castigator’s Duty (Bondsman): attacking shooting ? apModifier=1 ownModelsOnly=true weaponAbilities=[SUSTAINED HITS 1]
+bf13-b015-f175-d230 Thundercharge: attacking fight ? attacksModifier=2 ownModelsOnly=true
+bf22-284-978-cf1a Psychic Spoor: attacking any ? ownModelsOnly=true rerollHits=all rerollWounds=all
+bf22-b7a6-e939-3f3 Damaged: 1-5 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+bf3d-552f-3273-5bad Legendary Killer: attacking fight rerollHits=ones rerollWounds=ones
+bfb7-9989-8c0b-93cc Leader-beast: –
+bfda-e145-69af-3e6a Fate-forged Weapon: –
+bfdd-9874-4432-5d1c Monarch of the Hunt: attacking fight ? ownModelsOnly=true rerollHits=all rerollWounds=all
+bfff-9f42-5320-7f74 Veteran Guerrillas: attacking fight ? weaponAbilities=[PRECISION]
+c011-8b42-c9f3-e3cc Virulent Aura: attacking shooting rerollWounds=all
+c06a-41c6-5749-25c0 Lifewards: –
+c080-6d93-e857-2503 Takers of Heads: attacking any hitModifier=1 vsKeywords=CHARACTER
+c085-b752-358a-e7e9 Preymark crest: attacking any ? weaponAbilities=[PRECISION]
+c09c-483d-53fc-8d50 Prelocational Optimiser: –
+c0a2-6cfb-3e11-6316 Macro-extinction Protocols: attacking any hitModifier=1 ownModelsOnly=true vsKeywords=MONSTER, VEHICLE
+c0b8-257e-5ef1-664e Pact of Cursed Pinions: attacking fight attacksModifier=1 ownModelsOnly=true
+c0c9-74ff-68a4-bbec Fire Support: –
+c0cb-43e7-e7e6-11ea Fire Zone Purge: attacking shooting list ? hitModifier=1 unitKeywords=MILITARUM TEMPESTUS
+c0ff-cadb-d445-653 Armoured Aggressor: –
+c14f-4e5e-3adc-9fa Battlefield Control: attacking shooting ? ownModelsOnly=true rerollHits=ones
+c164-a394-c3c9-75ca Contracted Harvest: attacking shooting list unitKeywords=BLADES FOR HIRE, KABAL weaponAbilities=[SUSTAINED HITS 1: NON-MONSTER/VEHICLE]
+c1e1-6b02-3509-324b Exorcist's Thurible: defending any ? mortalFnp=5 ownModelsOnly=true psychicFnp=5
+c1fb-5309-ddff-4198 Watcher in the Dark: defending any ? mortalFnp=4
+c217-3fde-a40e-5507 Astral Aim (Psychic): attacking shooting ? weaponAbilities=[IGNORES COVER] weaponFilter=PSYCHIC
+c273-c398-fdc2-c2d5 Aura of Dark Glory: –
+c2a8-5405-6d21-f044 The Spiritshield Helm: defending any ? mortalFnp=3 psychicFnp=3
+c2b9-899a-b142-dec1 Slaughterthirst (Aura): attacking any list ? excludeUnitKeywords=MONSTERS unitKeywords=LEGIONES DAEMONICA KHORNE weaponAbilities=[LANCE]
+c2e0-cb89-dffd-dc4c Collar of Khorne: defending any ? ownModelsOnly=true psychicFnp=4 | defending any ? psychicFnp=5
+c2e4-dbcc-8d12-bbc3 Indefatigable Fortitude: defending any strengthVsToughness=gt woundModifier=-1
+c2f-9287-6547-ba56 Dark Favour (Psychic): –
+c2fe-faec-47bc-82e8 Rites of Coalescence: defending any ? woundModifier=-1
+c324-bc40-8caa-5e2d Ceaseless Cannonade: –
+c37b-09fa-19f6-3e9b Hammerhand (Psychic): attacking fight ? weaponAbilities=[LETHAL HITS]
+c393-649d-7810-bcae Master of the Forge: –
+c3c5-ef85-8a70-20ed Faithful Flock: –
+c3d6-b294-bf84-8480 Damaged: 1-5 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+c3f4-464b-3d82-f42f Glutton for Punishment: attacking any ? hitModifier=1 ownModelsOnly=true
+c3f6-4cf4-3904-1dd6 Daemonic Illusions (Aura): –
+c43b-6529-75b4-457a Consumed with Hunger (Aura): attacking any list ? rerollHits=all unitKeywords=WAR DOG vsKeywords=TITANIC, TOWERING
+c44-b390-e18d-9712 Ammo Runts (Once per battle, per unit): attacking shooting ? hitModifier=1
+c473-5e0b-1e9a-a8ef Hagioscope: –
+c481-d4ab-58f1-858d Tactical Instinct: attacking any weaponAbilities=[SUSTAINED HITS 1]
+c485-d6a6-8913-c29a Blistering Fusillade: attacking shooting ? apModifier=1 strengthModifier=1 vsKeywords=AFFLICTED
+c48a-62e2-8628-b37d Excessive Assault: attacking fight rerollWounds=ones
+c4c8-086f-169c-b7fd Tide of Muscle: attacking fight ? weaponAbilities=[LETHAL HITS]
+c4e1-ad56-db9d-3ffb Contraband Munitions: attacking shooting strengthModifier=2
+c4e4-ef49-3b7a-b725 Warp Tracer: attacking any list ? weaponAbilities=[IGNORES COVER]
+c4f2-c8d1-6e71-08bb Channelled Force: attacking fight ? weaponAbilities=[SUSTAINED HITS 1] | attacking fight ? weaponAbilities=[LETHAL HITS]
+c4f6-2b72-9aef-ce30 Ritual Butchery: attacking fight weaponAbilities=[SUSTAINED HITS 1]
+c4f7-bd85-80d4-ef6d Death Companion with Jump Pack: –
+c510-761d-3e49-c0b4 Dark Runes: –
+c519-1e0a-c0fa-a98d Gnarlskin Experimentor: defending any strengthVsToughness=gt woundModifier=-1
+c521-157b-8c79-8921 Lethal Instincts: attacking any ? rerollHits=all
+c52f-63f1-5845-cb48 Da Krushin' Armour: –
+c534-53bb-4d73-23d2 Armoured Resilience: defending any damageModifier=-1 ownModelsOnly=true
+c53e-77f2-6562-9205 Markerlight Precision: –
+c54c-1d21-f4bf-a9c7 Damaged: 1-13 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+c591-7926-5b88-ab16 Prey on the Weak: attacking any ? ownModelsOnly=true woundModifier=1
+c59c-fc3d-0293-bd46 Psychic Blank: defending any ? mortalFnp=4 ownModelsOnly=true psychicFnp=4
+c5b0-2214-2987-d0de Forward Observers: –
+c5be-9cdf-008d-3b05 Sentinel Directive: –
+c5cb-ee52-3ba9-89c9 Stubborn and Unforgiving: attacking any ? rerollHits=all
+c5f7-4215-d959-3e2 Damaged: 1-30 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+c63d-bb92-87ae-6e08 Invulnerable Save (5+*): –
+c662-6c60-3e77-889e Rain of Cruelty: –
+c680-6f61-e271-755f Saddleborne Assassins: attacking shooting ? apModifier=1
+c68c-a968-354f-bb99 Damaged: –
+c6d3-5aff-803c-3315 Ancient Conquest: attacking any ? ownModelsOnly=true rerollHits=ones rerollWounds=ones
+c6d3-ff20-7a9f-7fa9 Phase Shift Generator (Aura): –
+c71e-38ab-1946-1457 Lions, Not Wolves: attacking fight rerollHits=ones rerollWounds=ones
+c738-a378-7b40-dcbd Tempting Addendum: attacking any ? rerollHits=all
+c785-9209-5db8-d5e7 Damaged: 1-6 Wounds Remaining: –
+c78c-3f21-cf24-041b Time Sink: –
+c7e9-b44-ce90-7870 Stabilisation Talons: attacking any ? ignoreHitModifiers=true
+c812-0d92-9a85-b72b Nowhere to Hide: attacking any hitModifier=1 vsKeywords=HIDDEN
+c84f-f2a3-5d47-895a Arch Negator: attacking shooting ownModelsOnly=true weaponAbilities=[ANTI-VEHICLE 4+]
+c8ca-55cb-cdbc-fd1 Skyfire Protocols: –
+c8eb-db13-de01-b988 Seasoned Noble: attacking shooting ? apModifier=1 ownModelsOnly=true
+c931-b1ef-0f02-2847 Deff from Above: attacking shooting ? hitModifier=1
+c94e-e4b9-2e65-de1f Corded Muscle: attacking fight attacksModifier=1 strengthModifier=1
+c981-875a-ab73-8452 Temperamental Shokka: attacking any ? ownModelsOnly=true weaponAbilities=[TORRENT] weaponFilter=SHOKK ATTACK GUN | attacking any ? attacksModifier=1 ownModelsOnly=true weaponFilter=SHOKK ATTACK GUN
+c992-58d6-b9a7-1083 Evasive Manoeuvres: –
+c9ea-1d59-9bf-bb00 Putrescent Vitality (Psychic): –
+ca21-ca71-824c-4b47 Drawback: attacking any ? ownModelsOnly=true rerollHits=all
+ca33-a2da-5da2-73b1 Genalchemic Warding: defending any hitModifier=-1 weaponFilter=PSYCHIC
+ca33-e4c7-c4ea-c54a Decapitating Strikes (Pain): attacking fight ? vsKeywords=INFANTRY weaponAbilities=[DEVASTATING WOUNDS]
+ca52-d57a-856b-317b Thaa'ris and Rhi'ol, the Rapacious: attacking fight ? attacksModifier=3 ownModelsOnly=true weaponAbilities=[LANCE]
+ca6a-3aa8-ac25-6f1c Inured To Agony: –
+ca83-0825-3a7d-a3b5 Runes of Battle (Psychic): attacking any weaponAbilities=[IGNORES COVER]
+ca8d-dcb6-f333-6ff8 Venator Omni-Auspex: attacking any ? rerollWounds=ones vsKeywords=HIDDEN | attacking any ? rerollWounds=ones vsKeywords=HIDDEN
+ca9e-0a72-a29c-d61c Prophetic Gifts: –
+caa1-a6c2-f241-ef7a MultiCOG Targeting: attacking shooting ignoreHitModifiers=true ownModelsOnly=true
+caae-e670-6489-7383 Symphony of Pain (Psychic): attacking any list ? rerollHits=all rerollWounds=all unitKeywords=SLAANESH LEGIONES DAEMONICA
+cabc-c518-5262-d65e Bloody Fury: attacking shooting ? rerollHits=all
+cac4-9ec2-1044-a28a Hand of Asuryan: –
+cacb-844c-4611-5ce0 Storm of Silence: attacking any ownModelsOnly=true rerollWounds=all vsKeywords=CHARACTER
+caea-9ebe-9a0b-d0d7 Beast-ward Barbute: –
+cafb-03d3-9f5e-7c2d Heliotrophos: –
+cafb-3855-f3e3-aa1c Throat-slittas: attacking fight weaponAbilities=[LETHAL HITS: NON-MONSTER/VEHICLE]
+cafe-b553-9431-642d Sadistic Fulcrum: –
+cb0f-bc11-da23-6ef2 Empathic Disinclinator: –
+cb2f-c68b-f66e-93ae Annihilation Protocol: attacking shooting list ? apModifier=1 unitKeywords=DESTROYER CULT
+cb36-69d9-6027-34d7 Exemplar of Hate: attacking fight rerollHits=all
+cb5e-57b9-c416-c2a5 Righteous Purpose: –
+cb72-1c0b-76ff-5950 Visions of Suffering (Psychic): attacking any ? hitModifier=1
+cb76-25b3-da1e-ebe7 Headhunters: attacking any ? weaponAbilities=[DEVASTATING WOUNDS], [PRECISION]
+cb97-8ee0-1cbf-e38f Command Squad: defending any woundModifier=-1
+cba7-b3aa-e59b-3c1e Hidden Stalkers: defending any cover=true ownModelsOnly=true
+cbb3-6064-e9fc-48aa Apollonian Spear: attacking fight ? attacksModifier=3 ownModelsOnly=true strengthModifier=3
+cbc1-7e63-1279-b1e7 Finderz Keeperz: attacking shooting ? apModifier=1
+cbe5-4cf9-b1b7-5541 Exemplar's Eternity: attacking any ? rerollHits=ones rerollWounds=ones
+cbe7-5f04-88ae-4900 Atavistic Instigation: attacking any ? hitModifier=-1
+cc0-5e68-661b-905a Pelt of the Doppelgangrel:: defending any hitModifier=-1
+cc47-c40a-1c64-73e7 Tank-killer: attacking shooting ? ownModelsOnly=true rerollWounds=all vsKeywords=MONSTER, VEHICLE
+cc62-f70a-74d5-53a3 Emanatus Forcefield (Aura): –
+cc70-2470-1cb3-952c Feel No Pain 5+: –
+cc8f-6b40-8152-671f Inspiring Exemplar: –
+cca-bd2e-137e-9ae0 Signum: attacking shooting ? weaponAbilities=[IGNORES COVER]
+ccc1-44e6-b5f3-e432 Monocular Targeting Helms: attacking any ? weaponAbilities=[IGNORES COVER]
+ccea-127f-9229-d8ee Wazgit's Kopper Skullkap: attacking any ? hitModifier=1 ownModelsOnly=true weaponFilter=PSYCHIC
+ccea-7f53-e3d4-11cb Indomitable Steed: –
+cd07-ea04-fc73-3699 Mesmerising Form: defending any hitModifier=-1 ownModelsOnly=true
+cd12-5520-3853-12d1 Shadow Field: –
+cd5a-0fc0-fe54-6b9d Daemon Weapon of Nurgle: attacking fight critHitOn=5 ownModelsOnly=true
+cd67-9f43-7d95-51be Helm of Spite: defending any ? mortalFnp=5 psychicFnp=5
+cd67-c668-e2b7-4ea5 Mark of the Star Children: defending any toughnessChange=1 | attacking fight strengthModifier=1
+cd92-208e-7559-9c9b Fortis Doctrines: –
+cda-47a4-2046-4c2c Apex-beast: attacking any ? hitModifier=1 ownModelsOnly=true
+cdc2-d95e-c62e-48dd Deadly Feint: attacking shooting ? weaponAbilities=[LETHAL HITS]
+ce2a-f3db-5bb2-d3b5 Tyrant's Raiment: attacking any ? hitModifier=1 ownModelsOnly=true
+ce2f-2282-d8d5-abb9 Voice of Experience: attacking any ? hitModifier=1
+ce51-709e-a750-e68e Euphoric Strikes: attacking fight ? apModifier=1 attacksModifier=3 ownModelsOnly=true
+ce67-fc39-8970-3137 Formidably Resilient: defending any halveDamage=true ownModelsOnly=true
+ce7a-9685-58e8-036a Channelled Fury (Psychic): attacking any weaponAbilities=[SUSTAINED HITS 1] weaponFilter=PSYCHIC
+ce9e-8cb9-244f-1d90 Thread-cutter: attacking fight ownModelsOnly=true rerollHits=all vsKeywords=CHARACTER weaponAbilities=[PRECISION]
+cea9-5b46-6bab-b5d2 Overlord: attacking any rerollWounds=ones | attacking any ? rerollWounds=all
+cee6-b256-80d9-9a79 Mischief Makers (Aura): defending fight list ? excludeVsKeywords=MONSTERS, VEHICLES hitModifier=-1
+cefa-0b6a-caf2-7790 Warped Interference (Psychic): defending shooting cover=true
+cf0f-66b6-ba32-be38 Inescapable: attacking shooting ignoreHitModifiers=true
+cf12-2ea5-6834-5031 Untouchable Purity: defending any ? mortalFnp=4
+cf2a-c35d-d0cb-63b2 Mark of the Wulfen: attacking fight ? attacksModifier=1 ownModelsOnly=true strengthModifier=2
+cf3b-e41a-078e-021a Supernova Launcher: –
+cf4d-3336-e6e7-56a9 Triptych of Judgement: attacking any ignoreHitModifiers=true
+cf50-e63a-b563-0c89 Truesilver Weave: defending any damageToOne=true ownModelsOnly=true
+cf71-ab64-3470-c3d3 Bad Reputation: –
+cf7e-519e-c4e1-5abc Zealot: attacking fight ? attacksModifier=3 ownModelsOnly=true strengthModifier=3
+cf93-ad4d-2f08-a79d Twin-linked: –
+cfb4-3a43-2b29-1aae Spearpoint Paragon: attacking fight apModifier=1 ownModelsOnly=true strengthModifier=1
+cffc-137a-2a20-bc57 Brass Collar of Bloody Vengeance: defending any ? mortalFnp=3 ownModelsOnly=true psychicFnp=3
+d015-c9fb-0b8d-5c14 Quarry Seeker: –
+d02f-b1eb-9dcc-fd33 Master of Wolves: –
+d038-2f3d-1c4a-a15 Onslaught (Aura, Psychic): attacking shooting list ? unitKeywords=TYRANIDS weaponAbilities=[ASSAULT], [LETHAL HITS]
+d03f-7674-3564-5d99 Onslaught Killers: attacking fight ? hitModifier=1
+d071-fbf4-f406-1d44 Holy Hatred: attacking fight weaponAbilities=[SUSTAINED HITS 1]
+d077-4803-ce89-a6bc Snarling Rivalry: attacking shooting weaponAbilities=[IGNORES COVER]
+d07d-594b-cc77-344c War-form Mantles: –
+d087-cfde-e93a-f603 Searing Conflagaration: attacking any ? rerollWounds=ones
+d0c5-b33a-4a60-fc94 Forgewrought Skill: attacking any ownModelsOnly=true rerollHits=all
+d121-4b30-603-1d69 Wave Serpent Shield: defending shooting ownModelsOnly=true strengthVsToughness=gt woundModifier=-1
+d14c-f8d0-1118-9492 Unwavering Enmity: attacking any ? weaponAbilities=[LETHAL HITS]
+d14f-417-f02c-7ce6 Cursed Fang: attacking fight apModifier=1 ownModelsOnly=true weaponAbilities=[PRECISION]
+d167-8f2e-101f-f228 Phase-shifted Cover: –
+d177-5b86-dd6e-03b1 Unbreakable Faith: defending any ? damageModifier=-1
+d18e-6419-b7bf-be79 Overwhelming Short-range Firepower: attacking any ? ownModelsOnly=true rerollHits=ones rerollWounds=ones
+d19-9fc5-aa23-7917 Destructor: attacking shooting apModifier=1 ownModelsOnly=true vsKeywords=INFANTRY
+d1ac-e240-653c-cc9c Mobile Sensor Relays: –
+d1c4-54b8-28b0-fbc1 Psychic Communion (Psychic): –
+d1d-2e4f-db3d-b3c4 Advanced Guardian Drone: defending shooting ownModelsOnly=true woundModifier=-1
+d1d1-611e-5191-1095 Lethal Hits: –
+d212-dcdb-bb36-2f21 Seersight Strike: attacking any ownModelsOnly=true weaponAbilities=[ANTI-MONSTER 2+], [ANTI-VEHICLE 2+] weaponFilter=PSYCHIC
+d259-e012-ca84-f193 Bane-forged weapons: attacking any strengthModifier=1
+d27e-a6b4-0401-385b Spirit of Change: –
+d294-9c07-583e-33f Medicae Medi-packs: –
+d29e-6553-723c-5067 Divine Deliverance: attacking fight ? attacksModifier=3 ownModelsOnly=true weaponAbilities=[DEVASTATING WOUNDS]
+d2ad-d0a2-4079-f902 Special-issue Optics and Ammunition: attacking shooting ? weaponAbilities=[IGNORES COVER]
+d2bd-ec2b-d13f-7a0f Unquestioning Fanaticism: –
+d2ea-4457-7ac2-7173 Aetherstride (Psychic): –
+d329-6d10-6e7e-e959 Mow Down the Enemy: attacking any ? ownModelsOnly=true weaponAbilities=[DEVASTATING WOUNDS]
+d386-c95d-e969-4f81 Fuelled By Sensation: –
+d38c-74a3-5601-277b Untrammelled Rage: attacking shooting ? hitModifier=1 ownModelsOnly=true
+d3b3-187f-88c1-549 Daemon Lord of Khorne (Aura): attacking fight list ? hitModifier=1 unitKeywords=KHORNE LEGIONES DAEMONICA
+d3d3-265a-32cd-99af Slayer’s Oath: –
+d3dc-88b6-9d5a-a9ae Repress and Detain: –
+d3de-dea9-ed71-fb84 Helm of Brazen Ire: defending any damageModifier=-1 ownModelsOnly=true
+d40d-deae-b7a2-a424 Parasitic Implantation: attacking any ownModelsOnly=true weaponAbilities=[SUSTAINED HITS 1]
+d414-297a-ae9e-7023 Reinforced Carapace: defending any ? damageModifier=-1 ownModelsOnly=true
+d42e-f8ea-a29a-2766 Hail of Corrosive Disease: –
+d441-6f10-fc92-80f3 Phase-shifted Cover: –
+d44e-2f5-cadf-9eb Damaged: 1-4 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+d461-a9f5-94e3-bbbc Harassment Fire: defending any list ? hitModifier=-1
+d4a7-4825-c105-69da Rollbar searchlight: attacking shooting ignoreHitModifiers=true
+d4ac-24b9-1b80-6768 Beastmaster: –
+d4b0-322e-1e4e-7df9 Implacable Resistance: defending any damageModifier=-1 ownModelsOnly=true
+d4d3-6e32-23f-8c5a Lord of Decapitations: attacking fight weaponAbilities=[DEVASTATING WOUNDS]
+d4dc-52c7-2eda-ae83 Damaged: 1-26 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+d4de-4cfa-ee54-d422 Watch Master: attacking any ? ownModelsOnly=true rerollHits=ones vsKeywords=CHARACTER | attacking any ? ownModelsOnly=true rerollWounds=ones vsKeywords=CHARACTER
+d4f7-face-042b-a10d Furious Onslaught: attacking shooting ? ownModelsOnly=true rerollHits=all
+d4fb-fe41-71bd-2bf2 Conduit of Chaos: attacking fight ownModelsOnly=true weaponAbilities=[LANCE]
+d569-61db-406d-1d42 Slayers of Tyrants: attacking fight ? woundModifier=1
+d60e-18e8-35b8-4464 Veil of Time (Psychic): attacking any weaponAbilities=[SUSTAINED HITS 1]
+d610-cc24-7aba-b494 Shieldbreaker: attacking any ? critWoundOn=2 ownModelsOnly=true woundModifier=1
+d611-357d-2b19-b189 Vanguard Assault: attacking fight ? weaponAbilities=[LETHAL HITS]
+d61e-c391-27c4-cec9 Support System: attacking shooting ignoreHitModifiers=true ownModelsOnly=true
+d623-c025-484a-6770 Hunter's Eye: attacking shooting ? apModifier=1
+d65b-0557-a25c-cedc Veteran Crew: attacking shooting rerollHits=ones
+d65c-2c0a-65fc-b14d Champion of the Deathwing: attacking any ? weaponAbilities=[SUSTAINED HITS 1]
+d65d-22ee-7d91-448a Champion of the Kingsguard: attacking any ? ownModelsOnly=true rerollHits=ones vsKeywords=CHARACTER | attacking any ? ownModelsOnly=true rerollWounds=ones vsKeywords=CHARACTER
+d65f-02cb-036a-f6b3 Auspex Array: attacking shooting ownModelsOnly=true weaponAbilities=[IGNORES COVER]
+d680-6bcd-2dd3-5990 Boons of Deimos: attacking shooting strengthModifier=2
+d687-22aa-c30e-ca79 Naturalised Camoflage: –
+d6af-831e-45cc-394a Psychic Assassin: –
+d6bd-077c-acaf-39be Cacophonic Accompaniment: attacking shooting weaponAbilities=[IGNORES COVER]
+d6c0-12f5-dddf-21df Whipcord Sinews: attacking fight ownModelsOnly=true strengthModifier=2
+d6ef-b13d-f91a-ad20 Coordinated Strike: attacking any ? ownModelsOnly=true rerollHits=ones
+d6f9-7308-f063-7803 Kroothawk Flock: attacking shooting ? weaponAbilities=[IGNORES COVER]
+d704-4523-7eed-b79c Devoted to Destruction: –
+d704-af71-da93-83ae Rolling Fortress: defending shooting list ? cover=true
+d71a-a59f-aafd-3723 Harbingers of Dread: attacking any ? ownModelsOnly=true woundModifier=1
+d723-5652-3f58-a2c4 Guardian Constructs: attacking fight list ? rerollWounds=ones unitKeywords=CRYPTEK
+d75c-8807-c2d9-2fcc Duality Shield: –
+d75f-48f3-b102-8c08 Soul Glaive: attacking fight damageModifier=1 ownModelsOnly=true strengthModifier=1 | attacking fight ownModelsOnly=true weaponAbilities=[ANTI-CHAOS 4+]
+d782-840c-d76b-38c4 A'rgath, the King of Blades: attacking fight attacksModifier=1 ownModelsOnly=true strengthModifier=1 | attacking fight ? attacksModifier=2 ownModelsOnly=true strengthModifier=2
+d788-e7ec-e661-d112 Galvanic Field: attacking any weaponAbilities=[LETHAL HITS]
+d7a8-b14d-10df-6c7f Bellowed Challenge: –
+d7c9-287e-e909-3c39 Mighty Skull Rack (Aura): attacking fight list ? rerollHits=ones unitKeywords=WORLD EATERS
+d890-09df-9ccc-0d3b Firebase Control (Aura): attacking any list ? unitKeywords=LEAGUES OF VOTANN INFANTRY weaponAbilities=[SUSTAINED HITS 1]
+d8d6-4ad6-398a-e67d Fortification: –
+d8e2-0293-e08a-9c1f Empyric Guidance (Psychic): attacking any weaponAbilities=[LETHAL HITS]
+d9a6-ab83-01fc-7d59 Precise Prejudice: –
+da04-98f6-a254-edae Inconceivable Augmentation: attacking shooting weaponAbilities=[LETHAL HITS]
+da55-1d58-dee4-d42 Dark Zealotry: attacking fight ? woundModifier=1
+da5a-dc69-cf73-3b7 Death’s Heads: attacking any list ? rerollWounds=all unitKeywords=NURGLE LEGIONES DAEMONICA
+da7b-1c00-6fa2-b26a Honour of Vigilance: attacking shooting weaponAbilities=[LETHAL HITS]
+dab3-3e69-8bde-aed6 Driven by Hatred: attacking any ? ownModelsOnly=true rerollHits=all rerollWounds=all
+dab7-b3ab-0501-9090 Aura of Illusion: –
+dab9-88ab-e397-40a0 Tartarine Cuirass: defending any damageModifier=-1 ownModelsOnly=true
+dac0-5dcc-dca5-b00a Honour Guard of Macragge: defending any woundModifier=-1
+dae-a965-1e6d-d79a Damaged: 1-10 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+dae0-e2e7-a42b-6566 Quake Multigenerator: defending any list ? hitModifier=-1
+daf8-c48a-5832-741 Death Cult: attacking any rerollWounds=all vsKeywords=CHARACTER
+db0b-31e9-f3d7-bc67 Mind in the Machine: defending any list ? hitModifier=-1
+db0c-c6dc-9219-fa52 Macro-steroids (Pain): –
+db46-1f35-2996-964f Armour Hunter: attacking any ? hitModifier=1 ownModelsOnly=true
+dbbc-7f30-4080-686b Warrior Pride: –
+dbd9-90e8-ef-d873 Auspex Surveyor: attacking any list ? weaponAbilities=[IGNORES COVER]
+dbec-3461-2cac-79ba G'holl'ax, the Decayed: attacking fight ? ownModelsOnly=true weaponAbilities=[ANTI-INFANTRY 3+]
+dc03-6a23-e16b-3cf4 Warp Hunters: attacking any ? rerollWounds=ones
+dc09-cb01-528e-56d9 Murderous Imperative: attacking any list ? rerollHits=ones unitKeywords=SKITARII | attacking any list ? rerollWounds=ones unitKeywords=SKITARII
+dc57-888c-d72a-da1 Annihilator Protocols: attacking fight weaponAbilities=[SUSTAINED HITS 2]
+dca3-8d19-1837-acbf Stolid Bulk: attacking shooting skillModifier=1
+dcac-c0cc-f1e8-2430 Kustom Force Field: –
+dce6-3fb5-356f-832a Inspirational Fighter: attacking fight ? attacksModifier=1
+dd14-4a2e-2b63-5f55 Omnissiah's Blessing: –
+dd43-4cf0-2cac-a361 Glimpse of Eternity (Psychic): –
+dd5f-5aac-a976-1d59 At All Costs: attacking any list ? hitModifier=1 unitKeywords=AGENTS OF THE IMPERIUM
+dd6f-370e-baf4-2c5f Alchemicus Familiar: attacking any ? vsKeywords=INFANTRY woundModifier=1
+dd6f-f13f-b7c9-762e Blitz Dem Gitz!: –
+dd85-4783-c495-ca01 Obsessive Ruthlessness: –
+dd8e-2c98-72cd-1a06 Titanic Fire Support: attacking any list ? apModifier=1 unitKeywords=IMPERIUM
+dd97-3f1f-328b-3e82 Headlong Destruction: attacking any ? apModifier=1
+ddb7-5c9d-642d-b3c0 Adamantine Will: defending any ? psychicFnp=4
+ddbd-00dd-9f35-a5c1 Reaper: attacking any rerollHits=ones vsKeywords=INFANTRY, MOUNTED
+ddd3-a2ef-d91d-d153 Wisdom of the Ancients (Aura): attacking any list ? rerollHits=ones rerollWounds=ones unitKeywords=GREY KNIGHTS INFANTRY
+ddfc-0d10-302c-ac96 Twisted Science: attacking fight weaponAbilities=[LETHAL HITS]
+de4e-117c-695b-555f Tearing Claws: attacking fight attacksModifier=1 ownModelsOnly=true
+de60-7982-8376-9db9 Warden's Duty (Bondsman): –
+de83-c749-1bae-d1f0 Tank Hunter: attacking shooting ownModelsOnly=true vsKeywords=VEHICLE woundModifier=1
+de99-da3e-903b-d147 Obsessive Annunciation: attacking shooting weaponAbilities=[SUSTAINED HITS 1]
+dee0-6a07-757-2bb2 Xenos Hunter: attacking any hitModifier=1
+dee6-67e8-9a8b-f5cd Signum Array: attacking any list ? weaponAbilities=[IGNORES COVER]
+df3c-ad72-1ad5-4d0d Vector of Disease: attacking fight weaponAbilities=[SUSTAINED HITS 1], [LANCE]
+df4c-f512-dc01-b78a Nanoscarab amulet: –
+dfe4-1a8c-5c08-eafd Damaged: 1-10 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+dfef-85ce-8cc7-a6c6 Toxin Distillery: attacking any weaponAbilities=[LETHAL HITS]
+e00d-271e-a667-e79f Symbiotic Targeting: attacking any list ? rerollHits=ones unitKeywords=TYRANIDS
+e027-6e15-ddbd-194c Empyric Wellspring: attacking shooting ? strengthModifier=1 | attacking fight ? strengthModifier=2 | attacking fight ? apModifier=1
+e041-cbfb-9b67-3d89 Surgical Precision: attacking fight ? ownModelsOnly=true weaponAbilities=[PRECISION]
+e04a-bafe-cc4a-6992 Bloodlust: attacking fight ? ownModelsOnly=true weaponAbilities=[SUSTAINED HITS 1]
+e067-3654-b5ae-cef1 Pure of Soul: defending any weaponFilter=PSYCHIC woundModifier=-1
+e068-824b-2210-13c1 Embodied Prophecy: –
+e07-9b91-761a-7525 Gift of Poxes (Psychic): attacking any weaponAbilities=[SUSTAINED HITS 1]
+e07d-ca56-c77-2dce Guardian of the Lost: defending any damageModifier=-1
+e08f-0db5-7afc-0414 Execution Order: attacking any hitModifier=1 vsKeywords=CHARACTER
+e094-ab6f-abc0-f6f3 Kindred Hero: attacking any weaponAbilities=[LETHAL HITS]
+e09b-489-1a91-ec60 Bringers of Change: attacking shooting rerollWounds=ones
+e0c6-979e-6276-84d3 Guardian Protocols: defending any ? strengthVsToughness=gt woundModifier=-1
+e1-9726-a4fc-c9ae Reanimation Nodes (Aura): defending any list ? fnp=6 unitKeywords=NECRONS INFANTRY
+e11c-1932-dd04-c55f Exemplar of the Code: attacking any ? ownModelsOnly=true rerollWounds=all
+e13c-5912-365f-393f Synaptic Senses (Psychic): attacking shooting weaponAbilities=[LETHAL HITS]
+e1c3-ad35-2e25-f4ce Plated Growths: defending any strengthVsToughness=gt woundModifier=-1
+e1de-40a6-c9a9-7316 The Destroyer Hive: defending fight hitModifier=-1
+e208-6756-376-33de Conversion: –
+e230-1d28-9fc8-572a Damaged: 1-8 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+e245-8e53-4eb5-b72f Rejuvenating Swarm: defending any strengthVsToughness=gt woundModifier=-1
+e257-ed3e-c157-a9c6 Precise: –
+e284-c8a4-7a2a-24c9 Press the Attack: attacking any weaponAbilities=[SUSTAINED HITS 1]
+e2bb-4a2a-3469-97c6 Protect (Psychic): defending any ? woundModifier=-1
+e2e7-9443-2907-7aaf Pentakairic Armour: –
+e30a-12fc-14b5-f665 Acute Senses: attacking any ignoreHitModifiers=true
+e33f-e148-ccf4-d41a Purge Response: –
+e35-588d-b21e-33d8 Impetuous Fervour: attacking any rerollHits=ones
+e36c-3bf9-e758-77cf Veracity, The Sword of Oblivion: attacking fight ? ownModelsOnly=true weaponAbilities=[LANCE], [SUSTAINED HITS 1]
+e39a-81fc-953-c1fa Squig Barrage: defending any list ? hitModifier=-1
+e40d-a580-8e1f-cd2a Nowhere To Hide: attacking shooting list ? unitKeywords=ADEPTUS ASTARTES MOUNTED, ADEPTUS ASTARTES FLY VEHICLE weaponAbilities=[IGNORES COVER]
+e42a-f6cb-fd98-abf2 Supa-glowy Fing: –
+e456-1b0a-0223-d850 Void Shell: –
+e462-8d19-5d48-bcba Heroism in Extremis: –
+e47-254c-cdf9-7c5e Tank Hunters: attacking any hitModifier=1 vsKeywords=MONSTER, VEHICLE woundModifier=1
+e47d-63e8-2f6d-34cd Archon of the Poisoned Tongue (Pain): –
+e496-7223-5bfb-008e Witch Hunter: attacking any rerollHits=all vsKeywords=PSYKER
+e4a5-bf61-572d-569b Catechism of Death: attacking fight weaponAbilities=[DEVASTATING WOUNDS]
+e4bd-d365-f2b5-26d1 An Honourable Death in Combat: attacking any ? weaponAbilities=[SUSTAINED HITS 1] | attacking any ? weaponAbilities=[SUSTAINED HITS 2]
+e4df-4a6e-1e6-3eb3 Exhortation of Rage: attacking fight ? rerollWounds=all
+e50d-80b5-c26f-7923 Prescience (Psychic): defending any hitModifier=-1
+e513-e777-719a-1c4b Relic of the Primarch: attacking fight list ? attacksModifier=1 unitKeywords=ADEPTUS ASTARTES
+e520-0dd3-713d-ab78 Way of Stone: defending shooting strengthVsToughness=gt woundModifier=-1
+e55b-01c2-96c1-8435 Surprise Assault: attacking any list rerollHits=ones unitKeywords=TYRANIDS
+e583-3218-7a54-da39 Drawback: attacking any attacksModifier=-1 ownModelsOnly=true
+e589-6b4b-708c-0a93 Strafing Run: attacking shooting ? hitModifier=1 ownModelsOnly=true
+e58e-7a39-e2bd-a58b Forward Assault Warsuit: –
+e5c9-ce74-717b-4504 The Pulpit of Saint Holline’s Basilica: defending fight hitModifier=-1
+e5d1-c184-ac93-8fc2 Scarred Brute: –
+e646-46a8-6c93-eb83 Damaged: 1-33 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+e664-0500-5a3a-b18f Strike from the Skies: attacking shooting ? rerollHits=all
+e688-6f3a-136b-9d31 Omnissiah’s Blessing: –
+e6aa-9299-b9cf-d994 Targetin' Gizmos: attacking shooting ? weaponAbilities=[IGNORES COVER] | attacking shooting ? weaponAbilities=[SUSTAINED HITS 1]
+e6cd-072a-d34c-9ff6 Damaged: 1-6 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+e6d1-59ad-3bf9-a90f Battlefield Butchery (Pain): attacking fight ? attacksModifier=1 strengthModifier=1
+e6e1-7189-70a5-f53b Destroy the Daemonic: attacking any list ? rerollHits=ones rerollWounds=ones unitKeywords=INQUISITOR, INQUISITORIAL AGENTS, ORDO MALLEUS
+e6e2-2b88-617a-cc0b Thicket of Bladed Bone: attacking fight apModifier=1 | attacking fight weaponAbilities=[CLEAVE 1]
+e6f3-644-45fe-8b68 Targeting Coordinates: –
+e6fd-1844-f9b2-6f07 Bestial Prophet: attacking any hitModifier=1
+e75f-838a-6f72-3198 Vehement Aggression: attacking any ? rerollHits=ones
+e76c-0eeb-7452-3e1a Whispering Web: attacking any list ? critHitOn=5 unitKeywords=AELDARI
+e78a-fe96-2aa9-35b1 Morbid Might: attacking fight ownModelsOnly=true rerollWounds=all
+e802-8e16-27e3-7172 The Flesh is Weak: defending any ownModelsOnly=true toughnessChange=1
+e807-df37-9601-f121 Cartographic Data-leech: –
+e814-43ab-287b-0c93 Shootier Gunz: attacking shooting ? skillModifier=2 weaponAbilities=[HAZARDOUS]
+e849-72e6-b47b-32c5 Tears of the Phoenix: attacking fight ignoreHitModifiers=true ignoreWoundModifiers=true
+e84c-e5e3-3819-db1e Damaged: 1-6 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+e862-4703-fc73-5c46 Damaged: 1-8 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+e865-1963-3fc1-1d05 Chainsword Doctrines: –
+e913-d2c-461a-5b86 Way of the Shaper (Psychic): defending any fnp=6
+e92-f61-1c8f-4af6 Zealous Fortitude: defending any ? mortalFnp=4
+e929-0ce2-1124-9b54 Ablative Plating: –
+e969-204a-7adb-7aa9 Ancient Cover: –
+e97c-a4cc-83c5-5a60 Moment of Glory: attacking fight ? attacksModifier=3 ownModelsOnly=true strengthModifier=3
+e9ae-3e4d-a77b-c5d2 Bastion of Firepower: attacking shooting ? ownModelsOnly=true weaponAbilities=[LETHAL HITS]
+e9c1-2245-71b1-ca2a Sonic Devastation: –
+e9c4-2bb8-12ee-cd1b Psychic: –
+e9d9-5b1a-3377-bf4f Deathwatch Mission Tactics: attacking any list ? unitKeywords=DEATHWATCH weaponAbilities=[SUSTAINED HITS 1] | attacking any list ? unitKeywords=DEATHWATCH weaponAbilities=[LETHAL HITS] | attacking any list ? unitKeywords=DEATHWATCH weaponAbilities=[PRECISION]
+e9ea-ab25-5668-42e6 Unyielding Wards: –
+e9f4-8df1-7b3d-4cd1 Harbinger of Destruction: attacking shooting critHitOn=5
+e9ff-4f89-cec1-93b0 Damaged: 1-10 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+ea31-2582-622a-52fe Creeping Madness: attacking fight attacksModifier=1 strengthModifier=1
+ea42-7d15-fd81-73d6 Nurgle's Gift (Aura): attacking any list ? toughnessChange=-1 | defending fight list ? hitModifier=-1 | attacking any list ? saveChange=-1
+ea8a-0172-ebe8-2258 Heavily Armoured: –
+eaa0-009a-7cd2-91fe Blade of Endless Bloodshed: attacking fight attacksModifier=1 damageModifier=1 ownModelsOnly=true strengthModifier=1
+eabc-6ec1-cf79-e744 Vicious Instinct: attacking fight weaponAbilities=[LETHAL HITS]
+eae6-c930-f4cc-34d1 Guiding Hand: –
+eb08-e401-e0da-5c00 Spy-skull Datalink: attacking shooting weaponAbilities=[IGNORES COVER]
+eb25-bc78-6c52-aaad Iron Fortitude: defending shooting list excludeUnitKeywords=DAMNED strengthVsToughness=gt unitKeywords=HERETIC ASTARTES woundModifier=-1
+eb59-fb5e-62ca-e829 Bloodlust: attacking fight ? ownModelsOnly=true weaponAbilities=[DEVASTATING WOUNDS]
+eb6a-69da-dbb4-b942 The Endless Gift: –
+ebbc-de17-4221-db8d Wrath of the Wronged: attacking any ? hitModifier=1 woundModifier=1
+ebd6-d270-d7ee-bd1d Pan spectral scanner: attacking shooting rerollHits=ones
+ebf4-1fd9-00b7-7369 Laurels of Purity: defending any ? psychicFnp=4
+ebf4-909b-e7cf-e625 Nimble Fighters: defending fight hitModifier=-1
+ec10-202a-746e-169d Army: Xylocil: –
+ec65-c821-90e9-f515 Thyrikite Plate: defending any ? damageModifier=-1 ownModelsOnly=true | defending any ? damageToOne=true ownModelsOnly=true
+ecd2-a98c-6bc2-7276 Trademark Weapon: –
+ece7-477d-069f-b782 Blood Tithe: attacking fight list ? unitKeywords=BLOOD LEGIONS weaponAbilities=[LANCE]
+eced-3ff6-b0df-a19c Champion of the First Company: attacking fight weaponAbilities=[LETHAL HITS]
+ecf0-4fea-74c7-1091 Stanchion of Holy Martyrs: –
+ed08-df36-f6ee-94fe Blackweave Shroud: –
+ed3e-cbe0-ab7f-285e Focused Hunters: attacking any ? rerollHits=all
+ed47-d41b-11c5-95b2 Payback Time: –
+ed48-189a-6ec6-ad31 Tank Hunter: attacking shooting ? ownModelsOnly=true rerollHits=all vsKeywords=MONSTER, VEHICLE
+ed5a-1ef3-9b71-5810 Bonds of Duty: –
+ed62-fd08-6295-087b Voidstone: –
+ed73-45d8-ee76-e06a Incubi Shrine Token: –
+ed99-c1af-2cd3-629f Peerless Eradicator: attacking shooting weaponAbilities=[SUSTAINED HITS 1]
+edb5-c92e-0bef-312d Grizzled: –
+edb8-3cc0-1871-cd7d Goaded Savagery (Pain): –
+eddc-286e-4a78-6f8d Silent Executioner: –
+edde-386a-8739-aa0e Devoted Slaves: attacking any ? rerollWounds=ones
+ee03-c24e-5135-fe7f Armour of Misery: –
+ee0a-1bef-400c-17c5 Grimoire Abjuratis: –
+ee2f-447d-9c9d-ad63 Evasive: defending shooting ? apModifier=-1
+ee37-a238-abe2-08b5 Might is Right: attacking fight hitModifier=1
+ee59-d825-22fa-51b8 Resource Transmutation: –
+ee5c-1100-010b-69c4 Oathbreaker Guidance System: –
+ee7e-8838-a3cc-1c9d Roving Assassins: attacking shooting ? ownModelsOnly=true weaponAbilities=[IGNORES COVER]
+ee87-b3c6-eb20-4d7 Storm Troopers: attacking any rerollWounds=ones
+ee9f-15cc-2a69-8a31 Relic of the Matriarch - Petals of the Bloody Rose (Aura): attacking any list ? apModifier=1 unitKeywords=ADEPTA SORORITAS
+eea8-55f2-e7f8-5e64 Fenrisian Terminator Armor: –
+eeb6-c42-48f7-cc21 For The Greater Good: –
+eed0-ef83-b6cf-dddf Feel No Pain 4+: –
+eedb-a369-c603-9634 Annihilate the Unworthy: –
+eeea-e4f1-eff1-43fd Scattershield: –
+ef2e-5973-7f0a-4797 Legacy Sidearm: –
+ef2f-d232-e25b-83a0 Architect of Ruin: attacking any ? ownModelsOnly=true rerollWounds=all
+ef79-90c8-7d33-ff7f Reinforced Cover: –
+ef9c-0fce-12dd-6367 Hate-fuelled Butchers: –
+ef9d-4646-be0b-c9e7 Brute Shield: –
+efa5-c1d9-a512-e566 Ensorcelled Annihilation: attacking shooting ? ownModelsOnly=true rerollDamage=true rerollHits=all vsKeywords=MONSTER, VEHICLE
+efb4-f7d7-d10d-f31a Knight of the Opus Machina (Aura): attacking any list ? apModifier=1 skillModifier=1 unitKeywords=ADEPTUS MECHANICUS
+efc3-dbdb-925e-d8ba Swift Demise: attacking shooting rerollHits=ones
+efce-899b-2abc-f846 Titanic Fire Support: attacking any list ? apModifier=1 unitKeywords=CHAOS
+efef-192f-d0c0-6b48 Precision Drop: –
+f006-88d9-7920-5932 Darkest Artifice: –
+f03b-e2f1-818e-c766 Prescience (Psychic): defending any hitModifier=-1
+f060-be4d-a86a-b1fe Deredeo Strike: attacking shooting ? ownModelsOnly=true rerollHits=all
+f077-6b42-7739-96f7 Death to the Alien: attacking any rerollHits=ones
+f08d-3f9a-c2a0-fef7 Blades of the Emperor: attacking fight ? weaponAbilities=[LETHAL HITS]
+f0a7-d2d9-34a1-8194 Black Rage: attacking any rerollHits=all
+f0f8-7bb-41bd-a6c9 Bloodmaster: attacking any woundModifier=1
+f119-114a-a83a-4d1c Eclipse Field Generator: –
+f12-38da-600-43e8 Invulnerable Save: –
+f194-faba-c927-ba75 Inviolable Bastion: –
+f19f-3392-28d9-412a Paragons of Drills Discipline: –
+f1a7-7e92-ea7e-9e9a Final Howl (Aura): attacking any list ? rerollWounds=ones unitKeywords=WAR DOG
+f1bf-8f44-8a5a-d87b Graviton Vault: defending any list ? hitModifier=-1
+f1c3-3754-c9fb-e086 Cowl of Vehemence: attacking any ownModelsOnly=true rerollWounds=ones weaponFilter=PSYCHIC | attacking any ? ownModelsOnly=true rerollWounds=all weaponFilter=PSYCHIC
+f1c3-6cf4-2e6e-c3c3 Pan-spectral Scanning: attacking shooting rerollHits=ones
+f1d0-f2ce-6a7c-5f43 Keep Counting!: attacking fight weaponAbilities=[SUSTAINED HITS 1]
+f1f8-0162-549a-a464 Oversight Drone: attacking shooting ? weaponAbilities=[IGNORES COVER]
+f1fe-8446-b01d-3d82 Shimmershield: –
+f200-bc51-2065-ca29 Titan-killer: attacking shooting ownModelsOnly=true rerollHits=all vsKeywords=TITANIC, TOWERING
+f24f-76cb-f163-02c8 Sanctus vi: –
+f259-0a73-856e-7f0d Enemy Spotted: attacking shooting list ? hitModifier=1
+f26c-4b28-aaea-40cf Templar Vows: attacking fight ? weaponAbilities=[PRECISION] | attacking fight ? woundModifier=1
+f271-762e-61ae-367f Might of Titan (Psychic): attacking fight ? attacksModifier=3 ownModelsOnly=true strengthModifier=3
+f276-7f7a-d2e8-39da Power of the Hive Mind: –
+f298-3658-77a2-5851 Blessing of the Omnissiah: –
+f2c4-c894-81d4-d126 Sanctity of Purpose: attacking any rerollWounds=ones
+f2c7-d8b4-2a19-ae85 Bloody Spectacle: attacking fight ownModelsOnly=true rerollHits=all rerollWounds=all vsKeywords=CHARACTER
+f2cb-8211-7899-158a Deathwing: –
+f30b-24c9-671a-06ac Dark Blessings: –
+f364-f7a6-30b8-8181 Boons of the Brood: attacking any list unitKeywords=HARLEQUINS MOUNTED, HARLEQUINS VEHICLE weaponAbilities=[SUSTAINED HITS 1] | attacking any ? weaponAbilities=[SUSTAINED HITS 1]
+f384-6949-1926-d54d Dauntless Champions: attacking any list ? strengthVsToughness=lt unitKeywords=PALADIN SQUAD woundModifier=1
+f3af-b19e-5c33-e4b0 Vanguard Tyrant: attacking fight apModifier=1 ownModelsOnly=true strengthModifier=1
+f3b0-5247-4e07-6793 Ancient Weapons: attacking fight ownModelsOnly=true strengthModifier=2 | attacking fight apModifier=1 ownModelsOnly=true
+f3d6-87dc-9a02-a9eb Fireknife: attacking shooting rerollHits=ones
+f3ec-bea-7d9f-df98 Punishing Salvoes: attacking shooting ? ownModelsOnly=true weaponAbilities=[SUSTAINED HITS 1]
+f3ee-8636-a4ee-571c Suppression Bombardment: defending any list ? hitModifier=-1
+f420-4c72-dafd-6998 Psychological Saboteur (Aura): defending any list ? hitModifier=-1
+f43c-d2c6-adac-abf9 Strength Born of Hunger: attacking fight strengthModifier=1
+f43e-c42a-e09c-73af Ocular Adaptation: attacking fight hitModifier=1
+f464-5e4d-63ab-9472 Sorrowsyphon: attacking any damageModifier=1 weaponFilter=PLAGUE WIND
+f473-baff-f5e1-a7d0 Honour Guard: defending any ? woundModifier=-1
+f479-bc1a-5090-81d3 Tracking Target: –
+f47f-6b2a-77db-863e Guardian Organism: –
+f48-7960-4b45-401c Ferocious Assault: attacking shooting ? hitModifier=1 ownModelsOnly=true
+f4bb-1a4c-7d23-cc29 Sorcerous Support: –
+f4d9-7a39-2a0e-ceba Veteran of Behemoth: attacking shooting weaponAbilities=[SUSTAINED HITS 1]
+f4f7-c5ce-82b6-e3f4 Electrochaff Backups: defending shooting ? hitModifier=-1
+f50a-4106-c634-4dfb Dark Blessing (Aura): defending shooting list ? cover=true unitKeywords=HERETIC ASTARTES INFANTRY
+f52e-c2ae-4dd1-8964 Standard of the Emperor Ascendant: attacking fight ? attacksModifier=1
+f531-b188-9179-2f5a Interceptor: attacking shooting hitModifier=1 ownModelsOnly=true vsKeywords=FLY
+f539-f61e-3cd0-aaf4 Damaged: 1-8 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+f560-4712-3887-4d02 Touch of Rot: attacking fight apModifier=1 ownModelsOnly=true
+f629-3bb8-3eff-0ab9 Arrogant Invulnerability: defending any apModifier=-1
+f638-dc96-cfcf-9893 Pennant of Ascension (Aura): attacking fight list ? attacksModifier=1 unitKeywords=GENESTEALER CULTS INFANTRY, GENESTEALER CULTS MOUNTED
+f64f-279-e67c-f70b Synaptic Control: defending any damageModifier=-1 ownModelsOnly=true
+f66c-8f3c-896a-65a2 Damaged: 1-16 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+f676-2509-3424-99fd Artillery Commander: –
+f693-707c-ec2e-a202 Wardens of the Dark Cells: defending fight list ? excludeUnitKeywords=MONSTER, VEHICLE strengthVsToughness=gt unitKeywords=ADEPTUS CUSTODES woundModifier=-1
+f6a1-151a-9d0d-37d2 Burning Spray: attacking any list ? weaponAbilities=[IGNORES COVER]
+f6b2-f972-4ae4-64b8 Siege Shield: –
+f762-4de0-6b58-c6a0 Refined Stimms: attacking fight ? attacksModifier=2 weaponAbilities=[HAZARDOUS]
+f775-c5a7-e958-0496 Hero of Lion's Gate: –
+f78d-29de-0cf6-64b0 Sacred Unguents: –
+f7bb-7761-411b-1eed Armorium Cherub: –
+f7df-e297-d554-8c37 Armoured Spearhead: attacking any ? ownModelsOnly=true rerollHits=ones
+f7ef-79f2-60c-8568 Sternguard Focus: attacking shooting rerollHits=ones
+f80a-70bd-e9d-3452 Targeted Intercession: attacking fight ? apModifier=1 strengthModifier=1
+f889-9159-4989-aedf Tanith Camo-cloaks: defending any cover=true
+f891-237b-ad65-8f4e Veterans of the Long War: attacking fight rerollWounds=ones
+f8b6-3181-7e49-fb57 Indomitor Doctrines: attacking shooting ? strengthModifier=1 | attacking fight ? strengthModifier=1
+f8ed-1216-e13d-3fdd Fiend Slayer: attacking any ownModelsOnly=true rerollWounds=all vsKeywords=MONSTER, VEHICLE
+f967-55db-6ead-2b62 Rage Embodied (Aura): attacking fight list ? attacksModifier=1 unitKeywords=KHORNE LEGIONES DAEMONICA
+f96f-c3e2-6870-43c9 Frenzied Ferocity: attacking any weaponAbilities=[SUSTAINED HITS 1]
+f978-a7d6-d772-e43d Merciless Judgement: attacking shooting ? woundModifier=1
+f97a-e9ae-d98c-d824 Inloaded Lethality: attacking fight attacksModifier=3 damageModifier=1 ownModelsOnly=true
+f9b1-917a-e199-5a16 Frantic Focus: attacking any list ? unitKeywords=EMPEROR'S CHILDREN BATTLELINE weaponAbilities=[SUSTAINED HITS 1]
+f9d3-b36b-e093-4fb4 Killing Blow: attacking shooting list unitKeywords=T'AU EMPIRE weaponAbilities=[ASSAULT] | attacking shooting ? ownModelsOnly=true weaponAbilities=[LETHAL HITS]
+fa26-abd-b188-cbb2 Blitz: attacking any ? attacksModifier=3 ownModelsOnly=true weaponFilter=SOLITAIRE
+fa42-e5a5-ca1-b7ea Mischief Makers (Aura): –
+fa4e-5ac8-11a6-78d2 Fortification: –
+fa50-4758-2b95-c8ca Close In for the Kill: attacking any ? hitModifier=1 ownModelsOnly=true woundModifier=1
+fa51-e1fe-d616-2e0a False Majesty (Aura): attacking fight list ? excludeUnitKeywords=MONSTERS unitKeywords=LEGIONES DAEMONICA SLAANESH woundModifier=1
+fa74-5b0e-87a7-a44c Insurrectionists: attacking fight ? hitModifier=1
+fa94-a50a-bf65-10c7 Panoply of the Cursed Knights: defending any apModifier=-1 ownModelsOnly=true
+fa9d-389d-8535-ffb7 Slayers of Champions: attacking fight weaponAbilities=[PRECISION]
+faa2-ca37-47bb-e296 Forewarned by Fate: –
+fae8-e36f-bb91-c7ec Damaged: 1-10 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+faec-8b1b-5a21-0087 Feel No Pain 5+*: –
+faf3-6fc0-6682-dfa9 Artillery Support: attacking any list ? weaponAbilities=[IGNORES COVER]
+faf6-7377-c475-6b73 Vowed Target: attacking any list ? unitKeywords=DEATHWING INFANTRY woundModifier=1
+fb12-ef22-e61a-2859 Elimination Force: attacking any ? woundModifier=1
+fb5-f6b1-80d6-70fd Line-breaker: –
+fb71-30d2-69a7-6697 Might of Heroes [Pyschic]: attacking fight apModifier=1 strengthModifier=1
+fbbf-f5d2-d249-f3d9 Dark Champion: attacking any hitModifier=1
+fbce-3eac-c3a9-b353 New Rule: –
+fbf7-d855-510e-709d Prince of Slaanesh: attacking fight critWoundOn=5
+fc18-be59-bec1-4164 Weapon of Renown: –
+fc20-e371-673f-b15b Noctilith Sigil: defending any ? psychicFnp=4
+fc2c-2af6-089e-abdf Vengeful Retribution: attacking any ? hitModifier=1 woundModifier=1
+fc4a-5f80-e06c-d8db Acquirers of Knowledge: attacking any ? rerollHits=ones
+fca1-d488-3625-d230 Bio-horror Disruption (Psychic): attacking shooting weaponAbilities=[LETHAL HITS]
+fcae-ed9c-8fa6-c23f Massive Fangs: attacking fight ownModelsOnly=true weaponAbilities=[LANCE]
+fcce-2b56-1144-0657 Penitent's Roar: –
+fce7-cb5d-2fe6-19c1 CAT Unit: attacking shooting ? weaponAbilities=[IGNORES COVER]
+fd03-784a-c9a1-8351 Exo-gauntlet: –
+fd2f-d9d6-c448-a809 The Unwilling Orb: attacking shooting ? ownModelsOnly=true weaponAbilities=[DEVASTATING WOUNDS] weaponFilter=PSYCHIC
+fd3d-11e4-f436-d59d Damaged: 1-4 wounds remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+fd3f-63fe-e0eb-a310 Prism of Echoes: attacking any ? attacksModifier=1
+fd48-7592-52a8-aeff Omnissiah's Fury: attacking fight apModifier=1 attacksModifier=2 damageModifier=1 ownModelsOnly=true
+fd69-68cc-5d63-c84d Dark Pacts: –
+fd81-f791-7de2-88b0 Terminator Armor: –
+fd8a-2e51-e8c6-b34d Icon of Obstinacy: defending any hitModifier=-1
+fda2-046d-2f2f-a407 Defend the Divine Work: –
+fdac-9184-0120-bbf5 Plaguesight: attacking any ownModelsOnly=true rerollHits=all vsKeywords=AFFLICTED
+fdbb-e7fe-2049-9899 Watcher in the Dark: defending any ? mortalFnp=4
+fdcb-433f-b79f-1ec1 Tyrannic War Veterans: attacking any weaponAbilities=[DEVASTATING WOUNDS]
+fdd2-3f25-7c75-929d Practised Aim: attacking shooting skillModifier=1
+fddf-8b8c-8f65-e59b Surge of Wrath: attacking fight ownModelsOnly=true rerollDamage=true rerollHits=all rerollWounds=all vsKeywords=MONSTER, VEHICLE
+fde0-47bb-5767-5537 Preysight (Aura): attacking any list ? unitKeywords=WAR DOG weaponAbilities=[IGNORES COVER]
+fdf1-64a5-906c-3474 Finest Hour: attacking fight ? attacksModifier=3 ownModelsOnly=true | attacking fight ? ownModelsOnly=true weaponAbilities=[DEVASTATING WOUNDS]
+fe00-d1ed-cc9f-af99 Deadly Combatant: –
+fe0f-b73b-de73-7bde Damaged: 1-6 Wounds Remaining: attacking any ? hitModifier=-1 ownModelsOnly=true
+fe14-c4c9-0210-2cd0 Taskmaster (Aura): attacking any list ? rerollHits=ones unitKeywords=WAR DOG
+fe2c-a547-79b4-774a Focused Might (Psychic): attacking any rerollHits=all weaponFilter=PSYCHIC
+fe3-117b-e66f-63bb Mandiblasters: attacking fight ? critHitOn=5
+fe54-db84-ea4e-a5be Legacy of the Angel: –
+fe56-a10f-5d2-2e1a Fury of the First: attacking any ? apModifier=1
+feae-94bb-c894-acd7 Deck Gunners: attacking shooting weaponAbilities=[SUSTAINED HITS 1]
+feb6-53ec-59c9-7443 A Giant Amongst Giants: defending any ownModelsOnly=true woundsChange=2 | attacking fight ownModelsOnly=true strengthModifier=1
+feb7-0eb3-c8b1-d047 Ironstorm Auto-Targeters: –
+fed0-fa51-3add-ff75 Prey Slayers: –
+fed9-4f4c-13cd-6663 Bound Creation: –
+fee5-696a-3638-597a Hunter of Souls: attacking any ? ownModelsOnly=true rerollHits=ones rerollWounds=ones vsKeywords=CHARACTER
+fee7-90a8-24a2-79ef Paroxysm (Psychic): attacking any ? attacksModifier=-1
+fef2-4247-a7c0-ff81 Blessing of the Omnissiah: –
+fefe-3546-8754-2e26 XV02 Pilot Battlesuit: attacking shooting list ? unitKeywords=HAMMERHEAD GUNSHIP weaponAbilities=[LETHAL HITS]
+ff0b-8063-e5bc-1646 Rites of Reanimation: defending any fnp=5
+ff15-6f06-1824-ea0b Stealth Drones: –
+ff28-8ddd-27ec-ada3 Flush Them Out: attacking any list ? weaponAbilities=[IGNORES COVER]
+ff41-076d-afa0-af5c Fires of Purgation (Psychic): attacking fight ? weaponAbilities=[LANCE]
+ff6-3afb-8c90-deed Madcap Artillery: –
+ffac-af2d-0470-7e85 Precursive Judgement: –
+ffbc-add5-8823-38f1 Frenzied Metabolism: attacking any ? ownModelsOnly=true woundModifier=1
+ffdb-1136-eaeb-9284 Rugged Reliability: defending shooting apModifier=-1 ownModelsOnly=true
+ffe5-fe43-45b1-7128 Six-fold Blessing: –
+fffa-2217-e64e-3ce9 Flak Battery: attacking any ownModelsOnly=true rerollHits=all vsKeywords=FLY
+p1x9-r402-ww99-xorm Sanctic Reaper: attacking fight attacksModifier=3 ownModelsOnly=true

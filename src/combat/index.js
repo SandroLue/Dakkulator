@@ -351,6 +351,8 @@ export const EMPTY_SIMULATION = {
 	meanWoundsLost: 0,
 	meanModelsSlain: 0,
 	histogram: [],
+	meanPotentialWoundsLost: 0,
+	potentialHistogram: [],
 	clearedBy: [],
 	medianRounds: null,
 };

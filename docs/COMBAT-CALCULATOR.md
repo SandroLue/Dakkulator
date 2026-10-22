@@ -357,6 +357,13 @@ rounds, and recounts `[BLAST]` / `[CLEAVE]` models at the start of each round. I
 returns the round-1 damage histogram, `clearedBy[n]` = P(destroyed by the end of
 round n + 1) and `medianRounds`.
 
+Overkill: once the unit is destroyed in round 1, the rest of that round's
+attacks go on against fresh copies of its last model type (damage still capped
+per model, Feel No Pain still rolled). `potentialHistogram` and
+`meanPotentialWoundsLost` hold that "everything the attack could do"; folded at
+the unit's total wounds it is exactly `histogram`. The chart shows it with a
+"destroyed" line; the capped values stay what the matrix uses.
+
 ### 3.5 Metrics
 
 | Metric             | Definition                                               |
@@ -535,10 +542,19 @@ under the right armies, and the recipient's own are switched off, never deleted.
 | `simulate.test.js`               | exact engine vs Monte-Carlo within 4.5 standard errors, incl. spill and `[BLAST]`      |
 | `invariants.test.js`             | bounds, conserved probability mass, monotonicity, linearity, weapon-order independence |
 | `resolve.test.js`                | hand-computed golden values                                                            |
-| `exampleRosters.test.js`         | the modifiers generated for every example roster in `public/` (happy-dom)              |
+| `exampleRosters.test.js`         | snapshots: the modifiers generated for every example roster, and every matrix cell of three example matchups (update with `npx vitest -u` after an intended change) |
+| `modifierEquivalence.test.js`    | every modifier field gives exactly what the matching oracle-scenario rule gives, over random scenarios |
+| `ui/Calculator.test.jsx`         | UI smoke test (happy-dom): matrix, breakdown, every view and the modifier editor render without errors |
+| `oracleGroups.test.js`           | exact allocation across 2–3 model groups (own Toughness, saves, wounds, Feel No Pain each) vs `oracleGroups`, the multi-group oracle |
+| `library/handmadeRoster.test.js` | a hand-made roster (own wording) through parser, profiles, leader attachment, modifiers and matrix; roster loading and its error messages |
+| `library/useRosterLibrary.test.jsx` | the saved list library: uploads and slots, swapping, deleting, full storage, Map/Set round trip |
+| `abilityCorpus.test.js`          | how every corpus ability is read, against `__snapshots__/abilityCorpus.txt` (names and fields only); runs only where the local corpus exists |
 | other `*.test.js`                | parsing, profiles, modifiers, attachment, share links, library                         |
 
 A rule change in the engine must also be made in `oracle.js`.
+
+`npm run test:coverage` (also in CI) fails when line, function or branch coverage of
+`src/combat/*.js` or `src/library/*.js` drops below the minimums in `vite.config.js`.
 
 ---
 
