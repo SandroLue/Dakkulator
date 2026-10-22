@@ -12,12 +12,10 @@ const woundShare = (t) =>
 
 /**
  * `get` fills the cell; `share` colours it on a fixed 0–1 scale so the colour
- * means the same in every matchup (1 = `full`). `usesPoints` shows unit
- * costs in the matrix.
+ * means the same in every matchup (1 = `full`).
  */
 export const METRICS = {
 	pointsReturn: {
-		usesPoints: true,
 		// Percent of its own cost the attacker destroys.
 		label: "Efficiency",
 		get: (t) => t.pointsReturnPer100,
@@ -51,7 +49,6 @@ export const METRICS = {
 		full: "unit wiped",
 	},
 	pointsKilled: {
-		usesPoints: true,
 		label: "Points killed",
 		get: (t) => t.pointsKilled,
 		digits: 0,
@@ -60,7 +57,6 @@ export const METRICS = {
 		full: "unit wiped",
 	},
 	damagePer100Points: {
-		usesPoints: true,
 		label: "Damage per 100 points",
 		get: (t) => t.damagePer100Points,
 		digits: 1,

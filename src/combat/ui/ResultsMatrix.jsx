@@ -95,15 +95,7 @@ function HeaderTip({ tip }) {
 	);
 }
 
-function SortableHeader({
-	unit,
-	active,
-	onClick,
-	arrow,
-	placement,
-	onTip,
-	showPoints,
-}) {
+function SortableHeader({ unit, active, onClick, arrow, placement, onTip }) {
 	const show = (event) =>
 		onTip({
 			name: unit.name,
@@ -131,13 +123,7 @@ function SortableHeader({
 				{active && `${arrow} `}
 				{unit.name}
 			</div>
-			{/* Hidden rather than left out, so every view keeps the same cell size. */}
-			<div
-				className={`hint ${showPoints ? "" : "invisible"}`}
-				aria-hidden={!showPoints}
-			>
-				{unit.cost?.points ?? 0} pts
-			</div>
+			<div className="hint">{unit.cost?.points ?? 0} pts</div>
 		</button>
 	);
 }
@@ -161,8 +147,6 @@ export function ResultsMatrix({
 	const [rowSort, setRowSort] = useState(null);
 	// null | { by: attacker row index, desc }
 	const [colSort, setColSort] = useState(null);
-	// Unit costs only matter to the points-based metrics.
-	const showPoints = Boolean(METRICS[metric].usesPoints);
 	const grid = useMemo(() => buildGrid(matchup, metric), [matchup, metric]);
 
 	const toggleSort = (by) => (current) =>
@@ -242,7 +226,6 @@ export function ResultsMatrix({
 										className="border-y border-r border-line bg-surface-muted p-0 text-left"
 									>
 										<SortableHeader
-											showPoints={showPoints}
 											unit={unit}
 											active={rowSort?.by === index}
 											arrow={rowSort?.desc ? "▼" : "▲"}
@@ -260,7 +243,6 @@ export function ResultsMatrix({
 									{/* Sticky, so attacker names stay visible while scrolling sideways. */}
 									<th className="sticky left-0 z-10 border-x border-b border-line bg-surface-muted p-0 text-left shadow-[6px_0_8px_-4px_#000c]">
 										<SortableHeader
-											showPoints={showPoints}
 											unit={row.attacker}
 											active={colSort?.by === rowIndex}
 											arrow={colSort?.desc ? "▶" : "◀"}
