@@ -124,6 +124,40 @@ const SUMMED = [
 	"rawDamage",
 ];
 
+/**
+ * Rows for identical profiles (two models with the same Fleshmower, against
+ * the same models) as one row, in the order they first appear.
+ */
+export function groupIdentical(weapons) {
+	const rows = new Map();
+	for (const w of weapons) {
+		const d = w.detail ?? {};
+		const key = JSON.stringify([
+			w.isMelee,
+			w.sourceUnitName,
+			w.weaponName,
+			w.selectionName,
+			w.groupIndex ?? 0,
+			abilityLabels(w.abilities ?? {}),
+			abilityLabels(w.baseAbilities ?? w.abilities ?? {}),
+			d.hitTarget,
+			d.woundTarget,
+			d.critWoundTarget,
+			d.saveTarget,
+			d.damage,
+		]);
+		const row = rows.get(key);
+		if (!row) {
+			rows.set(key, { ...w });
+			continue;
+		}
+		for (const field of [...SUMMED, "woundsLost"]) {
+			row[field] = (row[field] ?? 0) + (w[field] ?? 0);
+		}
+	}
+	return [...rows.values()];
+}
+
 /** Column totals over the counted weapons (alternatives are not counted). */
 function sumWeapons(weapons) {
 	const total = {};
@@ -241,9 +275,13 @@ export function MatchupDetail({ pairing, rowCells = [] }) {
 	);
 	// Shooting + Fight: shooting weapons first, then fight, each under a divider.
 	const combined = pairing.phase === "combined";
-	const weaponRows = combined
-		? [...pairing.weapons].sort((a, b) => Number(a.isMelee) - Number(b.isMelee))
-		: pairing.weapons;
+	const weaponRows = groupIdentical(
+		combined
+			? [...pairing.weapons].sort(
+					(a, b) => Number(a.isMelee) - Number(b.isMelee),
+				)
+			: pairing.weapons,
+	);
 	const withSource = (weapon) =>
 		sources.size > 1 ? { ...weapon, showSource: true } : weapon;
 	const multiGroup =
@@ -387,15 +425,17 @@ export function MatchupDetail({ pairing, rowCells = [] }) {
 									</td>
 								</tr>
 							)}
-							{pairing.alternatives?.map((weapon, index) => (
-								<WeaponRow
-									key={`alt-${weapon.weaponName}-${index}`}
-									weapon={withSource(weapon)}
-									groups={groups}
-									multiGroup={multiGroup}
-									muted
-								/>
-							))}
+							{groupIdentical(pairing.alternatives ?? []).map(
+								(weapon, index) => (
+									<WeaponRow
+										key={`alt-${weapon.weaponName}-${index}`}
+										weapon={withSource(weapon)}
+										groups={groups}
+										multiGroup={multiGroup}
+										muted
+									/>
+								),
+							)}
 						</tbody>
 					</table>
 				</div>
