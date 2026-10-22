@@ -673,3 +673,104 @@ describe("matchAbility: enemy debuffs, weapons and Feel No Pain", () => {
 		).toMatchObject({ role: "defending", mortalFnp: 5, psychicFnp: 5 });
 	});
 });
+
+describe("matchAbility: short notation lists", () => {
+	it("reads several characteristics after one value", () => {
+		expect(
+			one("This model's melee attacks have +1 A, S and D.").modifier,
+		).toMatchObject({
+			phase: "fight",
+			attacksModifier: 1,
+			strengthModifier: 1,
+			damageModifier: 1,
+		});
+		expect(
+			one("This unit's ranged weapons have +1 S and AP.").modifier,
+		).toMatchObject({ strengthModifier: 1, apModifier: 1 });
+	});
+});
+
+describe("matchAbility: every part of an ability", () => {
+	it("reads listed characteristics, in every phrasing", () => {
+		expect(
+			one(
+				"Add 1 to the Attacks, Strength and Damage characteristics of the bearer's melee weapons.",
+			).modifier,
+		).toMatchObject({
+			attacksModifier: 1,
+			strengthModifier: 1,
+			damageModifier: 1,
+		});
+		expect(
+			one(
+				"Improve the Strength and Armour Penetration characteristics of melee weapons equipped by the bearer by 1.",
+			).modifier,
+		).toMatchObject({ strengthModifier: 1, apModifier: 1 });
+		expect(
+			one(
+				"Each time this model makes an attack, the Armour Penetration characteristic of its ranged weapons is improved by 1.",
+			).modifier,
+		).toMatchObject({ apModifier: 1 });
+		// Both skills are one change to the attack's skill.
+		expect(
+			one(
+				"Improve the Ballistic Skill and Weapon Skill characteristics of weapons equipped by this model by 1.",
+			).modifier.skillModifier,
+		).toBe(1);
+	});
+
+	it("reads a weapon ability after a short notation, and 'gain'", () => {
+		expect(
+			one("This unit's melee attacks have +1 S and [SUSTAINED HITS 1].")
+				.modifier,
+		).toMatchObject({
+			strengthModifier: 1,
+			weaponAbilities: "[SUSTAINED HITS 1]",
+		});
+	});
+
+	it("tolerates 'hit roll 1' and 'wound roll or 1'", () => {
+		expect(
+			one(
+				"Each time this model makes an attack, re-roll a Hit roll 1 and re-roll a Wound roll or 1.",
+			).modifier,
+		).toMatchObject({ rerollHits: "ones", rerollWounds: "ones" });
+	});
+
+	it("reads 'any successful wound roll' as a critical wound on every success", () => {
+		expect(
+			one(
+				"Each time this model makes an attack, add 1 to the Wound roll and any successful Wound roll scores a Critical Wound.",
+			).modifier,
+		).toMatchObject({ woundModifier: 1, critWoundOn: 2 });
+	});
+
+	it("splits one sentence with two subjects", () => {
+		const results = matchAbility(
+			'While a friendly Infantry unit is within 3" of this model, each time a model in that unit makes an attack, improve the Armour Penetration characteristic of that attack by 1, and each time an attack targets that unit, worsen the Armour Penetration characteristic of that attack by 1.',
+		);
+		expect(results.map((r) => r.modifier)).toEqual([
+			expect.objectContaining({ role: "attacking", apModifier: 1 }),
+			expect.objectContaining({ role: "defending", apModifier: -1 }),
+		]);
+	});
+
+	it("gives a list's lead-in to each item", () => {
+		const results = matchAbility(
+			"While a friendly Infantry unit is below half-strength, that unit's melee attacks can:\n- Re-roll hit rolls of 1.\n- Re-roll wound rolls of 1.",
+		);
+		expect(results.map((r) => r.modifier)).toEqual([
+			expect.objectContaining({ phase: "fight", rerollHits: "ones" }),
+			expect.objectContaining({ phase: "fight", rerollWounds: "ones" }),
+		]);
+		expect(one("This unit has:\n▪ +1 T.").modifier.toughnessChange).toBe(1);
+	});
+
+	it("reads Feel No Pain a leader gives to its bodyguard", () => {
+		expect(
+			one(
+				"While this model is leading a unit, bodyguard models in that unit have the Feel No Pain 5+ ability against psychic attacks.",
+			).modifier,
+		).toMatchObject({ role: "defending", psychicFnp: 5 });
+	});
+});

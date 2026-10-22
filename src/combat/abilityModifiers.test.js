@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { boltgunSquad, captain } from "./__fixtures__/units";
-import { abilityModifiers, mergeAbilityModifiers } from "./abilityModifiers";
+import {
+	abilityModifiers,
+	mergeAbilityModifiers,
+	mergeParts,
+	withoutRosterApplied,
+} from "./abilityModifiers";
 import { createModifier } from "./modifiers";
 
 const withAbilities = (unit, abilities, rules = {}) => ({
@@ -130,5 +135,94 @@ describe("abilityModifiers: choices and other units", () => {
 		expect(modifiers.map((m) => m.name)).not.toContain(
 			"Damaged: 1-3 Wounds Remaining",
 		);
+	});
+});
+
+describe("mergeParts", () => {
+	const part = (modifier, reasons = []) => ({
+		option: "",
+		scope: "unit",
+		modifier: {
+			role: "attacking",
+			phase: "fight",
+			vsKeywords: "",
+			...modifier,
+		},
+		conditional: reasons.length > 0,
+		reasons,
+	});
+
+	it("joins parts of one ability that apply in the same situation", () => {
+		const merged = mergeParts([
+			part({ rerollHits: "ones" }),
+			part({ rerollWounds: "ones" }, ["aura"]),
+		]);
+		expect(merged).toHaveLength(1);
+		expect(merged[0].modifier).toMatchObject({
+			rerollHits: "ones",
+			rerollWounds: "ones",
+		});
+		expect(merged[0].reasons).toEqual(["aura"]);
+	});
+
+	it("keeps options, other situations and repeated effects apart", () => {
+		const choice = ["earlier: choice"];
+		expect(
+			mergeParts([
+				part({ hitModifier: 1 }, choice),
+				part({ woundModifier: 1 }, choice),
+			]),
+		).toHaveLength(2);
+		expect(
+			mergeParts([
+				part({ hitModifier: 1 }),
+				part({ hitModifier: -1, role: "defending" }),
+			]),
+		).toHaveLength(2);
+		expect(
+			mergeParts([part({ hitModifier: 1 }), part({ hitModifier: 1 })]),
+		).toHaveLength(2);
+	});
+});
+
+describe("withoutRosterApplied", () => {
+	const result = (modifier) => ({
+		option: "",
+		scope: "unit",
+		modifier: {
+			role: "attacking",
+			phase: "fight",
+			vsKeywords: "",
+			...modifier,
+		},
+		conditional: false,
+		reasons: [],
+	});
+
+	it("drops what the roster's profiles already include", () => {
+		// BSData applies this enhancement's +1 A, S and D to the weapon profiles.
+		expect(
+			withoutRosterApplied(
+				"Memento Moritoi",
+				result({ attacksModifier: 1, strengthModifier: 1, damageModifier: 1 }),
+			),
+		).toBeNull();
+		// Anything the profiles do not show stays.
+		expect(
+			withoutRosterApplied(
+				"Memento Moritoi",
+				result({ attacksModifier: 1, rerollHits: "ones" }),
+			)?.modifier,
+		).toEqual({
+			role: "attacking",
+			phase: "fight",
+			vsKeywords: "",
+			rerollHits: "ones",
+		});
+	});
+
+	it("keeps abilities the data does not apply", () => {
+		const own = result({ hitModifier: 1 });
+		expect(withoutRosterApplied("Some Unit Ability", own)).toBe(own);
 	});
 });

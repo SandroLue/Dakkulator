@@ -38,10 +38,40 @@ export function isCombatAbility(text) {
 const ELIGIBILITY = /^[a-z' ,-]+ (?:models?|units?) only\.?$/;
 
 function sentences(text) {
-	return text
-		.split(/(?<=\.)\s+|\s*[\n■•]\s*|(?:^|\s)-\s(?=[a-z])/)
-		.map((s) => s.trim().replace(/^-\s*/, ""))
-		.filter((s) => s && !ELIGIBILITY.test(s));
+	const out = [];
+	// "this unit has: - +1 T - feel no pain 5+": the lead-in is each item's subject.
+	let leadIn = "";
+	for (const piece of text.split(
+		/(?<=\.)\s+|\s*(?=[\n■•▪])|(?:^|\s)(?=-\s?[a-z+])/,
+	)) {
+		const bullet = /^\s*[\n■•▪-]/.test(piece);
+		const s = piece
+			.trim()
+			.replace(/^[■•▪-]\s*/, "")
+			.trim();
+		if (!s || ELIGIBILITY.test(s)) continue;
+		if (!bullet) leadIn = "";
+		// "… has: +1 T" continues the sentence; "while …: re-roll …" is a condition.
+		const joint = /\b(?:has|have|can|gains?|is|are)$/.test(leadIn) ? " " : ", ";
+		out.push(bullet && leadIn ? `${leadIn}${joint}${s}` : s);
+		// "… can:", "… has:" opens a list of effects.
+		if (/:$/.test(s)) leadIn = s.replace(/:$/, "");
+	}
+	return out.flatMap(clauses);
+}
+
+/**
+ * "…, each time a model in that unit makes an attack, improve the AP by 1, and
+ * each time an attack targets that unit, worsen the AP by 1": two subjects, so
+ * two sentences, each with the opening they share (an aura, a condition).
+ */
+function clauses(sentence) {
+	const first = sentence.indexOf("each time ");
+	if (first < 0) return [sentence];
+	const parts = sentence.slice(first).split(/,? and (?=each time )/);
+	if (parts.length === 1) return [sentence];
+	const opening = sentence.slice(0, first);
+	return parts.map((part) => `${opening}${part.replace(/[.,]?$/, ".")}`);
 }
 
 // Who the ability talks about. `the bearer` is the model with an enhancement.
@@ -96,7 +126,7 @@ const ARMY_ATTACKING = [
 		`each time ${FRIENDLY_UNIT} makes an? (?:(?<phase>melee|ranged) )?attack`,
 	),
 	new RegExp(
-		`(?<phase>melee|ranged)? ?weapons equipped by (?:(?<kw>${KEYWORDS}) )?models from your army${EXCLUDING}`,
+		`(?<phase>melee|ranged)? ?weapons equipped by (?:(?<kw>${KEYWORDS}) )?(?:models|units) (?:from|in) your army${EXCLUDING}`,
 	),
 	/friendly (?<kw>[a-z' /-]+?) units?'s? (?:(?<phase>melee|ranged) )?(?:attacks|weapons)/,
 ];
@@ -189,17 +219,66 @@ const signed = (sign, n) =>
 	(sign === "-" || sign === "subtract" ? -1 : 1) * Number(n);
 
 /** Every effect the sentence names, as modifier fields. */
+/** Characteristic names an ability may list, and the modifier field for each. */
+const CHARACTERISTIC_KEYS = {
+	attacks: "attacksModifier",
+	strength: "strengthModifier",
+	damage: "damageModifier",
+	"armour penetration": "apModifier",
+	"ballistic skill": "skillModifier",
+	"weapon skill": "skillModifier",
+	toughness: "toughnessChange",
+	wounds: "woundsChange",
+	save: "saveChange",
+};
+// Move, Leadership and OC may sit in the same list; they change nothing here.
+const CHARACTERISTIC =
+	"(?:attacks|strength|damage|armou?r penetration|ballistic skill|weapon skill|toughness|wounds|save|move|leadership|objective control)";
+const CHARACTERISTICS = `${CHARACTERISTIC}(?:(?:, | and |, and )${CHARACTERISTIC})*`;
+// "add 1 to the attacks and strength characteristics" ("… damage roll" is no characteristic)
+const ADD_CHARACTERISTICS = new RegExp(
+	`(add|subtract) (\\d) (?:to|from) the (${CHARACTERISTICS})(?! roll)(?: characteristics?)?\\b`,
+	"g",
+);
+// "improve the strength characteristic of melee weapons equipped by the bearer by 2"
+const IMPROVE_CHARACTERISTICS = new RegExp(
+	`(improve|worsen) the (${CHARACTERISTICS}) characteristics?\\b[^.]*?\\bby (\\d)\\b`,
+	"g",
+);
+// "the armour penetration characteristic of its ranged weapons is improved by 1"
+const CHARACTERISTICS_IMPROVED = new RegExp(
+	`the (${CHARACTERISTICS}) characteristics? of [^.]*?\\b(?:is|are) (improved|worsened) by (\\d)\\b`,
+	"g",
+);
+const SHORT_STAT_KEYS = {
+	ap: "apModifier",
+	d: "damageModifier",
+	s: "strengthModifier",
+	a: "attacksModifier",
+	t: "toughnessChange",
+	w: "woundsChange",
+	sv: "saveChange",
+	bs: "skillModifier",
+	ws: "skillModifier",
+};
+const SHORT_STAT = "(?:ap|d|s|a|t|w|sv|bs|ws)";
+const SHORT_STATS = new RegExp(
+	`\\bha(?:s|ve) ([+-])(\\d) ?(${SHORT_STAT}(?:(?:, | and |, and )${SHORT_STAT})*)\\b`,
+	"g",
+);
+
 function effects(s) {
 	const e = {};
 	const set = (key, value) => {
 		if (value) e[key] = (e[key] ?? 0) + value;
 	};
 
-	// "re-roll a hit roll of 1", "re-roll hit rolls of 1", "re-roll the hit roll"
-	if (/re-?roll (?:(?:a|the) )?hit rolls? of 1\b/.test(s))
+	// "re-roll a hit roll of 1", "re-roll hit rolls of 1", "re-roll the hit roll";
+	// some datasheets drop the "of" or misspell it "or".
+	if (/re-?roll (?:(?:a|the) )?hit rolls? (?:of |or )?1\b/.test(s))
 		e.rerollHits = "ones";
 	else if (/re-?roll (?:the )?hit rolls?\b/.test(s)) e.rerollHits = "all";
-	if (/re-?roll (?:(?:a|the) )?wound rolls? of 1\b/.test(s))
+	if (/re-?roll (?:(?:a|the) )?wound rolls? (?:of |or )?1\b/.test(s))
 		e.rerollWounds = "ones";
 	else if (/re-?roll (?:the )?wound rolls?\b/.test(s)) e.rerollWounds = "all";
 
@@ -207,80 +286,52 @@ function effects(s) {
 		set("hitModifier", signed(m[1], m[2]));
 	for (const m of s.matchAll(/(add|subtract) (\d) (?:to|from) the wound roll/g))
 		set("woundModifier", signed(m[1], m[2]));
-	for (const m of s.matchAll(/([+-])(\d) to hit rolls?\b/g))
+	for (const m of s.matchAll(
+		/([+-])(\d) to hit rolls?\b( and wound rolls?\b)?/g,
+	)) {
 		set("hitModifier", signed(m[1], m[2]));
+		// "+1 to hit rolls and wound rolls"
+		if (m[3]) set("woundModifier", signed(m[1], m[2]));
+	}
 	for (const m of s.matchAll(/([+-])(\d) to wound rolls?\b/g))
 		set("woundModifier", signed(m[1], m[2]));
 
-	// "improve the armour penetration and damage characteristics … by 1"
-	for (const m of s.matchAll(
-		/(improve|worsen) the armou?r penetration(?: and damage)? characteristics? (?:of [a-z' ]+ )?by (\d)/g,
-	)) {
-		const value = (m[1] === "worsen" ? -1 : 1) * Number(m[2]);
-		set("apModifier", value);
-		if (m[0].includes("and damage")) set("damageModifier", value);
-	}
-	for (const m of s.matchAll(
-		/(add|subtract) (\d) (?:to|from) the damage characteristics?/g,
-	))
-		set("damageModifier", signed(m[1], m[2]));
-	// "add 3 to the strength and add 1 to the attacks characteristics",
-	// "add 1 to the strength and attacks characteristics"
-	for (const m of s.matchAll(
-		/(add|subtract) (\d) (?:to|from) the strength( and attacks)?\b/g,
-	)) {
-		set("strengthModifier", signed(m[1], m[2]));
-		if (m[3]) set("attacksModifier", signed(m[1], m[2]));
-	}
-	for (const m of s.matchAll(/(add|subtract) (\d) (?:to|from) the attacks\b/g))
-		set("attacksModifier", signed(m[1], m[2]));
-	for (const m of s.matchAll(
-		/improve the (strength|attacks) characteristics? (?:of [a-z' ]+ )?by (\d)/g,
-	))
-		set(
-			m[1] === "strength" ? "strengthModifier" : "attacksModifier",
-			Number(m[2]),
+	// Characteristics, alone or listed: "add 1 to the attacks, strength and
+	// damage characteristics", "improve the strength and armour penetration
+	// characteristics of … by 1", "the AP characteristic of … is improved by 1".
+	const changeAll = (list, value) => {
+		// "ballistic skill and weapon skill" is one change, to the attack's skill.
+		const keys = new Set(
+			list
+				.split(/, and |, | and /)
+				.map((name) => CHARACTERISTIC_KEYS[name.replace("armor", "armour")])
+				.filter(Boolean),
 		);
+		for (const key of keys) set(key, value);
+	};
+	for (const m of s.matchAll(ADD_CHARACTERISTICS)) {
+		changeAll(m[3], signed(m[1], m[2]));
+	}
+	for (const m of s.matchAll(IMPROVE_CHARACTERISTICS)) {
+		changeAll(m[2], (m[1] === "worsen" ? -1 : 1) * Number(m[3]));
+	}
+	for (const m of s.matchAll(CHARACTERISTICS_IMPROVED)) {
+		changeAll(m[1], (m[2] === "worsened" ? -1 : 1) * Number(m[3]));
+	}
 
-	// "improve the ballistic skill and weapon skill characteristics … by 1"
-	for (const m of s.matchAll(
-		/improve the (?:ballistic skill|weapon skill)(?: and (?:ballistic|weapon) skill)? characteristics? (?:of [a-z' ]+ )?by (\d)/g,
-	))
-		set("skillModifier", Number(m[1]));
-
-	// Short 11e notation: "have +1 AP", "have -1 D", "+1 S".
-	for (const m of s.matchAll(/\bha(?:s|ve) ([+-])(\d) ?(ap|d|s|a|t|w|sv)\b/g)) {
-		const key = {
-			ap: "apModifier",
-			d: "damageModifier",
-			s: "strengthModifier",
-			a: "attacksModifier",
-			t: "toughnessChange",
-			w: "woundsChange",
-			sv: "saveChange",
-		}[m[3]];
+	// Short 11e notation: "have +1 AP", "have -1 D", "have +1 A, S and D".
+	for (const m of s.matchAll(SHORT_STATS)) {
+		const keys = new Set(
+			m[3].split(/, and |, | and /).map((stat) => SHORT_STAT_KEYS[stat]),
+		);
 		// "+1 Sv" reads as a better save.
-		set(key, signed(m[1], m[2]));
+		for (const key of keys) set(key, signed(m[1], m[2]));
 	}
 
-	// The models' own Toughness, Save and Wounds.
-	for (const m of s.matchAll(
-		/(add|subtract) (\d) (?:to|from) the (toughness|wounds) characteristics?/g,
-	))
-		set(
-			m[3] === "toughness" ? "toughnessChange" : "woundsChange",
-			signed(m[1], m[2]),
-		);
-	for (const m of s.matchAll(
-		/(improve|worsen) the (toughness|save) characteristics? (?:of [a-z' ]+ )?by (\d)/g,
-	))
-		set(
-			m[2] === "toughness" ? "toughnessChange" : "saveChange",
-			(m[1] === "worsen" ? -1 : 1) * Number(m[3]),
-		);
-
+	// "have the [LETHAL HITS] ability", "gain the [LANCE] ability",
+	// "have +1 S and [SUSTAINED HITS 1]"
 	const brackets = s.match(
-		/ha(?:s|ve)(?: the)? ((?:\[[^\]]+\](?:,? (?:and )?)?)+)/,
+		/(?:ha(?:s|ve)|gains?)(?: the)? (?:[+-]\d ?[a-z]+(?:, | and |, and ))*((?:\[[^\]]+\](?:,? (?:and )?)?)+)/,
 	);
 	if (brackets)
 		e.weaponAbilities = brackets[1]
@@ -305,7 +356,10 @@ function effects(s) {
 		const against = fnp[2] ?? "";
 		if (/mortal wounds?/.test(against)) e.mortalFnp = Number(fnp[1]);
 		if (/psychic attacks?/.test(against)) e.psychicFnp = Number(fnp[1]);
-		if (!against) e.fnp = Number(fnp[1]);
+		// "… against that attack": the attack the sentence is about.
+		if (!against || /^(?:that|those|this) attacks?\b/.test(against)) {
+			e.fnp = Number(fnp[1]);
+		}
 	}
 
 	// "a critical hit is scored on an unmodified hit roll of 5+",
@@ -314,13 +368,20 @@ function effects(s) {
 		s.match(
 			new RegExp(
 				// "unmodifed" is a typo some datasheets carry.
-				`critical ${kind} (?:is scored )?on (?:an? )?(?:unmodifi?ed )?(?:${kind} roll of )?(\\d)\\+|(?:successful )?unmodifi?ed (?:successful )?${kind} rolls? of (\\d)\\+ scores? an? critical ${kind}`,
+				`critical ${kind} (?:is scored )?on (?:an? )?(?:successful )?(?:unmodifi?ed )?(?:${kind} roll of )?(\\d)\\+|(?:successful )?unmodifi?ed (?:successful )?${kind} rolls? of (\\d)\\+ scores? an? critical ${kind}`,
 			),
 		);
+	// "any successful wound roll scores a critical wound": every success, so 2+.
+	const anySuccess = (kind) =>
+		new RegExp(
+			`(?:any|a) successful (?:unmodifi?ed )?${kind} roll scores? an? critical ${kind}`,
+		).test(s);
 	const critHit = critical("hit");
 	if (critHit) e.critHitOn = Number(critHit[1] ?? critHit[2]);
+	else if (anySuccess("hit")) e.critHitOn = 2;
 	const critWound = critical("wound");
 	if (critWound) e.critWoundOn = Number(critWound[1] ?? critWound[2]);
+	else if (anySuccess("wound")) e.critWoundOn = 2;
 
 	if (/re-?roll (?:the )?damage roll/.test(s)) e.rerollDamage = true;
 	if (/halve the damage characteristic/.test(s)) e.halveDamage = true;
@@ -440,7 +501,7 @@ const STAT_EFFECTS = new Set([
 // "… of models in this unit", "this model has +1 T", "the bearer's unit has …";
 // not "models in that unit", which is someone else's.
 const OWN_MODELS =
-	/(?:^|\bof )(?:models in )?(?:this unit|this model|the bearer)(?:'s unit)?\b/;
+	/(?:^|\bof |, )(?:models in )?(?:this unit|this model|the bearer)(?:'s unit)?\b|\b(?:this unit|this model|the bearer) ha(?:s|ve)\b/;
 
 // "select one (other) friendly DESTROYER CULT unit within 9" of it"
 const SELECT_FRIENDLY =
@@ -666,6 +727,14 @@ export function matchAbility(text) {
 				scope: "list",
 				unitKeywords: keywordList(army.groups.kw),
 			};
+		} else if (
+			!who &&
+			statsOnly &&
+			isLeading &&
+			/\b(?:bodyguard )?models in that unit\b/.test(sentence)
+		) {
+			// The unit it leads: the leader's modifier covers the attached unit.
+			who = { role: "defending", phase: "any", text: "" };
 		} else if (!who && statsOnly && OWN_MODELS.test(sentence) && !aura) {
 			// The text tells "this model" (a leader alone) from "models in this unit".
 			const own = sentence.match(OWN_MODELS)[0].replace(/^of /, "");
@@ -784,7 +853,8 @@ export function matchAbility(text) {
 					(who.role === "attacking"
 						? !DEFENDING_ONLY.has(key)
 						: DEFENDING_EFFECTS.has(key)) &&
-					(key !== "fnp" || handsOn),
+					// …or one limited to some attacks ("psychic attacks").
+					(key !== "fnp" || handsOn || weaponFilter !== ""),
 			),
 		);
 		if (!Object.keys(allowed).length) continue;

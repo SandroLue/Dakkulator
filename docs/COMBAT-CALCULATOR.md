@@ -488,7 +488,12 @@ per battle, is on. Effects on an enemy unit (one picked, in an enemy "aura",
 Afflicted, Suppressed, …) become modifiers for your own list: weakened enemy
 attacks a defending one, help against that unit (−1 T, no cover) an attacking one. Auras and army-wide rules apply to the
 whole list, limited by the keywords they name. Reset brings back the generated
-set. `node scripts/abilityCoverage.mjs` measures the rules against a local copy
+set. Characteristic changes BSData already applies to the profiles (an
+enhancement like Memento Moritoi: +1 A, S and D on the bearer's melee weapons)
+show in the roster's values, so the generated modifier leaves them out;
+[rosterApplied.json](../src/combat/rosterApplied.json) lists those abilities and
+fields and is rebuilt with `node scripts/rosterApplied.mjs <BSData clone>`
+when BSData changes. `node scripts/abilityCoverage.mjs` measures the rules against a local copy
 of the BSData corpus (`scripts/.corpus/`, not committed). Modifiers are built in
 `ui/ModifierBuilder.jsx` and persisted in `localStorage` under `modifiersByArmy`,
 per army (the roster's catalog, e.g. `Imperium - Adeptus Custodes`): a list-A

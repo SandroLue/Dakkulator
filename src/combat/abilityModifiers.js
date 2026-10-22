@@ -1,10 +1,26 @@
 import { matchAbility } from "./abilityRules";
 import { createModifier, normalizeModifier } from "./modifiers";
 import { unitAbilityEntries } from "./profiles";
+import ROSTER_APPLIED from "./rosterApplied.json";
 import { listUnits } from "./unitList";
 
 /** Rules the engine already applies itself; as modifiers they would count twice. */
 const HANDLED_ELSEWHERE = /^(?:damaged\b|stealth$|leader$|support$)/i;
+
+/**
+ * Leaves out what the roster already shows: BSData applies e.g. Memento
+ * Moritoi's +1 A, S and D to the bearer's weapon profiles itself
+ * (scripts/rosterApplied.mjs). Null when nothing is left.
+ */
+export function withoutRosterApplied(name, result) {
+	const applied = ROSTER_APPLIED[name.trim().toLowerCase()];
+	if (!applied) return result;
+	const modifier = Object.fromEntries(
+		Object.entries(result.modifier).filter(([key]) => !applied.includes(key)),
+	);
+	const effects = Object.keys(modifier).filter((key) => EFFECT_FIELDS.has(key));
+	return effects.length ? { ...result, modifier } : null;
+}
 
 /** "dacatarai stance" → "Dacatarai Stance". */
 const title = (text) => text.replace(/\b[a-z]/g, (c) => c.toUpperCase());
@@ -29,8 +45,9 @@ export function abilityModifiers(roster, slot) {
 	for (const unit of units) {
 		for (const [name, text] of unitAbilityEntries(unit)) {
 			if (HANDLED_ELSEWHERE.test(name)) continue;
-			for (const result of matchAbility(text)) {
-				if (result.reasons.includes("that unit")) continue;
+			for (const part of mergeParts(matchAbility(text))) {
+				const result = withoutRosterApplied(name, part);
+				if (!result || result.reasons.includes("that unit")) continue;
 				// "select one of the following": one of several options, so off.
 				// Picking a target ("select one enemy unit") is no such choice.
 				const choice = result.reasons.includes("earlier: choice");
@@ -68,6 +85,81 @@ export function abilityModifiers(roster, slot) {
 		}
 	}
 	return modifiers;
+}
+
+// What a modifier does, as opposed to whom and when it applies to.
+const EFFECT_FIELDS = new Set([
+	"hitModifier",
+	"woundModifier",
+	"skillModifier",
+	"apModifier",
+	"strengthModifier",
+	"attacksModifier",
+	"damageModifier",
+	"rerollHits",
+	"rerollWounds",
+	"rerollDamage",
+	"weaponAbilities",
+	"ignoreHitModifiers",
+	"ignoreWoundModifiers",
+	"critHitOn",
+	"critWoundOn",
+	"cover",
+	"fnp",
+	"mortalFnp",
+	"psychicFnp",
+	"invuln",
+	"halveDamage",
+	"damageToOne",
+	"toughnessChange",
+	"saveChange",
+	"woundsChange",
+]);
+
+const isChoice = (result) => result.reasons.includes("earlier: choice");
+
+/** Who, when and how sure: parts of one ability with the same context are one modifier. */
+const contextOf = (result) =>
+	JSON.stringify({
+		scope: result.scope,
+		option: result.option,
+		selected: result.reasons.includes("selected target"),
+		modifier: Object.fromEntries(
+			Object.entries(result.modifier).filter(
+				([key]) => !EFFECT_FIELDS.has(key),
+			),
+		),
+	});
+
+/**
+ * "+3 A and [DEVASTATING WOUNDS]", or "re-roll hit rolls of 1 / re-roll wound
+ * rolls of 1" in a list, are one ability: one card, one switch. Options of a
+ * choice stay apart, and so do two parts that change the same thing.
+ */
+export function mergeParts(results) {
+	const merged = [];
+	for (const result of results) {
+		const same = isChoice(result)
+			? null
+			: merged.find(
+					(other) =>
+						!isChoice(other) &&
+						contextOf(other) === contextOf(result) &&
+						!Object.keys(result.modifier).some(
+							(key) => EFFECT_FIELDS.has(key) && key in other.modifier,
+						),
+				);
+		if (!same) {
+			merged.push({ ...result, reasons: [...result.reasons] });
+			continue;
+		}
+		Object.assign(same.modifier, result.modifier);
+		for (const reason of result.reasons) {
+			if (!same.reasons.includes(reason)) same.reasons.push(reason);
+		}
+		same.conditional ||= result.conditional;
+	}
+	return merged;
 }
 
 /** What makes two modifiers the same, whatever their id, list or on/off state. */

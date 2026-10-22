@@ -50,8 +50,8 @@ describe("modifiers generated for the example rosters", () => {
 		expect(await generated("Space Marine")).toEqual([
 			"Finest Hour @ Captain: +3 Attacks, [DEVASTATING WOUNDS] — when attacking, fight only",
 			"Ballistus Strike @ Ballistus Dreadnought: re-roll hits (all) — when attacking, shooting only",
-			"Bladeguard @ Bladeguard Veteran Squad: +1 Hit roll — when attacking, fight only",
-			"Bladeguard @ Bladeguard Veteran Squad: -1 Hit roll — when defending",
+			"Bladeguard @ Bladeguard Veteran Squad: +1 Hit roll — when attacking, fight only (off)",
+			"Bladeguard @ Bladeguard Veteran Squad: -1 Hit roll — when defending (off)",
 			"Mark the Target @ Eliminator Squad: [DEVASTATING WOUNDS] — when attacking, shooting only",
 			"Total Obliteration @ Eradicator Squad: re-roll hits (all), re-roll wounds (all), re-roll damage — when attacking, shooting only, vs MONSTER / VEHICLE",
 			"Executioner @ Repulsor Executioner: +1 Hit roll — when attacking",
@@ -61,6 +61,7 @@ describe("modifiers generated for the example rosters", () => {
 	it("Tyranids", async () => {
 		expect(await generated("Tyranids")).toEqual([
 			"Onslaught (Aura, Psychic) @ TYRANIDS: [ASSAULT], [LETHAL HITS] — when attacking, shooting only",
+			"Synapse @ TYRANIDS: +1 Strength — when attacking, fight only",
 			"Node Lash (Psychic) @ Neurotyrant: +1 Hit roll — when attacking",
 			"Brood Progenitor (Aura, Psychic) @ TERMAGANTS: [LETHAL HITS] — when attacking, shooting only",
 			"Singular Purpose @ Norn Assimilator: re-roll hits (all), re-roll wounds (all) — when attacking (off)",
@@ -74,14 +75,17 @@ describe("modifiers generated for the example rosters", () => {
 		expect(await generated("Dark Angels")).toEqual([
 			"Combat Doctrines – Devastator Doctrine @ every unit: [ASSAULT] — when attacking, shooting only (off)",
 			"Supreme Grand Master @ Azrael: [SUSTAINED HITS 1] — when attacking",
+			"Watcher in the Dark @ Azrael: Feel No Pain 4+ vs mortal wounds — when defending",
+			"Finest Hour @ Captain: +3 Attacks, [DEVASTATING WOUNDS] — when attacking, fight only",
 			"Litany of Hate @ Chaplain: [LANCE] — when attacking, fight only",
 			"The Emperor's Shield @ Lion El'Jonson: -1 Wound roll — when defending, if S > T",
 			"The Watchers @ Lion El'Jonson: Feel No Pain 4+ vs mortal wounds, Feel No Pain 4+ vs psychic attacks — when defending",
+			"Martial Exemplar [Aura] @ DARK ANGELS: re-roll hits (1s), re-roll wounds (1s) — when attacking, fight only",
 			"No Hiding From the Watchers @ DARK ANGELS: Feel No Pain 5+ vs mortal wounds, Feel No Pain 5+ vs psychic attacks — when defending",
-			"Targeted Intercession @ Assault Intercessor Squad: +1 Strength — when attacking, fight only",
+			"Targeted Intercession @ Assault Intercessor Squad: +1 AP, +1 Strength — when attacking, fight only",
 			"Close-quarters Firepower @ Aggressor Squad: +1 Strength — when attacking",
 			"Inner Circle @ Deathwing Knights: -1 Damage — when defending",
-			"Special-issue Optics and Ammunition @ Eliminator Squad: [IGNORES COVER] — when attacking, shooting only",
+			"Special-issue Optics and Ammunition @ Eliminator Squad: [IGNORES COVER] — when attacking, shooting only (off)",
 			"Total Obliteration @ Eradicator Squad with Melta Rifles: re-roll damage — when attacking, shooting only",
 			"Executioner @ Repulsor Executioner: +1 Hit roll — when attacking, shooting only",
 		]);
