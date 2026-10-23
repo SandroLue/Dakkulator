@@ -281,6 +281,11 @@ export function MatchupDetail({ pairing }) {
 	const killChance = (chartData ?? [])
 		.filter((d) => d.value >= unitWounds)
 		.reduce((sum, d) => sum + d.probability, 0);
+	// The average of the bars as drawn, overkill included.
+	const expectedWounds = (chartData ?? []).reduce(
+		(sum, d) => sum + d.value * d.probability,
+		0,
+	);
 
 	return (
 		<div className="panel flex flex-col gap-4 p-4">
@@ -455,16 +460,31 @@ export function MatchupDetail({ pairing }) {
 													: `${value} wounds lost`
 										}
 									/>
-									{/* Past this line the unit is gone: the rest is overkill. */}
+									{/* Past this line the unit is gone: the rest is overkill.
+									    Under 1% it is just noise, so it is left off. */}
+									{killChance >= 0.01 && (
+										<ReferenceLine
+											x={unitWounds}
+											stroke="var(--color-muted)"
+											strokeDasharray="4 3"
+											label={{
+												value: `destroyed · ${percent(killChance)}`,
+												// Above the plot, so no bar can cover it.
+												position: "top",
+												fill: "var(--color-muted)",
+												fontSize: 11,
+											}}
+										/>
+									)}
+									{/* The axis is per whole wound, so the line sits on the nearest bar. */}
 									<ReferenceLine
-										x={unitWounds}
-										stroke="var(--color-muted)"
+										x={Math.round(expectedWounds)}
+										stroke="var(--color-accent)"
 										strokeDasharray="4 3"
 										label={{
-											value: `destroyed · ${percent(killChance)}`,
-											// Above the plot, so no bar can cover it.
+											value: `average · ${expectedWounds.toFixed(1)}`,
 											position: "top",
-											fill: "var(--color-muted)",
+											fill: "var(--color-accent)",
 											fontSize: 11,
 										}}
 									/>

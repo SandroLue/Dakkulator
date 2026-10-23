@@ -81,57 +81,6 @@ export function bestCaseContext() {
 	});
 }
 
-/** What the numbers currently assume, as short phrases. */
-function assumptions(ctx) {
-	const phrases = [];
-	for (const toggle of TOGGLE_GROUPS.flatMap((group) => group.toggles)) {
-		if (toggle.requires && !ctx[toggle.requires]) continue;
-		const active = toggle.invert ? !ctx[toggle.key] : ctx[toggle.key];
-		if (active) phrases.push(toggle.label);
-	}
-	for (const toggle of APPLY_TO_ALL) {
-		if (ctx[toggle.key]) phrases.push(`${toggle.label} on every weapon`);
-	}
-	if (ctx.allSustainedHits > 0) {
-		phrases.push(`SUSTAINED HITS ${ctx.allSustainedHits} on every weapon`);
-	}
-	for (const modifier of MODIFIERS) {
-		const value = ctx[modifier.key];
-		if (value)
-			phrases.push(`${value > 0 ? "+" : ""}${value} ${modifier.label}`);
-	}
-	for (const reroll of REROLLS) {
-		const mode = ctx[reroll.key];
-		if (mode && mode !== "none") {
-			phrases.push(`${reroll.label} ${mode === "ones" ? "of 1" : "(all)"}`);
-		}
-	}
-	return phrases;
-}
-
-/** One line under the phase tabs, so the assumptions behind the numbers are never hidden. */
-export function AssumptionsLine({ ctx, onEdit }) {
-	const phrases = assumptions(ctx);
-	return (
-		<p className="hint -mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-			<span>
-				<b className="font-semibold">Assuming:</b>{" "}
-				{phrases.length ? phrases.join(", ") : "no battlefield bonuses"}. Unit
-				and faction abilities count only when added as modifiers.
-			</span>
-			{onEdit && (
-				<button
-					type="button"
-					className="button-small button-ghost print-display-none"
-					onClick={onEdit}
-				>
-					Edit
-				</button>
-			)}
-		</p>
-	);
-}
-
 const MODIFIERS = [
 	{ key: "skillModifier", label: "BS / WS characteristic" },
 	// Hit and wound roll modifiers are capped at ±1 by the rules.

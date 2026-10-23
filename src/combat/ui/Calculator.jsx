@@ -4,7 +4,7 @@ import { isCombatAbility } from "../abilityRules";
 import { calculateMatchup } from "../index";
 import { unitAbilityEntries } from "../profiles";
 import { applyAttachments, listUnits } from "../unitList";
-import { AssumptionsLine, ContextControls, PhaseTabs } from "./ContextControls";
+import { ContextControls, PhaseTabs } from "./ContextControls";
 import { MatchupDetail } from "./MatchupDetail";
 import { ModifierBuilder } from "./ModifierBuilder";
 import { ResultsMatrix } from "./ResultsMatrix";
@@ -155,7 +155,6 @@ export function Calculator({
 
 	// A click on a cell brings its breakdown into view, which sits below the matrix.
 	const detailRef = useRef(null);
-	const battlefieldRef = useRef(null);
 	const scrollToDetail = useRef(false);
 	const selectCell = (cell) => {
 		scrollToDetail.current = true;
@@ -333,12 +332,6 @@ export function Calculator({
 				onChange={(phase) => setCtx({ ...ctx, phase })}
 				controls="calculator-results"
 			/>
-			<AssumptionsLine
-				ctx={ctx}
-				onEdit={() =>
-					battlefieldRef.current?.scrollIntoView({ behavior: "smooth" })
-				}
-			/>
 
 			{matchup ? (
 				<div
@@ -370,7 +363,7 @@ export function Calculator({
 				</div>
 			)}
 
-			<div ref={battlefieldRef} className="print-display-none scroll-mt-4">
+			<div className="print-display-none">
 				<ContextControls ctx={ctx} onChange={setCtx} />
 			</div>
 
