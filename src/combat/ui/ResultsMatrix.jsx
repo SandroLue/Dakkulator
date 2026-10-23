@@ -199,8 +199,7 @@ export function ResultsMatrix({
 					</button>
 				)}
 			</div>
-			{/* Padding outside the scroll box: inside it, cells would scroll past the sticky names.
-			    The names cast a shadow, so columns visibly slide underneath them. */}
+			{/* Padding outside the scroll box: inside it, cells would scroll past the sticky names. */}
 			<div className="p-4">
 				<div className="overflow-x-auto">
 					<table
@@ -219,7 +218,7 @@ export function ResultsMatrix({
 						<thead>
 							<tr>
 								{/* The pickers above already name the sides. */}
-								<th className="sticky left-0 z-20 border border-line bg-surface-muted p-0 shadow-[6px_0_8px_-4px_#000c]" />
+								<th className="sticky left-0 z-20 border border-line bg-surface-muted p-0" />
 								{columns.map(({ unit, index }) => (
 									<th
 										key={`${unit.name}-${index}`}
@@ -241,7 +240,7 @@ export function ResultsMatrix({
 							{rows.map(({ row, index: rowIndex }) => (
 								<tr key={`${row.attacker.name}-${rowIndex}`}>
 									{/* Sticky, so attacker names stay visible while scrolling sideways. */}
-									<th className="sticky left-0 z-10 border-x border-b border-line bg-surface-muted p-0 text-left shadow-[6px_0_8px_-4px_#000c]">
+									<th className="sticky left-0 z-10 border-x border-b border-line bg-surface-muted p-0 text-left">
 										<SortableHeader
 											unit={row.attacker}
 											active={colSort?.by === rowIndex}

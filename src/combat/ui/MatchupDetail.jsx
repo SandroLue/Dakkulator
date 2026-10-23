@@ -125,6 +125,9 @@ export function groupIdentical(weapons) {
 			continue;
 		}
 		for (const field of [...SUMMED, "woundsLost"]) {
+			// A value neither row has stays missing: alternatives have no
+			// `declaredAttacks`, and the Attacks column then shows `attacks`.
+			if (row[field] == null && w[field] == null) continue;
 			row[field] = (row[field] ?? 0) + (w[field] ?? 0);
 		}
 	}

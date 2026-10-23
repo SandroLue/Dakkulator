@@ -33,6 +33,14 @@ describe("groupIdentical", () => {
 		expect(merged.hits).toBe(4);
 	});
 
+	it("keeps a value no row has missing, so alternatives show their attacks", () => {
+		// Alternatives are resolved alone and have no declaredAttacks.
+		const alternative = () => row({ declaredAttacks: undefined, attacks: 2 });
+		const [merged] = groupIdentical([alternative(), alternative()]);
+		expect(merged.declaredAttacks).toBeUndefined();
+		expect(merged.attacks).toBe(4);
+	});
+
 	it("keeps other targets, units, phases and stats apart", () => {
 		expect(
 			groupIdentical([
