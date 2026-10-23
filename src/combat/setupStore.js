@@ -1,13 +1,54 @@
-import { validAttachments, validContext } from "./shareState";
+import { REROLL_MODES } from "./modifiers";
+import { defaultContext } from "./resolve";
+import { sustainedHitsValue } from "./weaponKeywords";
 
 /**
  * The calculator setup remembered between visits, in localStorage:
  * - per army list: which units are selected and which leaders joined whom;
  * - for every matchup: the battlefield context (incl. phase) and the metric.
  *
- * Everything is validated on the way back in, like a share link, so a stale or
+ * Everything is validated on the way back in, so a stale or
  * hand-edited entry falls back to the defaults instead of breaking the page.
  */
+
+const UNIT_KEY = /^\d{1,4}:\d{1,4}$/;
+const PHASES = ["combined", "shooting", "fight"];
+
+export function validAttachments(value) {
+	if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+	return Object.fromEntries(
+		Object.entries(value).filter(
+			([leader, bodyguard]) =>
+				UNIT_KEY.test(leader) &&
+				typeof bodyguard === "string" &&
+				UNIT_KEY.test(bodyguard),
+		),
+	);
+}
+
+export function validContext(value) {
+	const defaults = defaultContext();
+	const ctx = {};
+	if (!value || typeof value !== "object") return defaults;
+	for (const [key, raw] of Object.entries(value)) {
+		// Sustained Hits may be dice ("D3") as well as a number.
+		if (key === "allSustainedHits") {
+			if (sustainedHitsValue(raw)) ctx[key] = String(raw).trim();
+			continue;
+		}
+		if (!(key in defaults) || typeof raw !== typeof defaults[key]) continue;
+		if (typeof raw === "number") {
+			if (Number.isFinite(raw)) ctx[key] = Math.max(-6, Math.min(6, raw));
+		} else if (key === "phase") {
+			if (PHASES.includes(raw)) ctx[key] = raw;
+		} else if (key.startsWith("reroll")) {
+			if (REROLL_MODES.includes(raw)) ctx[key] = raw;
+		} else {
+			ctx[key] = raw;
+		}
+	}
+	return defaultContext(ctx);
+}
 
 const UNIT_SETUP_KEY = "unitSetupByList";
 const VIEW_KEY = "calculatorView";

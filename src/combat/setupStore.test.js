@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { defaultContext } from "./resolve";
-import { loadUnitSetup, loadView, saveUnitSetup, saveView } from "./setupStore";
+import {
+	loadUnitSetup,
+	loadView,
+	saveUnitSetup,
+	saveView,
+	validContext,
+} from "./setupStore";
 
 const memoryStorage = () => {
 	const data = new Map();
@@ -114,5 +120,19 @@ describe("obvious leader attachments", () => {
 		expect(loadUnitSetup("list-1", keys, storage, suggest).attachments).toEqual(
 			{},
 		);
+	});
+});
+
+describe("validContext", () => {
+	it("keeps dice Sustained Hits and the 'apply to all' defences", () => {
+		const ctx = validContext({
+			allSustainedHits: "D3",
+			allFnp: 5,
+			allInvuln: 4,
+		});
+		expect(ctx.allSustainedHits).toBe("D3");
+		expect(ctx.allFnp).toBe(5);
+		expect(ctx.allInvuln).toBe(4);
+		expect(validContext({ allSustainedHits: "lots" }).allSustainedHits).toBe(0);
 	});
 });

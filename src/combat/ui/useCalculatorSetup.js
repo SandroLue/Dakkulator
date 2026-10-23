@@ -19,11 +19,6 @@ import {
 	saveUnitSetup,
 	saveView,
 } from "../setupStore";
-import {
-	decodeShareState,
-	encodeShareState,
-	mergeSharedModifiers,
-} from "../shareState";
 import { listUnits, suggestAttachments } from "../unitList";
 import { bestCaseContext } from "./ContextControls";
 import { METRICS } from "./metrics";
@@ -137,98 +132,4 @@ export function useAbilityModifiers({ sides, modifiers, saveModifiers }) {
 		for (const listId of filled) markAbilitiesFilled(listId);
 		if (next !== modifiers) saveModifiers(next);
 	});
-}
-
-/**
- * Reading a share link from the URL (in two stages: settings at once, unit
- * selection once the same rosters are loaded) and copying one.
- */
-export function useShareLink({
-	rosterA,
-	rosterB,
-	sideA,
-	sideB,
-	ctx,
-	setCtx,
-	modifiers,
-	saveModifiers,
-	onApplied,
-}) {
-	const [pending, setPending] = useState(() => {
-		const shared = decodeShareState(window.location.hash);
-		return shared && { ...shared, stage: "settings" };
-	});
-	const [notice, setNotice] = useState(null);
-	const [copyStatus, setCopyStatus] = useState("");
-
-	useEffect(() => {
-		if (pending?.stage !== "settings") return;
-		setCtx(pending.ctx);
-		setNotice("Loaded the shared battlefield settings.");
-		setPending({ ...pending, stage: "selection" });
-		// Reloading should not re-apply the link.
-		window.history.replaceState(
-			null,
-			"",
-			`${window.location.pathname}${window.location.search}`,
-		);
-	}, [pending, setCtx]);
-
-	// Modifiers are stored per army, so they wait until the shared rosters are loaded.
-	const apply = (shared) => {
-		const merged = mergeSharedModifiers(modifiers, shared.modifiers);
-		saveModifiers(merged.modifiers);
-		setNotice(
-			`Loaded a shared setup: ${merged.added} modifier(s) added${
-				merged.disabled ? `, ${merged.disabled} of yours switched off` : ""
-			}.`,
-		);
-		sideA.setSelected(new Set(shared.selected.A));
-		sideB.setSelected(new Set(shared.selected.B));
-		sideA.setAttachments(shared.attachments.A);
-		sideB.setAttachments(shared.attachments.B);
-		onApplied?.();
-		setPending(null);
-	};
-
-	useEffect(() => {
-		if (pending?.stage !== "selection") return;
-		if (
-			rosterA?.name === pending.rosterNames.A &&
-			rosterB?.name === pending.rosterNames.B
-		) {
-			apply(pending);
-		}
-	});
-
-	const copy = async () => {
-		const hash = encodeShareState({
-			rosterNames: { A: rosterA.name, B: rosterB.name },
-			selected: { A: sideA.selected, B: sideB.selected },
-			attachments: { A: sideA.attachments, B: sideB.attachments },
-			ctx,
-			modifiers,
-		});
-		const { origin, pathname, search } = window.location;
-		const url = `${origin}${pathname}${search}${hash}`;
-		try {
-			await navigator.clipboard.writeText(url);
-			setCopyStatus("Link copied — the recipient needs the same two rosters.");
-			setTimeout(() => setCopyStatus(""), 4000);
-		} catch {
-			window.prompt("Copy this link:", url);
-		}
-	};
-
-	return {
-		notice,
-		pending,
-		copyStatus,
-		copy,
-		apply: () => apply(pending),
-		dismiss: () => {
-			setNotice(null);
-			setPending(null);
-		},
-	};
 }

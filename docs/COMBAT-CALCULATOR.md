@@ -301,7 +301,6 @@ Pure functions, no React, in [src/combat](../src/combat):
 | `attach.js`                               | leader / bodyguard attachment (§4.2)                                  |
 | `unitList.js`                             | a roster's units: every copy listed, grouped again after attachment   |
 | `setupStore.js`                           | remembered setup: units/leaders per list, context and metric globally |
-| `shareState.js`                           | share-link encoding (§4.4)                                            |
 | `simulate.worker.js`, `simulateClient.js` | runs Monte-Carlo in a Web Worker, cached per pairing                  |
 
 ### 3.1 Dice expressions
@@ -509,15 +508,7 @@ that army is loaded, in either slot; "both lists" modifiers are shared by all
 armies. The old single `modifiers` list is filed under the armies loaded on first
 visit. The breakdown lists the modifiers applied to a pairing.
 
-### 4.4 Share links — [src/combat/shareState.js](../src/combat/shareState.js)
-
-"Copy share link" encodes the selection, attachments, `ctx`, direction and
-modifiers in `#share=`. Rosters are not included; the selection is restored once
-rosters with the same names are loaded (or the recipient applies it to the
-loaded rosters). Shared modifiers are merged in at that point, so they are filed
-under the right armies, and the recipient's own are switched off, never deleted.
-
-### 4.5 Army lists
+### 4.4 Army lists
 
 - Army lists live in [src/library/](../src/library/): one upload area (several
   files at once) and a table of saved lists; the attacker and defender pick
@@ -549,7 +540,7 @@ under the right armies, and the recipient's own are switched off, never deleted.
 | `library/handmadeRoster.test.js` | a hand-made roster (own wording) through parser, profiles, leader attachment, modifiers and matrix; roster loading and its error messages |
 | `library/useRosterLibrary.test.jsx` | the saved list library: uploads and slots, swapping, deleting, full storage, Map/Set round trip |
 | `abilityCorpus.test.js`          | how every corpus ability is read, against `__snapshots__/abilityCorpus.txt` (names and fields only); runs only where the local corpus exists |
-| other `*.test.js`                | parsing, profiles, modifiers, attachment, share links, library                         |
+| other `*.test.js`                | parsing, profiles, modifiers, attachment, saved setup, library                         |
 
 A rule change in the engine must also be made in `oracle.js`.
 

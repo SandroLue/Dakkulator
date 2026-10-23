@@ -12,7 +12,6 @@ import { UnitPicker } from "./UnitPicker";
 import {
 	useAbilityModifiers,
 	useArmyModifiers,
-	useShareLink,
 	useUnitSetup,
 	useView,
 } from "./useCalculatorSetup";
@@ -34,41 +33,6 @@ const uniqueKeywords = (roster) =>
 			),
 		),
 	].sort();
-
-function ShareBanner({
-	notice,
-	pending,
-	rosterA,
-	rosterB,
-	onApply,
-	onDismiss,
-}) {
-	if (!notice && !pending) return null;
-	const waiting = pending?.stage === "selection";
-	return (
-		<div className="print-display-none flex flex-wrap items-center gap-3 rounded-lg border border-info bg-info-soft px-4 py-3 text-sm">
-			<span>{notice}</span>
-			{waiting && (
-				<span>
-					To restore the unit selection, choose “{pending.rosterNames.A}” as the{" "}
-					attacker and “{pending.rosterNames.B}” as the defender.
-				</span>
-			)}
-			{waiting && rosterA && rosterB && (
-				<button type="button" onClick={onApply}>
-					Use the loaded rosters anyway
-				</button>
-			)}
-			<button
-				type="button"
-				className="button-ghost ml-auto"
-				onClick={onDismiss}
-			>
-				Dismiss
-			</button>
-		</div>
-	);
-}
 
 /**
  * Abilities the engine doesn't model, split by the side whose units have them.
@@ -141,17 +105,6 @@ export function Calculator({
 		modifiers,
 		saveModifiers,
 	});
-	const share = useShareLink({
-		rosterA,
-		rosterB,
-		sideA,
-		sideB,
-		ctx,
-		setCtx,
-		modifiers,
-		saveModifiers,
-		onApplied: () => setSelectedCell(null),
-	});
 
 	// A click on a cell brings its breakdown into view, which sits below the matrix.
 	const detailRef = useRef(null);
@@ -192,17 +145,6 @@ export function Calculator({
 		}
 		return texts;
 	}, [rosterA, rosterB]);
-
-	const banner = (
-		<ShareBanner
-			notice={share.notice}
-			pending={share.pending}
-			rosterA={rosterA}
-			rosterB={rosterB}
-			onApply={share.apply}
-			onDismiss={share.dismiss}
-		/>
-	);
 
 	const entriesA = useMemo(
 		() => applyAttachments(listUnits(rosterA), sideA.attachments),
@@ -287,7 +229,6 @@ export function Calculator({
 	if (!rosterA || !rosterB) {
 		return (
 			<div className="print-display-none flex w-full flex-col gap-5">
-				{banner}
 				{pickers}
 			</div>
 		);
@@ -324,7 +265,6 @@ export function Calculator({
 
 	return (
 		<div className="flex w-full flex-col gap-5">
-			{banner}
 			{pickers}
 
 			<PhaseTabs
@@ -387,15 +327,6 @@ export function Calculator({
 						)
 					}
 				/>
-			</div>
-
-			<div className="print-display-none flex flex-wrap items-center justify-center gap-3 text-sm">
-				<button type="button" onClick={share.copy}>
-					Copy share link
-				</button>
-				{share.copyStatus && (
-					<span className="text-muted">{share.copyStatus}</span>
-				)}
 			</div>
 		</div>
 	);
