@@ -49,7 +49,7 @@ function WeaponAbilities({ weapon }) {
 					<span
 						key={label}
 						className="ability-tag ability-tag-granted"
-						title="Granted by a modifier or “Apply to all”"
+						title="Granted by an ability or “Apply to all”"
 					>
 						+ {label}
 					</span>
@@ -339,222 +339,231 @@ export function MatchupDetail({ pairing }) {
 	);
 
 	return (
-		<div className="panel flex flex-col gap-4 p-4">
-			<div className="flex flex-wrap items-start gap-3">
-				<div className="flex flex-col gap-1">
-					<div className="panel-title">
-						{pairing.attackerName} <span className="text-accent">→</span>{" "}
-						{pairing.defenderName}
-					</div>
-					<div className="text-sm text-muted">
-						{phaseLabel(pairing.phase)} ·{" "}
-						{groups.length > 1
-							? `${groups.length} allocation groups, in the order the defender must use`
-							: describeGroup(groups[0])}
+		<div className="panel">
+			<div className="panel-header">
+				<span className="panel-title">Combat Details</span>
+			</div>
+			<div className="flex flex-col gap-4 p-4">
+				<div className="flex flex-wrap items-start gap-3">
+					<div className="flex flex-col gap-1">
+						<div className="panel-title">
+							{pairing.attackerName} <span className="text-accent">→</span>{" "}
+							{pairing.defenderName}
+						</div>
+						<div className="text-sm text-muted">
+							{phaseLabel(pairing.phase)} ·{" "}
+							{groups.length > 1
+								? `${groups.length} allocation groups, in the order the defender must use`
+								: describeGroup(groups[0])}
+						</div>
 					</div>
 				</div>
-			</div>
-			<div className="flex flex-col text-base">
-				{summarise(pairing).map((line) => (
-					<p key={line}>{line}</p>
-				))}
-			</div>
-			{pairing.appliedModifiers?.length > 0 && (
-				<div className="flex flex-wrap items-center gap-1.5 text-xs">
-					<span className="text-muted">Modifiers applied:</span>
-					{[...new Set(pairing.appliedModifiers)].map((name) => (
-						<span key={name} className="badge">
-							{name}
-						</span>
+				<div className="flex flex-col text-base">
+					{summarise(pairing).map((line) => (
+						<p key={line}>{line}</p>
 					))}
 				</div>
-			)}
+				{pairing.appliedModifiers?.length > 0 && (
+					<div className="flex flex-wrap items-center gap-1.5 text-xs">
+						<span className="text-muted">Abilities applied:</span>
+						{[...new Set(pairing.appliedModifiers)].map((name) => (
+							<span key={name} className="badge">
+								{name}
+							</span>
+						))}
+					</div>
+				)}
 
-			{/* The dice maths, for whoever wants to check the numbers. */}
-			<details>
-				<summary className="section-label cursor-pointer py-1 hover:text-ink">
-					Show breakdown
-				</summary>
-				<div className="overflow-x-auto">
-					<table className="w-full border-collapse text-sm">
-						<thead>
-							<tr>
-								{COLUMNS.map(([label, , hint]) => (
-									<th
-										key={label}
-										title={hint}
-										className="section-label border border-line bg-surface-muted px-3 py-2 text-left"
-									>
-										{/* A dotted underline marks headers that explain themselves on hover. */}
-										{hint ? (
-											<span className="cursor-help underline decoration-dotted underline-offset-4">
-												{label}
-											</span>
-										) : (
-											label
-										)}
-									</th>
-								))}
-								{multiGroup && (
-									<th className="section-label border border-line bg-surface-muted px-3 py-2 text-left">
-										Target
-									</th>
-								)}
-							</tr>
-						</thead>
-						<tbody>
-							{weaponRows.map((weapon, index) => (
-								<Fragment key={`${weapon.weaponName}-${index}`}>
-									{combined &&
-										weapon.isMelee !== weaponRows[index - 1]?.isMelee && (
-											<>
-												{/* A small gap sets each phase apart from what is above it. */}
-												<tr>
-													<td
-														colSpan={COLUMNS.length + (multiGroup ? 1 : 0)}
-														className="h-2 border-0 p-0"
-													/>
-												</tr>
-												<tr>
-													<td
-														colSpan={COLUMNS.length + (multiGroup ? 1 : 0)}
-														className="section-label border border-line bg-surface-muted px-3 py-1.5"
-													>
-														{weapon.isMelee ? "Fight phase" : "Shooting phase"}
-													</td>
-												</tr>
-											</>
-										)}
-									<WeaponRow
-										weapon={withSource(weapon)}
-										groups={groups}
-										multiGroup={multiGroup}
-									/>
-								</Fragment>
-							))}
-							<tr>
-								<td className="border border-line px-3 py-2">Total</td>
-								{COLUMNS.slice(1).map(([label, accessor]) => (
-									<td
-										key={label}
-										className={`border border-line px-3 py-2 ${
-											label === "Wounds lost" ? "font-bold" : ""
-										}`}
-									>
-										{accessor({
-											...sumWeapons(pairing.weapons),
-											// The exact total, as in the results matrix.
-											woundsLost: pairing.totals.woundsLost,
-										})}
-									</td>
-								))}
-								{multiGroup && <td className="border border-line px-3 py-2" />}
-							</tr>
-							{pairing.alternatives?.length > 0 && (
+				{/* The dice maths, for whoever wants to check the numbers. */}
+				<details>
+					<summary className="section-label cursor-pointer py-1 hover:text-ink">
+						Show breakdown
+					</summary>
+					<div className="overflow-x-auto">
+						<table className="w-full border-collapse text-sm">
+							<thead>
 								<tr>
-									<td
-										colSpan={COLUMNS.length + (multiGroup ? 1 : 0)}
-										className="section-label border border-line bg-surface-muted px-3 py-2"
-									>
-										Alternative profiles — not counted in the totals
-									</td>
+									{COLUMNS.map(([label, , hint]) => (
+										<th
+											key={label}
+											title={hint}
+											className="section-label border border-line bg-surface-muted px-3 py-2 text-left"
+										>
+											{/* A dotted underline marks headers that explain themselves on hover. */}
+											{hint ? (
+												<span className="cursor-help underline decoration-dotted underline-offset-4">
+													{label}
+												</span>
+											) : (
+												label
+											)}
+										</th>
+									))}
+									{multiGroup && (
+										<th className="section-label border border-line bg-surface-muted px-3 py-2 text-left">
+											Target
+										</th>
+									)}
 								</tr>
-							)}
-							{groupIdentical(pairing.alternatives ?? []).map(
-								(weapon, index) => (
-									<WeaponRow
-										key={`alt-${weapon.weaponName}-${index}`}
-										weapon={withSource(weapon)}
-										groups={groups}
-										multiGroup={multiGroup}
-										muted
-									/>
-								),
-							)}
-						</tbody>
-					</table>
-				</div>
-			</details>
+							</thead>
+							<tbody>
+								{weaponRows.map((weapon, index) => (
+									<Fragment key={`${weapon.weaponName}-${index}`}>
+										{combined &&
+											weapon.isMelee !== weaponRows[index - 1]?.isMelee && (
+												<>
+													{/* A small gap sets each phase apart from what is above it. */}
+													<tr>
+														<td
+															colSpan={COLUMNS.length + (multiGroup ? 1 : 0)}
+															className="h-2 border-0 p-0"
+														/>
+													</tr>
+													<tr>
+														<td
+															colSpan={COLUMNS.length + (multiGroup ? 1 : 0)}
+															className="section-label border border-line bg-surface-muted px-3 py-1.5"
+														>
+															{weapon.isMelee
+																? "Fight phase"
+																: "Shooting phase"}
+														</td>
+													</tr>
+												</>
+											)}
+										<WeaponRow
+											weapon={withSource(weapon)}
+											groups={groups}
+											multiGroup={multiGroup}
+										/>
+									</Fragment>
+								))}
+								<tr>
+									<td className="border border-line px-3 py-2">Total</td>
+									{COLUMNS.slice(1).map(([label, accessor]) => (
+										<td
+											key={label}
+											className={`border border-line px-3 py-2 ${
+												label === "Wounds lost" ? "font-bold" : ""
+											}`}
+										>
+											{accessor({
+												...sumWeapons(pairing.weapons),
+												// The exact total, as in the results matrix.
+												woundsLost: pairing.totals.woundsLost,
+											})}
+										</td>
+									))}
+									{multiGroup && (
+										<td className="border border-line px-3 py-2" />
+									)}
+								</tr>
+								{pairing.alternatives?.length > 0 && (
+									<tr>
+										<td
+											colSpan={COLUMNS.length + (multiGroup ? 1 : 0)}
+											className="section-label border border-line bg-surface-muted px-3 py-2"
+										>
+											Alternative profiles — not counted in the totals
+										</td>
+									</tr>
+								)}
+								{groupIdentical(pairing.alternatives ?? []).map(
+									(weapon, index) => (
+										<WeaponRow
+											key={`alt-${weapon.weaponName}-${index}`}
+											weapon={withSource(weapon)}
+											groups={groups}
+											multiGroup={multiGroup}
+											muted
+										/>
+									),
+								)}
+							</tbody>
+						</table>
+					</div>
+				</details>
 
-			<div className="flex flex-col gap-4">
-				<div className="flex flex-col gap-1">
-					<div className="section-label">Wounds lost in one round</div>
-					<div style={{ height: 280 }}>
-						{!chartData && (
-							<div className="hint flex h-full items-center justify-center">
-								{simulationError
-									? `Monte-Carlo failed: ${simulationError}`
-									: "Running Monte-Carlo…"}
-							</div>
-						)}
-						{chartData && (
-							<ResponsiveContainer width="100%" height="100%">
-								<BarChart
-									data={chartData}
-									margin={{ top: 24, right: 8, bottom: 16, left: 8 }}
-								>
-									<CartesianGrid {...GRID} vertical={false} />
-									<XAxis
-										dataKey="value"
-										{...AXIS}
-										label={axisLabel("Wounds lost")}
-									/>
-									<YAxis tickFormatter={percent} width={48} {...AXIS} />
-									<Tooltip
-										{...TOOLTIP}
-										formatter={(value) => [percent(value), "Probability"]}
-										labelFormatter={(value) =>
-											value > unitWounds
-												? `${value} wounds · ${value - unitWounds} overkill`
-												: value === unitWounds
-													? `${value} wounds lost · ${value} or more: ${percent(killChance)}`
-													: `${value} wounds lost`
-										}
-									/>
-									{/* Past this line the unit is gone: the rest is overkill.
-									    Under 1% it is just noise, so it is left off. */}
-									{killChance >= 0.01 && (
+				<div className="flex flex-col gap-4">
+					<div className="flex flex-col gap-1">
+						<div className="section-label">Wounds lost in one round</div>
+						<div style={{ height: 280 }}>
+							{!chartData && (
+								<div className="hint flex h-full items-center justify-center">
+									{simulationError
+										? `Monte-Carlo failed: ${simulationError}`
+										: "Running Monte-Carlo…"}
+								</div>
+							)}
+							{chartData && (
+								<ResponsiveContainer width="100%" height="100%">
+									<BarChart
+										data={chartData}
+										margin={{ top: 24, right: 8, bottom: 16, left: 8 }}
+									>
+										<CartesianGrid {...GRID} vertical={false} />
+										<XAxis
+											dataKey="value"
+											{...AXIS}
+											label={axisLabel("Wounds lost")}
+										/>
+										<YAxis tickFormatter={percent} width={48} {...AXIS} />
+										<Tooltip
+											{...TOOLTIP}
+											formatter={(value) => [percent(value), "Probability"]}
+											labelFormatter={(value) =>
+												value > unitWounds
+													? `${value} wounds · ${value - unitWounds} overkill`
+													: value === unitWounds
+														? `${value} wounds lost · ${value} or more: ${percent(killChance)}`
+														: `${value} wounds lost`
+											}
+										/>
+										{/* Past this line the unit is gone: the rest is overkill.
+										    Under 1% it is just noise, so it is left off. */}
+										{killChance >= 0.01 && (
+											<ReferenceLine
+												x={unitWounds}
+												stroke="var(--color-muted)"
+												strokeDasharray="4 3"
+												label={{
+													value: `destroyed · ${percent(killChance)}`,
+													// Above the plot, so no bar can cover it.
+													position: "top",
+													fill: "var(--color-muted)",
+													fontSize: 11,
+												}}
+											/>
+										)}
+										{/* The axis is per whole wound, so the line sits on the nearest bar. */}
 										<ReferenceLine
-											x={unitWounds}
-											stroke="var(--color-muted)"
+											x={Math.round(expectedWounds)}
+											stroke="var(--color-accent)"
 											strokeDasharray="4 3"
 											label={{
-												value: `destroyed · ${percent(killChance)}`,
-												// Above the plot, so no bar can cover it.
+												value: `average · ${expectedWounds.toFixed(1)}`,
 												position: "top",
-												fill: "var(--color-muted)",
+												fill: "var(--color-accent)",
 												fontSize: 11,
 											}}
 										/>
-									)}
-									{/* The axis is per whole wound, so the line sits on the nearest bar. */}
-									<ReferenceLine
-										x={Math.round(expectedWounds)}
-										stroke="var(--color-accent)"
-										strokeDasharray="4 3"
-										label={{
-											value: `average · ${expectedWounds.toFixed(1)}`,
-											position: "top",
-											fill: "var(--color-accent)",
-											fontSize: 11,
-										}}
-									/>
-									<Bar
-										dataKey="probability"
-										fill="var(--primary-color)"
-										radius={[3, 3, 0, 0]}
-										{...BAR_ANIMATION}
-									>
-										{chartData.map((entry) => (
-											<Cell
-												key={entry.value}
-												fillOpacity={entry.overkill > 0 ? 0.4 : 1}
-											/>
-										))}
-									</Bar>
-								</BarChart>
-							</ResponsiveContainer>
-						)}
+										<Bar
+											dataKey="probability"
+											fill="var(--primary-color)"
+											radius={[3, 3, 0, 0]}
+											{...BAR_ANIMATION}
+										>
+											{chartData.map((entry) => (
+												<Cell
+													key={entry.value}
+													fillOpacity={entry.overkill > 0 ? 0.4 : 1}
+												/>
+											))}
+										</Bar>
+									</BarChart>
+								</ResponsiveContainer>
+							)}
+						</div>
 					</div>
 				</div>
 			</div>

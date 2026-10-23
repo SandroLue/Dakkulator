@@ -1,5 +1,14 @@
-import { defaultContext } from "../index";
-import { REROLL_OPTIONS, Segmented, Toggle } from "./controls";
+import { Fragment } from "react";
+import { defaultContext, sustainedHitsValue } from "../index";
+import {
+	ComboBox,
+	PanelToggle,
+	REROLL_OPTIONS,
+	Segmented,
+	Toggle,
+	collapsibleHeader,
+	usePanelOpen,
+} from "./controls";
 
 // `on`: starts switched on, so the user only turns off what does not apply.
 const TOGGLE_GROUPS = [
@@ -58,18 +67,6 @@ const TOGGLE_GROUPS = [
 	},
 ];
 
-const APPLY_TO_ALL = [
-	{ key: "allLethalHits", label: "LETHAL HITS" },
-	{ key: "allDevastatingWounds", label: "DEVASTATING WOUNDS" },
-];
-
-const SUSTAINED_OPTIONS = [
-	[0, "Off"],
-	[1, "1"],
-	[2, "2"],
-	[3, "3"],
-];
-
 export function bestCaseContext() {
 	return defaultContext({
 		phase: "combined",
@@ -81,23 +78,101 @@ export function bestCaseContext() {
 	});
 }
 
-const MODIFIERS = [
-	{ key: "skillModifier", label: "BS / WS characteristic" },
-	// Hit and wound roll modifiers are capped at ±1 by the rules.
-	{ key: "hitModifier", label: "Hit roll", min: -1, max: 1 },
-	{ key: "woundModifier", label: "Wound roll", min: -1, max: 1 },
-	{ key: "apModifier", label: "AP" },
+const OFF_ON = [
+	[false, "Off"],
+	[true, "On"],
 ];
 
-/** Keeps a value within a field's limits, if it has any. */
-const clamp = (
-	value,
-	{ min = Number.NEGATIVE_INFINITY, max = Number.POSITIVE_INFINITY },
-) => Math.max(min, Math.min(max, value));
+/**
+ * "Apply to all", in the order the dice are rolled: each step's modifier,
+ * re-roll and abilities together.
+ */
+/** `[value, label]` for every whole step from `min` to `max`: "−1", "0", "+1"… */
+const signedRange = (min, max) =>
+	Array.from({ length: max - min + 1 }, (_, i) => {
+		const value = min + i;
+		return [value, value > 0 ? `+${value}` : value < 0 ? `−${-value}` : "0"];
+	});
 
-const REROLLS = [
-	{ key: "rerollHits", label: "Re-roll hits" },
-	{ key: "rerollWounds", label: "Re-roll wounds" },
+/** "N+" rolls, best first; 0 for none. */
+const THRESHOLDS = [[0, "None"], ...[2, 3, 4, 5, 6].map((n) => [n, `${n}+`])];
+
+const APPLY_STEPS = [
+	{
+		title: "Hits",
+		fields: [
+			{ key: "rerollHits", label: "Re-roll", kind: "reroll" },
+			{ key: "allLethalHits", label: "Lethal Hits", kind: "switch" },
+			{
+				key: "skillModifier",
+				label: "BS / WS",
+				kind: "select",
+				options: signedRange(-2, 2),
+			},
+			// Hit and wound roll modifiers are capped at ±1 by the rules.
+			{
+				key: "hitModifier",
+				label: "Hit roll",
+				kind: "select",
+				options: signedRange(-1, 1),
+			},
+			// No rules maximum: datasheets print 1 to 3 or D3, but X can be anything.
+			{
+				key: "allSustainedHits",
+				label: "Sustained Hits",
+				kind: "combo",
+				suggestions: ["0", "1", "2", "3", "D3", "2D3", "D6", "2D6"],
+			},
+		],
+	},
+	{
+		title: "Wounds",
+		fields: [
+			{ key: "rerollWounds", label: "Re-roll", kind: "reroll" },
+			{
+				key: "allDevastatingWounds",
+				label: "Devastating Wounds",
+				kind: "switch",
+			},
+			{
+				key: "woundModifier",
+				label: "Wound roll",
+				kind: "select",
+				options: signedRange(-1, 1),
+			},
+		],
+	},
+	{
+		title: "Saves & damage",
+		fields: [
+			{
+				key: "apModifier",
+				label: "AP",
+				kind: "select",
+				options: signedRange(-2, 3),
+			},
+			// The defender's own, if better, still counts.
+			{
+				key: "allInvuln",
+				label: "Invulnerable",
+				kind: "select",
+				options: THRESHOLDS,
+			},
+			{
+				key: "allFnp",
+				label: "Feel No Pain",
+				kind: "select",
+				options: THRESHOLDS,
+			},
+			// −1 is the common "reduce Damage by 1"; a result never drops below 1.
+			{
+				key: "damageModifier",
+				label: "Damage",
+				kind: "select",
+				options: signedRange(-2, 2),
+			},
+		],
+	},
 ];
 
 const SHOOTING_ICON = (
@@ -158,7 +233,65 @@ export function PhaseTabs({ phase, onChange, controls }) {
 	);
 }
 
+// Three columns; the toggles sit two to a row in equal cells.
+const COLUMNS = "grid gap-x-8 gap-y-6 md:grid-cols-3";
+const PAIR = "grid grid-cols-2 gap-2.5";
+const FILL_TOGGLE =
+	"min-h-9 w-full items-center justify-center text-center leading-tight";
+
+function ApplyField({ id, field, value, onChange }) {
+	if (field.kind === "select") {
+		return (
+			<select
+				id={id}
+				value={value ?? 0}
+				onChange={(e) => onChange(Number(e.target.value))}
+				className="control-centered h-9 w-full"
+			>
+				{field.options.map(([option, label]) => (
+					<option key={option} value={option}>
+						{label}
+					</option>
+				))}
+			</select>
+		);
+	}
+	if (field.kind === "combo") {
+		// Typed as is, so "D" can become "D3"; empty (shown as "0") means off.
+		const text = value ? String(value) : "";
+		const invalid = text !== "" && text !== "0" && !sustainedHitsValue(text);
+		return (
+			<ComboBox
+				id={id}
+				value={text}
+				// Off shows the "0" placeholder; mark that option as the current one.
+				selected={text || "0"}
+				suggestions={field.suggestions}
+				placeholder="0"
+				// "0" and empty are both off, stored as the default 0 so Reset sees it.
+				onChange={(next) => {
+					const trimmed = next.trim();
+					onChange(trimmed === "" || trimmed === "0" ? 0 : trimmed);
+				}}
+				aria-invalid={invalid}
+				title={invalid ? "A number or dice, like 2 or D3" : undefined}
+				className={`control-centered h-9 w-full ${invalid ? "border-danger" : ""}`}
+			/>
+		);
+	}
+	return (
+		<Segmented
+			label={field.label}
+			value={field.kind === "switch" ? Boolean(value) : value}
+			options={field.kind === "switch" ? OFF_ON : REROLL_OPTIONS}
+			onChange={onChange}
+			className="segmented-fill"
+		/>
+	);
+}
+
 export function ContextControls({ ctx, onChange }) {
+	const [open, setOpen] = usePanelOpen("apply-to-all");
 	const set = (key, value) => onChange({ ...ctx, [key]: value });
 	// The phase has its own tabs, so a reset keeps it.
 	const defaults = { ...bestCaseContext(), phase: ctx.phase };
@@ -168,8 +301,14 @@ export function ContextControls({ ctx, onChange }) {
 
 	return (
 		<div className="panel text-sm">
-			<div className="panel-header">
-				<span className="panel-title">Battlefield</span>
+			<div {...collapsibleHeader(open, setOpen)}>
+				<PanelToggle
+					open={open}
+					onToggle={setOpen}
+					controls="apply-to-all-panel"
+				>
+					Apply to all
+				</PanelToggle>
 				<button
 					type="button"
 					className="button-small ml-auto"
@@ -181,12 +320,12 @@ export function ContextControls({ ctx, onChange }) {
 				</button>
 			</div>
 
-			<div className="flex flex-col gap-5 p-4">
-				<div className="grid gap-5 md:grid-cols-3">
-					{TOGGLE_GROUPS.map((group) => (
-						<div key={group.label} className="flex flex-col gap-2">
-							<span className="section-label">{group.label}</span>
-							<div className="flex flex-wrap gap-2">
+			{open && (
+				<div id="apply-to-all-panel" className="flex flex-col gap-8 p-5">
+					{/* One column per group: helps, hinders, optional rules. */}
+					<div className={COLUMNS}>
+						{TOGGLE_GROUPS.map((group) => (
+							<div key={group.label} className={`${PAIR} content-start`}>
 								{group.toggles
 									.filter((toggle) => !toggle.requires || ctx[toggle.requires])
 									.map((toggle) => (
@@ -198,75 +337,46 @@ export function ContextControls({ ctx, onChange }) {
 											onChange={(value) =>
 												set(toggle.key, toggle.invert ? !value : value)
 											}
+											className={FILL_TOGGLE}
 										>
 											{toggle.label}
 										</Toggle>
 									))}
 							</div>
-						</div>
-					))}
-				</div>
-
-				<div className="flex flex-col gap-2">
-					<span className="section-label">Apply to all</span>
-					<div className="flex flex-wrap items-center gap-2">
-						{APPLY_TO_ALL.map((toggle) => (
-							<Toggle
-								key={toggle.key}
-								pressed={ctx[toggle.key]}
-								onChange={(value) => set(toggle.key, value)}
-							>
-								{toggle.label}
-							</Toggle>
 						))}
-						<div className="flex items-center gap-2">
-							<span className="font-semibold">SUSTAINED HITS</span>
-							<Segmented
-								label="Sustained Hits for all weapons"
-								value={ctx.allSustainedHits ?? 0}
-								options={SUSTAINED_OPTIONS}
-								onChange={(value) => set("allSustainedHits", value)}
-							/>
-						</div>
 					</div>
-				</div>
 
-				<div className="flex flex-col gap-2">
-					<span className="section-label">Modifiers & re-rolls</span>
-					<div className="grid grid-cols-2 gap-x-6 gap-y-4 md:grid-cols-3 lg:grid-cols-6">
-						{MODIFIERS.map((modifier) => (
-							<label key={modifier.key} className="flex flex-col gap-1">
-								<span className="font-semibold">{modifier.label}</span>
-								<input
-									type="number"
-									step="1"
-									min={modifier.min}
-									max={modifier.max}
-									value={clamp(ctx[modifier.key] ?? 0, modifier)}
-									onChange={(e) =>
-										set(
-											modifier.key,
-											clamp(Number(e.target.value) || 0, modifier),
-										)
-									}
-									className="w-20"
-								/>
-							</label>
-						))}
-						{REROLLS.map((reroll) => (
-							<div key={reroll.key} className="flex flex-col gap-1">
-								<span className="font-semibold">{reroll.label}</span>
-								<Segmented
-									label={reroll.label}
-									value={ctx[reroll.key]}
-									options={REROLL_OPTIONS}
-									onChange={(value) => set(reroll.key, value)}
-								/>
+					<div className={COLUMNS}>
+						{APPLY_STEPS.map((step) => (
+							<div
+								key={step.title}
+								// One label width everywhere, so every control starts on the same line.
+								className="grid grid-cols-[9.5rem_minmax(0,1fr)] content-start items-center gap-x-3 gap-y-2.5 rounded-lg border border-line bg-surface-muted p-3"
+							>
+								<span className="col-span-2 border-b border-line pb-2 text-xs font-semibold uppercase tracking-wide text-muted">
+									{step.title}
+								</span>
+								{step.fields.map((field) => (
+									<Fragment key={field.key}>
+										<label
+											htmlFor={`apply-${field.key}`}
+											className="truncate font-semibold"
+										>
+											{field.label}
+										</label>
+										<ApplyField
+											id={`apply-${field.key}`}
+											field={field}
+											value={ctx[field.key]}
+											onChange={(value) => set(field.key, value)}
+										/>
+									</Fragment>
+								))}
 							</div>
 						))}
 					</div>
 				</div>
-			</div>
+			)}
 		</div>
 	);
 }

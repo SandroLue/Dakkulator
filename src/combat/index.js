@@ -1,6 +1,7 @@
 import {
 	applyUserModifiers,
 	grantAbilities,
+	normalizeModifier,
 	selectModifiers,
 } from "./modifiers";
 import {
@@ -17,8 +18,10 @@ import {
 	scaleStreams,
 } from "./resolve";
 import { simulate } from "./simulate";
+import { sustainedHitsValue } from "./weaponKeywords";
 
 export { defaultContext } from "./resolve";
+export { sustainedHitsValue } from "./weaponKeywords";
 export {
 	buildAttackerProfiles,
 	buildDefenderProfiles,
@@ -254,11 +257,13 @@ function preparePhase(attacker, defender, ctx, options, defenderState) {
 		),
 		groups: buildDefenderProfiles(defender),
 		...selected,
+		defending: [...selected.defending, ...defendedByAll(ctx)],
 	});
 	return {
 		ctx: modified.ctx,
 		groups: modified.groups,
-		applied: modified.applied,
+		// "Apply to all" is shown in its own panel, not as one of the abilities.
+		applied: modified.applied.filter((name) => name !== APPLY_TO_ALL),
 		profiles: pickBestProfiles(
 			modified.profiles,
 			modified.groups,
@@ -270,12 +275,29 @@ function preparePhase(attacker, defender, ctx, options, defenderState) {
 
 /** The "apply to all" context options as weapon-ability strings. */
 function appliedToAll(ctx) {
-	const sustained = Math.max(0, Math.min(3, Math.trunc(ctx.allSustainedHits)));
+	const sustained = sustainedHitsValue(ctx.allSustainedHits);
 	return [
 		ctx.allLethalHits && "[LETHAL HITS]",
 		ctx.allDevastatingWounds && "[DEVASTATING WOUNDS]",
-		sustained > 0 && `[SUSTAINED HITS ${sustained}]`,
+		sustained && `[SUSTAINED HITS ${sustained}]`,
 	].filter(Boolean);
+}
+
+const APPLY_TO_ALL = "Apply to all";
+
+/** The "apply to all" defences as a defensive ability every defender has. */
+function defendedByAll(ctx) {
+	if (!ctx.allFnp && !ctx.allInvuln) return [];
+	return [
+		normalizeModifier({
+			id: "apply-to-all",
+			name: APPLY_TO_ALL,
+			role: "defending",
+			list: "any",
+			fnp: ctx.allFnp,
+			invuln: ctx.allInvuln,
+		}),
+	];
 }
 
 /** Wounds one profile removes from the whole unit when it attacks alone. */

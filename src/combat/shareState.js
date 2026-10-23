@@ -1,5 +1,6 @@
 import { REROLL_MODES, normalizeModifier } from "./modifiers";
 import { defaultContext } from "./resolve";
+import { sustainedHitsValue } from "./weaponKeywords";
 
 /**
  * Shareable calculator state in the URL hash (`#share=<base64url JSON>`).
@@ -98,6 +99,11 @@ export function validContext(value) {
 	const ctx = {};
 	if (!value || typeof value !== "object") return defaults;
 	for (const [key, raw] of Object.entries(value)) {
+		// Sustained Hits may be dice ("D3") as well as a number.
+		if (key === "allSustainedHits") {
+			if (sustainedHitsValue(raw)) ctx[key] = String(raw).trim();
+			continue;
+		}
 		if (!(key in defaults) || typeof raw !== typeof defaults[key]) continue;
 		if (typeof raw === "number") {
 			if (Number.isFinite(raw)) ctx[key] = Math.max(-6, Math.min(6, raw));

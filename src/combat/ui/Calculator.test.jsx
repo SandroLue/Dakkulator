@@ -111,6 +111,11 @@ describe("Calculator", () => {
 
 	it("generates the lists' modifiers and opens the editor", async () => {
 		await render();
+		// The Abilities panel starts collapsed.
+		expect(container.querySelector('button[aria-label^="Edit "]')).toBeNull();
+		await click(
+			container.querySelector('button[aria-controls="abilities-panel"]'),
+		);
 		const edit = container.querySelector('button[aria-label^="Edit "]');
 		expect(edit).not.toBeNull();
 		await click(edit);

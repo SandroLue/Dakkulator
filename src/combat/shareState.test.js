@@ -6,6 +6,7 @@ import {
 	encodeShareState,
 	hasShareHash,
 	mergeSharedModifiers,
+	validContext,
 } from "./shareState";
 
 const state = {
@@ -111,5 +112,19 @@ describe("mergeSharedModifiers", () => {
 		expect(result.modifiers[0].id).toBe(mine[0].id);
 		expect(result.added).toBe(1);
 		expect(result.disabled).toBe(1);
+	});
+});
+
+describe("validContext", () => {
+	it("keeps dice Sustained Hits and the 'apply to all' defences", () => {
+		const ctx = validContext({
+			allSustainedHits: "D3",
+			allFnp: 5,
+			allInvuln: 4,
+		});
+		expect(ctx.allSustainedHits).toBe("D3");
+		expect(ctx.allFnp).toBe(5);
+		expect(ctx.allInvuln).toBe(4);
+		expect(validContext({ allSustainedHits: "lots" }).allSustainedHits).toBe(0);
 	});
 });

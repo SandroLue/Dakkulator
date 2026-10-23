@@ -238,3 +238,19 @@ export function abilityApplies(flags, key, targetKeywords) {
 	if (!targetKeywords) return false;
 	return required.some((keyword) => targetKeywords.has(keyword));
 }
+
+/**
+ * "Apply to all" Sustained Hits as the X of [SUSTAINED HITS X]: a whole number
+ * or dice ("D3", "2D6"); null when off or not something the keyword can take.
+ */
+export function sustainedHitsValue(raw) {
+	const text = String(raw ?? "")
+		.trim()
+		.toUpperCase();
+	if (!/^(\d+D\d+|D\d+|\d+)$/.test(text)) return null;
+	return /^\d+$/.test(text)
+		? Number(text) > 0
+			? String(Number(text))
+			: null
+		: text;
+}

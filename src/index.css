@@ -102,6 +102,23 @@
 		white-space: nowrap;
 		text-overflow: ellipsis;
 	}
+	/* One drawn chevron for every select (and the combo fields dressed as one),
+	   set in from the edge, instead of each browser's own arrow. */
+	select,
+	.combo-input {
+		appearance: none;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a3a68e' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+		background-repeat: no-repeat;
+		background-position: right 10px center;
+		background-size: 14px;
+		padding-right: 32px;
+	}
+	/* Centred values: the same room on the left keeps them in the middle. */
+	.control-centered {
+		padding-left: 32px;
+		text-align: center;
+		text-align-last: center;
+	}
 	input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):hover,
 	select:hover,
 	textarea:hover {
@@ -117,6 +134,46 @@
 	textarea:focus-visible {
 		outline: 2px solid var(--primary-color);
 		outline-offset: 1px;
+	}
+	/* A text field with suggestions, made to look like the selects beside it:
+	   the browser's own list arrow hidden, and the
+	   "0" placeholder in the normal text colour, as a select would show it. */
+	.combo-input {
+		cursor: pointer;
+	}
+	/* The suggestions, like a select's open list: just under the field, as wide. */
+	.combo-list {
+		position: absolute;
+		top: calc(100% + 2px);
+		left: 0;
+		right: 0;
+		z-index: 30;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		background-color: var(--color-surface-muted);
+		border: 1px solid var(--color-border-strong);
+		border-radius: 6px;
+		overflow: hidden;
+		box-shadow: 0 8px 20px -8px #000c;
+	}
+	.combo-list > [role="option"] {
+		padding: 4px 9px;
+		text-align: center;
+		cursor: pointer;
+	}
+	.combo-list > [aria-selected="true"] {
+		font-weight: 700;
+	}
+	.combo-list > [data-active] {
+		background-color: var(--color-surface-raised);
+		color: var(--primary-color);
+	}
+	.combo-input::placeholder {
+		color: var(--color-text);
+	}
+	.combo-input:focus {
+		cursor: text;
 	}
 	select:disabled,
 	input:disabled {
@@ -485,6 +542,20 @@
 	.segmented > button[aria-pressed="true"] .hint {
 		color: inherit;
 		opacity: 0.75;
+	}
+	/* Fills its cell, options sharing the width equally. A fieldset does not
+	   stretch its children to a set height, so the buttons carry it: 2.25rem
+	   overall, like the inputs, less the 3px padding and 1px border each side. */
+	.segmented.segmented-fill {
+		display: flex;
+		width: 100%;
+	}
+	.segmented-fill > button {
+		flex: 1;
+		justify-content: center;
+		align-items: center;
+		height: calc(2.25rem - 8px);
+		padding-block: 0;
 	}
 	/* Phase switch heading the results: everything below it belongs to the chosen phase. */
 	.phase-tabs {

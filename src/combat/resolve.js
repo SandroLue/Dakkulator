@@ -35,6 +35,10 @@ export function defaultContext(overrides = {}) {
 		allLethalHits: false,
 		allDevastatingWounds: false,
 		allSustainedHits: 0,
+		// "Apply to all" for every defender: Feel No Pain and invulnerable save,
+		// as N for N+; 0 is none. The best of these and the unit's own is used.
+		allFnp: 0,
+		allInvuln: 0,
 		attackerDamaged: false,
 		...overrides,
 	};

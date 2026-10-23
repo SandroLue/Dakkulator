@@ -10,7 +10,14 @@ import {
 	normalizeModifier,
 	parseKeywords,
 } from "../modifiers";
-import { REROLL_OPTIONS, Segmented, Toggle } from "./controls";
+import {
+	PanelToggle,
+	REROLL_OPTIONS,
+	Segmented,
+	Toggle,
+	collapsibleHeader,
+	usePanelOpen,
+} from "./controls";
 
 const STEPS = [-3, -2, -1, 0, 1, 2, 3];
 // Hit and wound rolls can never be modified by more than 1 either way.
@@ -53,7 +60,7 @@ function Field({ label, hint, group = false, children }) {
 	// Segmented buttons must not sit in a <label>: clicking the text would press the first one.
 	const Tag = group ? "div" : "label";
 	return (
-		<Tag className="flex min-w-0 flex-col gap-1">
+		<Tag className="flex min-w-0 flex-col gap-1.5">
 			<span className="font-semibold">
 				{label} {hint && <span className="hint">{hint}</span>}
 			</span>
@@ -195,7 +202,7 @@ function ModifierEditor({
 	);
 
 	return (
-		<div className="flex flex-col gap-4 rounded-lg border border-line-strong bg-surface-muted p-4">
+		<div className="flex flex-col gap-6 rounded-lg border border-line-strong bg-surface-muted p-5">
 			{abilityText && (
 				<div className="whitespace-pre-line rounded-md border-l-4 border-accent bg-surface px-3 py-2 text-sm">
 					<div className="section-label pb-1">{modifier.name}</div>
@@ -211,7 +218,7 @@ function ModifierEditor({
 				</div>
 			)}
 			<div className="hint">{describeModifier(modifier)}</div>
-			<div className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
+			<div className="grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
 				<Field label="Ability">
 					<input
 						type="text"
@@ -346,15 +353,14 @@ function ModifierEditor({
 				</Field>
 			</div>
 
-			<div className="flex flex-col gap-3 border-t border-line pt-4">
+			<div className="flex flex-col gap-4 border-t border-line pt-5">
 				<span className="section-label">Effects</span>
 				<div className="hint">
-					From the attacker's point of view: on a defensive modifier, −1 Hit
-					roll makes the unit harder to hit and −1 AP worsens incoming AP.
-					Toughness, Save and Wounds change the attacked models: +1 Save is a
-					better save.
+					From the attacker's point of view: on a defensive ability, −1 Hit roll
+					makes the unit harder to hit and −1 AP worsens incoming AP. Toughness,
+					Save and Wounds change the attacked models: +1 Save is a better save.
 				</div>
-				<div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4 lg:grid-cols-7">
+				<div className="grid grid-cols-2 gap-x-8 gap-y-5 sm:grid-cols-4 lg:grid-cols-7">
 					{NUMERIC_EFFECTS[modifier.role].map((key) => (
 						<Field key={key} label={EFFECT_LABELS[key]}>
 							<select
@@ -386,7 +392,7 @@ function ModifierEditor({
 					))}
 				</div>
 				{attacking ? (
-					<div className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
+					<div className="grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
 						{[
 							["rerollHits", "Re-roll hits"],
 							["rerollWounds", "Re-roll wounds"],
@@ -433,7 +439,7 @@ function ModifierEditor({
 						</div>
 					</div>
 				) : (
-					<div className="grid grid-cols-2 items-end gap-x-6 gap-y-4 sm:grid-cols-4 lg:grid-cols-7">
+					<div className="grid grid-cols-2 items-end gap-x-8 gap-y-5 sm:grid-cols-4 lg:grid-cols-7">
 						{thresholdField("fnp", "FNP", THRESHOLDS)}
 						{thresholdField("invuln", "Invulnerable", THRESHOLDS)}
 						{thresholdField("mortalFnp", "FNP vs mortal wounds", THRESHOLDS)}
@@ -456,7 +462,7 @@ function ModifierEditor({
 					</div>
 				)}
 			</div>
-			<div className="flex flex-wrap gap-2 border-t border-line pt-4">
+			<div className="flex flex-wrap gap-2.5 border-t border-line pt-5">
 				<button type="button" className="button-primary" onClick={onDone}>
 					Done
 				</button>
@@ -491,6 +497,7 @@ export function ModifierBuilder({
 	// The modifiers read from the lists' abilities, which Reset goes back to.
 	defaults = () => [],
 }) {
+	const [open, setOpen] = usePanelOpen("abilities");
 	const [editingId, setEditingId] = useState(null);
 	// Resetting replaces the user's own work, so it asks first.
 	const [confirmReset, setConfirmReset] = useState(false);
@@ -573,8 +580,10 @@ export function ModifierBuilder({
 
 	return (
 		<section className="panel text-sm">
-			<div className="panel-header">
-				<span className="panel-title">Modifiers</span>
+			<div {...collapsibleHeader(open, setOpen)}>
+				<PanelToggle open={open} onToggle={setOpen} controls="abilities-panel">
+					Abilities
+				</PanelToggle>
 				<span className="badge">
 					{active}/{visible.length} active
 				</span>
@@ -583,7 +592,7 @@ export function ModifierBuilder({
 					className="button-primary button-small ml-auto"
 					onClick={() => add()}
 				>
-					+ Add modifier
+					+ Add ability
 				</button>
 				{confirmReset ? (
 					<span className="inline-flex items-center gap-1">
@@ -613,108 +622,110 @@ export function ModifierBuilder({
 					<button
 						type="button"
 						className="button-small"
-						title="Go back to the modifiers read from the lists' abilities"
+						title="Go back to the abilities read from the lists"
 						onClick={() => setConfirmReset(true)}
 					>
 						Reset
 					</button>
 				)}
 			</div>
-			<div className="flex flex-col gap-4 p-4">
-				{groups.map((group) => (
-					// Modifiers first, then the abilities not built yet (dashed, with +).
-					<div key={group.role} className="flex flex-col gap-2">
-						<span className="section-label">{group.title}</span>
-						{/* Equal-width cards: the name, and below it the unit it applies to. */}
-						{group.modifiers.length > 0 && (
-							<div className="grid grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-2">
-								{group.modifiers.map((m) => {
-									const label = modifierLabel(m);
-									const isEditing = editingId === m.id;
-									return (
-										<span key={m.id} className="flex min-w-0">
-											<Toggle
-												pressed={m.enabled}
-												onChange={(enabled) => replace({ ...m, enabled })}
-												title={`${scopeLabel(m)} — ${describeModifier(m)}`}
-												className="min-w-0 flex-1 justify-start rounded-r-none text-left"
-											>
-												<span className="flex min-w-0 flex-col leading-tight">
-													{/* "Martial Ka'tah – Dacatarai Stance": the option tells them apart. */}
-													<span className="truncate">
-														{label.includes(" – ")
-															? label.split(" – ")[1]
-															: label}
-													</span>
-													<span className="hint truncate">
-														{label.includes(" – ") &&
-															`${label.split(" – ")[0]} · `}
-														{unitScope(m)}
-													</span>
-												</span>
-											</Toggle>
-											<button
-												type="button"
-												aria-label={`Edit ${label}`}
-												aria-expanded={isEditing}
-												title="Edit"
-												onClick={() => setEditingId(isEditing ? null : m.id)}
-												className={`rounded-l-none rounded-r-full border-l-0 px-2.5 ${
-													isEditing
-														? "border-accent bg-accent-soft text-accent"
-														: ""
-												}`}
-											>
-												<svg
-													viewBox="0 0 24 24"
-													aria-hidden="true"
-													className="h-3.5 w-3.5"
-													fill="none"
-													stroke="currentColor"
-													strokeWidth="2.2"
-													strokeLinecap="round"
-													strokeLinejoin="round"
+			{open && (
+				<div id="abilities-panel" className="flex flex-col gap-8 p-5">
+					{groups.map((group) => (
+						// Modifiers first, then the abilities not built yet (dashed, with +).
+						<div key={group.role} className="flex flex-col gap-3">
+							<span className="section-label">{group.title}</span>
+							{/* Equal-width cards: the name, and below it the unit it applies to. */}
+							{group.modifiers.length > 0 && (
+								<div className="grid grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-2.5">
+									{group.modifiers.map((m) => {
+										const label = modifierLabel(m);
+										const isEditing = editingId === m.id;
+										return (
+											<span key={m.id} className="flex min-w-0">
+												<Toggle
+													pressed={m.enabled}
+													onChange={(enabled) => replace({ ...m, enabled })}
+													title={`${scopeLabel(m)} — ${describeModifier(m)}`}
+													className="min-w-0 flex-1 justify-start rounded-r-none text-left"
 												>
-													<path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" />
-												</svg>
-											</button>
-										</span>
-									);
-								})}
+													<span className="flex min-w-0 flex-col leading-tight">
+														{/* "Martial Ka'tah – Dacatarai Stance": the option tells them apart. */}
+														<span className="truncate">
+															{label.includes(" – ")
+																? label.split(" – ")[1]
+																: label}
+														</span>
+														<span className="hint truncate">
+															{label.includes(" – ") &&
+																`${label.split(" – ")[0]} · `}
+															{unitScope(m)}
+														</span>
+													</span>
+												</Toggle>
+												<button
+													type="button"
+													aria-label={`Edit ${label}`}
+													aria-expanded={isEditing}
+													title="Edit"
+													onClick={() => setEditingId(isEditing ? null : m.id)}
+													className={`rounded-l-none rounded-r-full border-l-0 px-2.5 ${
+														isEditing
+															? "border-accent bg-accent-soft text-accent"
+															: ""
+													}`}
+												>
+													<svg
+														viewBox="0 0 24 24"
+														aria-hidden="true"
+														className="h-3.5 w-3.5"
+														fill="none"
+														stroke="currentColor"
+														strokeWidth="2.2"
+														strokeLinecap="round"
+														strokeLinejoin="round"
+													>
+														<path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" />
+													</svg>
+												</button>
+											</span>
+										);
+									})}
+								</div>
+							)}
+							<div className="flex flex-wrap items-center gap-2.5">
+								{group.names.map((name) => (
+									<button
+										type="button"
+										key={name}
+										className="button-small button-ghost rounded-full border-dashed border-line-strong"
+										title={`Add ${name} (${group.label.toLowerCase()})`}
+										onClick={() =>
+											add({ name, list: group.list, role: group.role })
+										}
+									>
+										+ {name}
+									</button>
+								))}
 							</div>
-						)}
-						<div className="flex flex-wrap items-center gap-2">
-							{group.names.map((name) => (
-								<button
-									type="button"
-									key={name}
-									className="button-small button-ghost rounded-full border-dashed border-line-strong"
-									title={`Add a modifier for ${name} (${group.label.toLowerCase()})`}
-									onClick={() =>
-										add({ name, list: group.list, role: group.role })
-									}
-								>
-									+ {name}
-								</button>
-							))}
 						</div>
-					</div>
-				))}
-				{editing && (
-					<ModifierEditor
-						modifier={editing}
-						onChange={replace}
-						onDone={() => setEditingId(null)}
-						onDuplicate={() => add(editing)}
-						onDelete={() => remove(editing.id)}
-						unitNames={unitNames}
-						listNames={listNames}
-						attackerList={attackerList}
-						keywords={keywords}
-						abilityText={abilityTexts.get(editing.name.trim().toLowerCase())}
-					/>
-				)}
-			</div>
+					))}
+					{editing && (
+						<ModifierEditor
+							modifier={editing}
+							onChange={replace}
+							onDone={() => setEditingId(null)}
+							onDuplicate={() => add(editing)}
+							onDelete={() => remove(editing.id)}
+							unitNames={unitNames}
+							listNames={listNames}
+							attackerList={attackerList}
+							keywords={keywords}
+							abilityText={abilityTexts.get(editing.name.trim().toLowerCase())}
+						/>
+					)}
+				</div>
+			)}
 		</section>
 	);
 }

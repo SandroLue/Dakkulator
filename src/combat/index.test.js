@@ -6,7 +6,12 @@ import {
 	mixedSquad,
 	vehicleTarget,
 } from "./__fixtures__/units";
-import { calculateMatchup, resolveUnitVsUnit, simulatePairing } from "./index";
+import {
+	calculateMatchup,
+	resolveUnitVsUnit,
+	simulatePairing,
+	sustainedHitsValue,
+} from "./index";
 import { createModifier } from "./modifiers";
 
 describe("resolveUnitVsUnit", () => {
@@ -48,6 +53,41 @@ describe("resolveUnitVsUnit", () => {
 			allDevastatingWounds: true,
 		});
 		expect(devastating.totals.mortalWounds).toBeCloseTo(13.3333 / 6, 3);
+	});
+
+	it("reads 'apply to all' Sustained Hits as a number or dice", () => {
+		expect(sustainedHitsValue(0)).toBe(null);
+		expect(sustainedHitsValue("")).toBe(null);
+		expect(sustainedHitsValue("0")).toBe(null);
+		expect(sustainedHitsValue(2)).toBe("2");
+		expect(sustainedHitsValue(" d3 ")).toBe("D3");
+		expect(sustainedHitsValue("2D6")).toBe("2D6");
+		expect(sustainedHitsValue("D")).toBe(null);
+
+		const d3 = resolveUnitVsUnit(boltgunSquad, marineTarget, {
+			allSustainedHits: "D3",
+		});
+		const two = resolveUnitVsUnit(boltgunSquad, marineTarget, {
+			allSustainedHits: 2,
+		});
+		// D3 averages 2 extra hits per critical hit.
+		expect(d3.totals.hits).toBeCloseTo(two.totals.hits, 6);
+	});
+
+	it("gives every defender the 'apply to all' Feel No Pain and invulnerable save", () => {
+		const plain = resolveUnitVsUnit(boltgunSquad, marineTarget, {});
+		const fnp = resolveUnitVsUnit(boltgunSquad, marineTarget, { allFnp: 5 });
+		// A 5+ Feel No Pain stops a third of the damage.
+		expect(fnp.totals.woundsLost).toBeCloseTo(
+			(plain.totals.woundsLost * 2) / 3,
+			6,
+		);
+		expect(fnp.appliedModifiers ?? []).not.toContain("Apply to all");
+
+		const invuln = resolveUnitVsUnit(boltgunSquad, marineTarget, {
+			allInvuln: 2,
+		});
+		expect(invuln.totals.woundsLost).toBeLessThan(plain.totals.woundsLost);
 	});
 
 	it("opting out of [LETHAL HITS] overrides 'apply to all'", () => {

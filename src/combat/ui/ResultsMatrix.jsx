@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { getUnitTotalModels } from "../profiles";
 import { MetricSelect } from "./MetricSelect";
 import {
@@ -65,8 +65,62 @@ function shareColors(share) {
 // Column widths come from CSS (`--matrix-name`, `--matrix-cell`), narrower on phones.
 const NAME_COLUMN = "var(--matrix-name)";
 const CELL = "var(--matrix-cell)";
+// The name column grows with the table up to this much of its base width;
+// everything beyond goes to the result columns.
+const NAME_STRETCH = 1.3;
+const NAME_WIDTH = `clamp(${NAME_COLUMN}, 20%, calc(${NAME_STRETCH} * ${NAME_COLUMN}))`;
+
+/**
+ * Always the panel's full width; the result columns, left without a width,
+ * share what the name column leaves equally. Never narrower than the widest
+ * name column plus base-width cells: past that the panel scrolls sideways.
+ */
+const tableWidth = (cellCount) =>
+	`max(calc(${NAME_STRETCH} * ${NAME_COLUMN} + ${cellCount} * ${CELL}), 100%)`;
+
+// Text and row height grow with the cells, up to this much.
+const MAX_SCALE = 1.5;
+const BASE_ROW_REM = 2.75;
+
+/**
+ * How much wider the result cells are than their base width (`--matrix-cell`),
+ * between 1 and `MAX_SCALE`, kept up to date as the panel resizes. Fonts and
+ * row heights follow it, so a stretched matrix looks scaled, not stretched.
+ */
+function useCellScale(columnCount) {
+	const ref = useRef(null);
+	const [scale, setScale] = useState(1);
+	// biome-ignore lint/correctness/useExhaustiveDependencies: re-measure when the columns change
+	useLayoutEffect(() => {
+		const box = ref.current;
+		if (!box || typeof ResizeObserver === "undefined") return;
+		const measure = () => {
+			const table = box.querySelector("table");
+			const cell = table?.querySelector("thead th:nth-child(2)");
+			if (!cell) return;
+			const rootPx = Number.parseFloat(
+				getComputedStyle(document.documentElement).fontSize,
+			);
+			const baseRem = Number.parseFloat(
+				getComputedStyle(table).getPropertyValue("--matrix-cell"),
+			);
+			if (!(rootPx > 0 && baseRem > 0)) return;
+			const ratio = cell.offsetWidth / (baseRem * rootPx);
+			setScale(Math.min(MAX_SCALE, Math.max(1, ratio)));
+		};
+		measure();
+		const observer = new ResizeObserver(measure);
+		observer.observe(box);
+		return () => observer.disconnect();
+	}, [columnCount]);
+	return [ref, scale];
+}
+
+// A column so name and points stack, filling the cell however tall the row is.
+// `items-stretch` and `gap-0` undo the global button style, which centres and
+// spaces its content: centred lines would neither sit left nor truncate.
 const HEADER_BUTTON =
-	"block w-full cursor-pointer rounded-none border-0 bg-transparent px-3 py-2 text-left font-normal hover:bg-[#ffffff14] focus-visible:-outline-offset-2";
+	"flex h-full w-full min-w-0 cursor-pointer flex-col items-stretch justify-center gap-0 rounded-none border-0 bg-transparent px-3 py-2 text-left font-normal hover:bg-[#ffffff14] focus-visible:-outline-offset-2";
 
 /** Each weapon once, however many models carry it, in the tooltip's shape. */
 function unitWeapons(unit, key) {
@@ -165,7 +219,7 @@ function SortableHeader({ unit, active, onClick, arrow, placement, onTip }) {
 				{active && `${arrow} `}
 				{unit.name}
 			</div>
-			<div className="hint">{unit.cost?.points ?? 0} pts</div>
+			<div className="hint truncate">{unit.cost?.points ?? 0} pts</div>
 		</button>
 	);
 }
@@ -183,6 +237,7 @@ export function ResultsMatrix({
 	// null | { by: attacker row index, desc }
 	const [colSort, setColSort] = useState(null);
 	const grid = useMemo(() => buildGrid(matchup, metric), [matchup, metric]);
+	const [scrollRef, scale] = useCellScale(matchup.defenderUnits.length);
 
 	const toggleSort = (by) => (current) =>
 		current?.by === by ? { by, desc: !current.desc } : { by, desc: true };
@@ -236,18 +291,20 @@ export function ResultsMatrix({
 			</div>
 			{/* Padding outside the scroll box: inside it, cells would scroll past the sticky names. */}
 			<div className="p-4">
-				<div className="overflow-x-auto">
+				<div ref={scrollRef} className="overflow-x-auto">
 					<table
 						// Separate borders move with the sticky cells; collapsed ones stay behind and leave gaps.
-						className="table-fixed border-separate border-spacing-0 text-sm"
+						className="table-fixed border-separate border-spacing-0"
 						style={{
-							width: `calc(${NAME_COLUMN} + ${matchup.defenderUnits.length} * ${CELL})`,
+							width: tableWidth(matchup.defenderUnits.length),
+							// text-sm, scaled with the cells; the sizes inside are in em.
+							fontSize: `${0.875 * scale}rem`,
 						}}
 					>
 						<colgroup>
-							<col style={{ width: NAME_COLUMN }} />
+							<col style={{ width: NAME_WIDTH }} />
 							{columns.map(({ unit, index }) => (
-								<col key={`${unit.name}-${index}`} style={{ width: CELL }} />
+								<col key={`${unit.name}-${index}`} />
 							))}
 						</colgroup>
 						<thead>
@@ -273,9 +330,12 @@ export function ResultsMatrix({
 						</thead>
 						<tbody>
 							{rows.map(({ row, index: rowIndex }) => (
-								<tr key={`${row.attacker.name}-${rowIndex}`}>
+								<tr
+									key={`${row.attacker.name}-${rowIndex}`}
+									style={{ height: `${BASE_ROW_REM * scale}rem` }}
+								>
 									{/* Sticky, so attacker names stay visible while scrolling sideways. */}
-									<th className="sticky left-0 z-10 border-x border-b border-line bg-surface-muted p-0 text-left">
+									<th className="sticky left-0 z-10 h-px border-x border-b border-line bg-surface-muted p-0 text-left">
 										<SortableHeader
 											unit={row.attacker}
 											active={colSort?.by === rowIndex}
@@ -324,7 +384,7 @@ export function ResultsMatrix({
 													className="block h-full w-full cursor-pointer rounded-none border-0 bg-transparent px-3 py-2.5 text-center font-normal text-inherit focus-visible:-outline-offset-2"
 												>
 													<b
-														className={`text-base ${value.unarmed ? "font-normal text-muted" : ""}`}
+														className={`text-[1.143em] ${value.unarmed ? "font-normal text-muted" : ""}`}
 													>
 														{shown}
 													</b>
