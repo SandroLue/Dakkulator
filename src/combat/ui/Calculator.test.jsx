@@ -80,7 +80,8 @@ const click = (element) =>
 		element.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 	});
 
-const matrixCells = () => [...container.querySelectorAll("td button")];
+// Matrix cells carry a title; the breakdown below also has buttons in its cells.
+const matrixCells = () => [...container.querySelectorAll("td[title] > button")];
 
 describe("Calculator", () => {
 	it("shows the matrix, a matchup's breakdown and every view", async () => {

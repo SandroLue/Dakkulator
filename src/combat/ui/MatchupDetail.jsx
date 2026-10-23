@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import { abilityLabels } from "../weaponKeywords";
 import { phaseLabel } from "./ContextControls";
+import { FloatingTip, WeaponTable, tipPosition, useTip } from "./StatTip";
 import {
 	AXIS,
 	BAR_ANIMATION,
@@ -64,6 +65,49 @@ function WeaponAbilities({ weapon }) {
 				</span>
 			))}
 		</div>
+	);
+}
+
+const weaponName = (w) => String(w.weaponName ?? "").replace(/^[➤▸▶>*\s]+/, "");
+
+/** The weapon's cell, with its datasheet profile on hover anywhere in it. */
+function WeaponCell({ weapon, children }) {
+	const [tip, setTip] = useTip();
+	const line = weapon.statline;
+	const show = (event) =>
+		setTip({
+			position: tipPosition(
+				event.currentTarget.getBoundingClientRect(),
+				"below",
+			),
+		});
+	return (
+		<td
+			className={`border border-line px-3 py-2 ${line ? "cursor-help" : ""}`}
+			onMouseEnter={line ? show : undefined}
+			onMouseLeave={() => setTip(null)}
+		>
+			{children}
+			{line && (
+				<FloatingTip tip={tip}>
+					<WeaponTable
+						isMelee={weapon.isMelee}
+						weapons={[
+							{
+								name: weaponName(weapon) || weapon.selectionName,
+								range: line.range,
+								attacks: line.attacks,
+								skill: line.skill ? `${line.skill}+` : null,
+								str: line.strength,
+								ap: line.ap ? `-${line.ap}` : 0,
+								damage: line.damage,
+								keywords: line.keywords,
+							},
+						]}
+					/>
+				</FloatingTip>
+			)}
+		</td>
 	);
 }
 
@@ -169,11 +213,17 @@ function WeaponRow({ weapon, groups, multiGroup, muted = false }) {
 		<tr
 			className={`hover:bg-surface-muted ${muted ? "text-muted italic" : ""}`}
 		>
-			{COLUMNS.map(([label, accessor]) => (
-				<td key={label} className="border border-line px-3 py-2">
-					{accessor(weapon)}
-				</td>
-			))}
+			{COLUMNS.map(([label, accessor], index) =>
+				index === 0 ? (
+					<WeaponCell key={label} weapon={weapon}>
+						{accessor(weapon)}
+					</WeaponCell>
+				) : (
+					<td key={label} className="border border-line px-3 py-2">
+						{accessor(weapon)}
+					</td>
+				),
+			)}
 			{multiGroup && (
 				<td className="border border-line px-3 py-2 text-xs text-muted">
 					{describeGroup(groups[weapon.groupIndex ?? 0])}
@@ -182,8 +232,6 @@ function WeaponRow({ weapon, groups, multiGroup, muted = false }) {
 		</tr>
 	);
 }
-
-const weaponName = (w) => String(w.weaponName ?? "").replace(/^[➤▸▶>*\s]+/, "");
 
 /** The round-one distribution, overkill included, with a bar for every total. */
 export function woundsChartData(simulation, unitWounds) {

@@ -587,6 +587,16 @@ export function computeAttackStreams(weapon, target, context = {}) {
 		// Tells the phases apart when shooting and fighting are resolved together.
 		isMelee: Boolean(profile.isMelee),
 		groupName: group.name,
+		// The profile as printed, for the breakdown's hover card.
+		statline: {
+			range: profile.range,
+			attacks: profile.attacks,
+			skill: profile.skill,
+			strength: profile.strength,
+			ap: profile.ap,
+			damage: profile.damage,
+			keywords: profile.weaponKeywords,
+		},
 		abilities,
 		// The weapon's own abilities, before any were granted.
 		baseAbilities: profile.baseAbilities ?? abilities,
