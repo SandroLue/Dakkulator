@@ -239,18 +239,25 @@ export function abilityApplies(flags, key, targetKeywords) {
 	return required.some((keyword) => targetKeywords.has(keyword));
 }
 
+const MAX_SUSTAINED = 100;
+const MAX_SUSTAINED_DICE = 10;
+
 /**
  * "Apply to all" Sustained Hits as the X of [SUSTAINED HITS X]: a whole number
- * or dice ("D3", "2D6"); null when off or not something the keyword can take.
+ * up to 100, or up to ten D3 or D6 ("D3", "2D6"); null when off or out of range.
+ * The limits keep a typo from turning into an enormous calculation.
  */
 export function sustainedHitsValue(raw) {
 	const text = String(raw ?? "")
 		.trim()
 		.toUpperCase();
-	if (!/^(\d+D\d+|D\d+|\d+)$/.test(text)) return null;
-	return /^\d+$/.test(text)
-		? Number(text) > 0
-			? String(Number(text))
-			: null
-		: text;
+	if (/^\d+$/.test(text)) {
+		const n = Number(text);
+		return n > 0 && n <= MAX_SUSTAINED ? String(n) : null;
+	}
+	const dice = text.match(/^(\d*)D([36])$/);
+	if (!dice) return null;
+	const count = dice[1] === "" ? 1 : Number(dice[1]);
+	if (count < 1 || count > MAX_SUSTAINED_DICE) return null;
+	return `${count === 1 ? "" : count}D${dice[2]}`;
 }

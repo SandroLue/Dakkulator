@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { abilityModifiers, mergeAbilityModifiers } from "../abilityModifiers";
 import { isCombatAbility } from "../abilityRules";
-import { calculateMatchup } from "../index";
+import { calculateMatchup, resolveUnitVsUnit } from "../index";
 import { unitAbilityEntries } from "../profiles";
 import { applyAttachments, listUnits } from "../unitList";
 import { ContextControls, PhaseTabs } from "./ContextControls";
@@ -261,7 +261,21 @@ export function Calculator({
 	const shownCell = matchup?.rows[selectedCell?.row]?.cells[selectedCell?.col]
 		? selectedCell
 		: { row: firstArmedRow, col: 0 };
-	const pairing = matchup?.rows[shownCell.row]?.cells[shownCell.col] ?? null;
+	const shownRow = shownCell.row;
+	const shownCol = shownCell.col;
+	// The opened matchup once more, with every attack counted in full (overkill
+	// included) for its breakdown; the matrix keeps the real, capped result.
+	const pairing = useMemo(() => {
+		const attacker = matchup?.rows[shownRow]?.attacker;
+		const defender = matchup?.defenderUnits[shownCol];
+		if (!attacker || !defender) return null;
+		return resolveUnitVsUnit(attacker, defender, ctx, {
+			modifiers,
+			attackerList: "A",
+			defenderList: "B",
+			potential: true,
+		});
+	}, [matchup, shownRow, shownCol, ctx, modifiers]);
 
 	return (
 		<div className="flex w-full flex-col gap-5">

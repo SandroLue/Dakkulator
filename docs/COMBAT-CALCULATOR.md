@@ -363,6 +363,13 @@ per model, Feel No Pain still rolled). `potentialHistogram` and
 the unit's total wounds it is exactly `histogram`. The chart shows it with a
 "destroyed" line; the capped values stay what the matrix uses.
 
+The breakdown does the same exactly: `resolveUnitVsUnit(…, { potential: true })`
+(only for the opened matchup) allocates once more against the unit with enough
+extra models of its last type that it outlasts the attack. Each weapon is then
+one row with all its attacks; hits, wounds, damage and wounds lost include the
+overkill (`totals.potentialWoundsLost`), while `woundsLost`, `modelsSlain` and
+`pDestroyed` in the totals stay the real, capped result.
+
 ### 3.5 Metrics
 
 | Metric             | Definition                                               |

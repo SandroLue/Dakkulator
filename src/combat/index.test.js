@@ -63,6 +63,12 @@ describe("resolveUnitVsUnit", () => {
 		expect(sustainedHitsValue(" d3 ")).toBe("D3");
 		expect(sustainedHitsValue("2D6")).toBe("2D6");
 		expect(sustainedHitsValue("D")).toBe(null);
+		expect(sustainedHitsValue("100")).toBe("100");
+		expect(sustainedHitsValue("101")).toBe(null);
+		expect(sustainedHitsValue("10D6")).toBe("10D6");
+		expect(sustainedHitsValue("11D6")).toBe(null);
+		expect(sustainedHitsValue("1D3")).toBe("D3");
+		expect(sustainedHitsValue("D20")).toBe(null);
 
 		const d3 = resolveUnitVsUnit(boltgunSquad, marineTarget, {
 			allSustainedHits: "D3",
@@ -363,5 +369,82 @@ describe("calculateMatchup", () => {
 		const a = calculateMatchup([boltgunSquad], [marineTarget]);
 		const b = calculateMatchup([boltgunSquad], [marineTarget]);
 		expect(a).toBe(b);
+	});
+});
+
+describe("the breakdown's potential: every attack, overkill included", () => {
+	// Ten boltguns (20 shots) into a 2-model W2 unit: dead long before the last shot.
+	const fragile = {
+		...marineTarget,
+		models: [{ ...marineTarget.models[0], count: 2 }],
+	};
+
+	it("shows each weapon once, with all its attacks", () => {
+		const real = resolveUnitVsUnit(boltgunSquad, fragile);
+		const full = resolveUnitVsUnit(
+			boltgunSquad,
+			fragile,
+			{},
+			{ potential: true },
+		);
+		expect(full.weapons).toHaveLength(1);
+		expect(full.weapons[0].attacks).toBeCloseTo(20, 9);
+		expect(full.weapons[0].declaredAttacks).toBeCloseTo(20, 9);
+		// BS3+: every attack rolls, so two thirds hit.
+		expect(full.weapons[0].hits).toBeCloseTo(20 * (4 / 6), 9);
+		expect(real.weapons[0].hits).toBeLessThan(full.weapons[0].hits);
+	});
+
+	it("keeps the real result in the totals and adds the overkill", () => {
+		const real = resolveUnitVsUnit(boltgunSquad, fragile);
+		const full = resolveUnitVsUnit(
+			boltgunSquad,
+			fragile,
+			{},
+			{ potential: true },
+		);
+		for (const key of ["woundsLost", "modelsSlain", "pDestroyed"]) {
+			expect(full.totals[key]).toBeCloseTo(real.totals[key], 12);
+		}
+		expect(full.totals.potentialWoundsLost).toBeGreaterThan(
+			real.totals.woundsLost,
+		);
+		expect(full.weapons.reduce((sum, w) => sum + w.woundsLost, 0)).toBeCloseTo(
+			full.totals.potentialWoundsLost,
+			9,
+		);
+	});
+
+	it("covers every group a weapon reaches in one row", () => {
+		const full = resolveUnitVsUnit(
+			boltgunSquad,
+			mixedSquad,
+			{},
+			{ potential: true },
+		);
+		const names = full.weapons.map((w) => w.weaponName);
+		expect(new Set(names).size).toBe(names.length);
+		expect(full.weapons[0].targetGroups.length).toBeGreaterThanOrEqual(1);
+		expect(full.weapons[0].attacks).toBeCloseTo(20, 9);
+	});
+
+	it("agrees with the Monte-Carlo's overkill", () => {
+		const full = resolveUnitVsUnit(
+			boltgunSquad,
+			fragile,
+			{},
+			{ potential: true },
+		);
+		const sim = simulatePairing(full, { trials: 20000, seed: 5, rounds: 1 });
+		let square = 0;
+		for (const { value, probability } of sim.potentialHistogram) {
+			square += value * value * probability;
+		}
+		const se = Math.sqrt(
+			Math.max(square - sim.meanPotentialWoundsLost ** 2, 1e-4) / 20000,
+		);
+		expect(
+			Math.abs(full.totals.potentialWoundsLost - sim.meanPotentialWoundsLost),
+		).toBeLessThanOrEqual(4.5 * se);
 	});
 });

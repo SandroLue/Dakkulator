@@ -274,7 +274,7 @@ function ApplyField({ id, field, value, onChange }) {
 					onChange(trimmed === "" || trimmed === "0" ? 0 : trimmed);
 				}}
 				aria-invalid={invalid}
-				title={invalid ? "A number or dice, like 2 or D3" : undefined}
+				title={invalid ? "1 to 100, or up to 10 D3 or D6, like 2D6" : undefined}
 				className={`control-centered h-9 w-full ${invalid ? "border-danger" : ""}`}
 			/>
 		);

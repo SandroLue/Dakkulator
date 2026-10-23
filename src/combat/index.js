@@ -144,12 +144,17 @@ export function resolveUnitVsUnit(
 		groups,
 	);
 
+	// The breakdown's view: every attack, overkill included (see `potentialRows`).
+	const potential = options.potential
+		? potentialRows(profiles, fullStreams, groups)
+		: null;
+
 	// `attacks` counts only dice rolled while the unit still stood; `declaredAttacks`
 	// is the weapon's full attack count, split between groups like its dice.
 	const shownShares = allocation.diceShare.map((shares) =>
 		shares.map((share, index) => (index > 0 && share < 1e-4 ? 0 : share)),
 	);
-	for (const [index, row] of fullStreams.entries()) {
+	for (const [index, row] of potential ? [] : fullStreams.entries()) {
 		for (const [weapon, full] of row.entries()) {
 			const share = shownShares[weapon][index];
 			if (index > 0 && share === 0) continue;
@@ -173,7 +178,13 @@ export function resolveUnitVsUnit(
 			totals.mortalWounds += w.mortalWounds;
 		}
 	}
+	for (const w of potential?.weapons ?? []) {
+		weapons.push(w);
+		for (const key of Object.keys(totals)) totals[key] += w[key] ?? 0;
+	}
 	totals.woundsLost = allocation.woundsLost;
+	// Everything the attacks could do: more than the unit has when it overkills.
+	totals.potentialWoundsLost = potential?.woundsLost ?? allocation.woundsLost;
 	totals.modelsSlain = allocation.modelsSlain;
 	totals.pointsKilled = allocation.pointsKilled;
 	const pDestroyed = allocation.pDestroyed;
@@ -187,7 +198,7 @@ export function resolveUnitVsUnit(
 		),
 		woundsLost: woundsLostAlone(
 			profile,
-			part.groups,
+			potential ? withExtraModels(part.groups, potential.extra) : part.groups,
 			targetModelCount,
 			part.ctx,
 		),
@@ -378,6 +389,77 @@ export const EMPTY_SIMULATION = {
 	clearedBy: [],
 	medianRounds: null,
 };
+
+/** The unit with `extra` more models of its last type. */
+function withExtraModels(groups, extra) {
+	const last = groups.length - 1;
+	return groups.map((group, index) =>
+		index === last ? { ...group, count: group.count + extra } : group,
+	);
+}
+
+/**
+ * One row per weapon with every attack it makes, as if the unit had as many
+ * models of its last type as it takes: the attacks that would land after the
+ * unit is destroyed still roll against that model type. Hits, wounds, damage
+ * and wounds lost then show the weapon in full, overkill included.
+ */
+function potentialRows(profiles, fullStreams, groups) {
+	const last = fullStreams.length - 1;
+	const weaponStreams = profiles.map((_, weapon) =>
+		fullStreams.map((row) => row[weapon]),
+	);
+	// Enough extra models that the unit outlasts the attack; doubled until it does.
+	const lastDamage = fullStreams[last].reduce((sum, s) => sum + s.rawDamage, 0);
+	const maxDamage = Math.max(
+		1,
+		...fullStreams[last].map((s) => s.damagePmf.length - 1),
+	);
+	let extra =
+		Math.ceil((3 * lastDamage + 10 * maxDamage) / groups[last].wounds) + 1;
+	let allocation = allocateAttacks(
+		weaponStreams,
+		withExtraModels(groups, extra),
+	);
+	for (let tries = 0; allocation.pDestroyed > 1e-9 && tries < 5; tries++) {
+		extra *= 2;
+		allocation = allocateAttacks(weaponStreams, withExtraModels(groups, extra));
+	}
+
+	const weapons = profiles.map((_, weapon) => {
+		const shares = allocation.diceShare[weapon];
+		const parts = weaponStreams[weapon].map((streams, g) =>
+			scaleStreams(streams, shares[g]),
+		);
+		// The rolls (and so the to-wound and save numbers) of the group most dice met.
+		const main = shares.indexOf(Math.max(...shares));
+		const row = { ...parts[main], groupIndex: main };
+		for (const key of POTENTIAL_SUMMED) {
+			row[key] = parts.reduce((sum, part) => sum + (part[key] ?? 0), 0);
+		}
+		row.declaredAttacks = row.attacks;
+		row.woundsLost = allocation.weaponWoundsLost[weapon];
+		// The model groups this weapon's attacks reach, for the breakdown.
+		row.targetGroups = shares
+			.map((share, g) => (share >= 1e-4 ? g : null))
+			.filter((g) => g !== null);
+		return row;
+	});
+	return { weapons, woundsLost: allocation.woundsLost, extra };
+}
+
+const POTENTIAL_SUMMED = [
+	"attacks",
+	"hits",
+	"critHits",
+	"sustainedHits",
+	"autoWounds",
+	"wounds",
+	"critWounds",
+	"mortalWounds",
+	"failedSaves",
+	"rawDamage",
+];
 
 /** The minimal input `simulate` needs, so it can be posted to a Web Worker cheaply. */
 export function pairingStreamGroups(pairing) {

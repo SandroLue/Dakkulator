@@ -190,22 +190,18 @@ function sumWeapons(weapons) {
 // `[label, accessor, hint]`; the hint is the header's tooltip.
 const COLUMNS = [
 	["Weapon", weaponLabel],
-	[
-		"Attacks",
-		(w) => format(w.declaredAttacks ?? w.attacks),
-		"Every attack the weapon makes, as on its datasheet.",
-	],
-	[
-		"Hits",
-		(w) => format(w.hits),
-		"Counts only attacks resolved while the target is still alive. Attacks that would land after the unit is destroyed are left out, so a weapon that always hits, like [TORRENT], can show fewer hits than attacks.",
-	],
+	["Attacks", (w) => format(w.declaredAttacks ?? w.attacks)],
+	["Hits", (w) => format(w.hits)],
 	["Wounds", (w) => format(w.wounds)],
 	["Mortal", (w) => format(w.mortalWounds)],
 	["Failed saves", (w) => format(w.failedSaves)],
 	["Damage", (w) => format(w.rawDamage)],
 	// After the one-model damage cap, excess damage and Feel No Pain.
-	["Wounds lost", (w) => format(w.woundsLost)],
+	[
+		"Wounds lost",
+		(w) => format(w.woundsLost),
+		"Damage minus Feel No Pain saves and overkill",
+	],
 ];
 
 function WeaponRow({ weapon, groups, multiGroup, muted = false }) {
@@ -226,12 +222,18 @@ function WeaponRow({ weapon, groups, multiGroup, muted = false }) {
 			)}
 			{multiGroup && (
 				<td className="border border-line px-3 py-2 text-xs text-muted">
-					{describeGroup(groups[weapon.groupIndex ?? 0])}
+					{/* Every group the weapon's attacks reach, in allocation order. */}
+					{(weapon.targetGroups ?? [weapon.groupIndex ?? 0])
+						.map((index) => describeGroup(groups[index]))
+						.join(" → ")}
 				</td>
 			)}
 		</tr>
 	);
 }
+
+// The "average" label's distance above the plot when it sits a row above "destroyed".
+const AVERAGE_LABEL_OFFSET = 19;
 
 /** The round-one distribution, overkill included, with a bar for every total. */
 export function woundsChartData(simulation, unitWounds) {
@@ -275,6 +277,7 @@ function summarise(pairing) {
 	const mostly = byWeapon.size > 1 && top ? `, mostly with the ${top[0]}` : "";
 
 	const share = Math.round((t.woundsLost / (wounds || 1)) * 100);
+	const overkill = (t.potentialWoundsLost ?? t.woundsLost) - t.woundsLost;
 	// Wounds and models are separate measures: overkill is lost, and an average
 	// of 1.2 models' worth of wounds can still kill fewer models on average.
 	return [
@@ -284,6 +287,9 @@ function summarise(pairing) {
 		`Clears it in one round ${Math.round(t.pDestroyed * 100)}% of the time.`,
 		Number.isFinite(t.roundsToClear) &&
 			`About ${format(t.roundsToClear, 1)} rounds to clear on average.`,
+		// What the attack could do beyond the unit, as in the breakdown below.
+		overkill >= 0.5 &&
+			`About ${format(overkill, 1)} wounds of overkill per round.`,
 	].filter(Boolean);
 }
 
@@ -323,7 +329,9 @@ export function MatchupDetail({ pairing }) {
 	const withSource = (weapon) =>
 		sources.size > 1 ? { ...weapon, showSource: true } : weapon;
 	const multiGroup =
-		new Set(pairing.weapons.map((w) => w.groupIndex ?? 0)).size > 1;
+		new Set(
+			pairing.weapons.flatMap((w) => w.targetGroups ?? [w.groupIndex ?? 0]),
+		).size > 1;
 	// Every wound total from 0 up, overkill included, so the line for "unit
 	// destroyed" has a place even where no trial ended exactly on it.
 	const unitWounds = groups.reduce((sum, g) => sum + g.count * g.wounds, 0);
@@ -332,6 +340,8 @@ export function MatchupDetail({ pairing }) {
 	const killChance = (chartData ?? [])
 		.filter((d) => d.value >= unitWounds)
 		.reduce((sum, d) => sum + d.probability, 0);
+	// Under 1% the "destroyed" line is just noise, so it is left off.
+	const showDestroyed = killChance >= 0.01;
 	// The average of the bars as drawn, overkill included.
 	const expectedWounds = (chartData ?? []).reduce(
 		(sum, d) => sum + d.value * d.probability,
@@ -347,14 +357,24 @@ export function MatchupDetail({ pairing }) {
 				<div className="flex flex-wrap items-start gap-3">
 					<div className="flex flex-col gap-1">
 						<div className="panel-title">
-							{pairing.attackerName} <span className="text-accent">→</span>{" "}
-							{pairing.defenderName}
-						</div>
-						<div className="text-sm text-muted">
-							{phaseLabel(pairing.phase)} ·{" "}
-							{groups.length > 1
-								? `${groups.length} allocation groups, in the order the defender must use`
-								: describeGroup(groups[0])}
+							{pairing.attackerName}{" "}
+							{/* Drawn, not the "→" glyph: the fallback font sets that on its own
+							    baseline, low against the capitals. As tall as half the cap height
+							    above the baseline, so the shaft sits mid-letter. */}
+							<svg
+								viewBox="0 0 24 12"
+								aria-hidden="true"
+								className="inline-block h-[0.7em] w-[1.4em] align-baseline text-accent"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2.5"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								preserveAspectRatio="xMidYMid meet"
+							>
+								<path d="M2 6h19M16 1.5 21 6l-5 4.5" />
+							</svg>
+							<span className="sr-only">→</span> {pairing.defenderName}
 						</div>
 					</div>
 				</div>
@@ -449,8 +469,10 @@ export function MatchupDetail({ pairing }) {
 										>
 											{accessor({
 												...sumWeapons(pairing.weapons),
-												// The exact total, as in the results matrix.
-												woundsLost: pairing.totals.woundsLost,
+												// Overkill included, like the rows above.
+												woundsLost:
+													pairing.totals.potentialWoundsLost ??
+													pairing.totals.woundsLost,
 											})}
 										</td>
 									))}
@@ -499,7 +521,13 @@ export function MatchupDetail({ pairing }) {
 								<ResponsiveContainer width="100%" height="100%">
 									<BarChart
 										data={chartData}
-										margin={{ top: 24, right: 8, bottom: 16, left: 8 }}
+										margin={{
+											// A second label row when both lines are labelled.
+											top: showDestroyed ? 38 : 24,
+											right: 8,
+											bottom: 16,
+											left: 8,
+										}}
 									>
 										<CartesianGrid {...GRID} vertical={false} />
 										<XAxis
@@ -519,9 +547,8 @@ export function MatchupDetail({ pairing }) {
 														: `${value} wounds lost`
 											}
 										/>
-										{/* Past this line the unit is gone: the rest is overkill.
-										    Under 1% it is just noise, so it is left off. */}
-										{killChance >= 0.01 && (
+										{/* Past this line the unit is gone: the rest is overkill. */}
+										{showDestroyed && (
 											<ReferenceLine
 												x={unitWounds}
 												stroke="var(--color-muted)"
@@ -543,9 +570,27 @@ export function MatchupDetail({ pairing }) {
 											label={{
 												value: `average · ${expectedWounds.toFixed(1)}`,
 												position: "top",
+												// One row above "destroyed", so the two never overlap.
+												offset: showDestroyed ? AVERAGE_LABEL_OFFSET : 5,
 												fill: "var(--color-accent)",
 												fontSize: 11,
 											}}
+											// Raised with its label, the line still reaches up to it.
+											shape={
+												showDestroyed
+													? ({ x1, y1, x2, y2, ...line }) => (
+															<line
+																{...line}
+																x1={x1}
+																x2={x2}
+																y1={
+																	Math.min(y1, y2) - (AVERAGE_LABEL_OFFSET - 5)
+																}
+																y2={Math.max(y1, y2)}
+															/>
+														)
+													: undefined
+											}
 										/>
 										<Bar
 											dataKey="probability"
