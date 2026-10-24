@@ -445,6 +445,17 @@ profiles share a `choice` key; against each target `resolveUnitVsUnit` resolves
 every candidate alone and keeps the one that removes the most wounds. The others
 are reported as `alternatives` / `unusedWeaponProfiles`.
 
+A model with a `[CLOSE-QUARTERS]` (Pistol) weapon and other ranged weapons
+shoots either side, not both (§24.27), unless the unit is a MONSTER or
+VEHICLE: its ranged profiles carry a `volley` tag, and per target the side
+whose weapons together remove more wounds is kept; the other side becomes
+alternatives.
+
+`[ONE SHOT]` weapons fire once per battle: all of them may fire in the same
+round, so the one-round results count them; the Monte-Carlo fires them in the
+first round only, and `roundsToClear` counts their share for the first round
+only.
+
 Defender allocation groups are ordered worst save first, leaders last (§05.03).
 
 ### 4.2 Attached units — [src/combat/attach.js](../src/combat/attach.js)

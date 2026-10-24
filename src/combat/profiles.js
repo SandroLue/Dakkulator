@@ -71,25 +71,19 @@ export function getUnitTotalModels(unit) {
 	return unit?.models?.reduce((sum, m) => sum + (m.count || 0), 0) || 0;
 }
 
-function modelCountForStat(unit, stat) {
-	const models = unit?.models || [];
+/**
+ * How many models each statline describes. Rosters split a squad into one
+ * model entry per wargear choice ("Plague Marine with plasma gun" ×1, "…
+ * with boltgun" ×5): every entry counts towards the statline it fits best.
+ */
+function modelCountsByStat(unit) {
 	const stats = unit?.modelStats || [];
-	if (!models.length) return 1;
-	if (stats.length <= 1) return getUnitTotalModels(unit) || 1;
-
-	let best = models[0];
-	let bestScore = getNameMatchScore(stat?.name, best?.name);
-	for (const model of models.slice(1)) {
-		const score = getNameMatchScore(stat?.name, model?.name);
-		if (
-			score > bestScore ||
-			(score === bestScore && (model.count || 0) > (best.count || 0))
-		) {
-			best = model;
-			bestScore = score;
-		}
+	const counts = new Map(stats.map((stat) => [stat, 0]));
+	for (const model of unit?.models || []) {
+		const stat = findCarrierStats(unit, model);
+		if (stat) counts.set(stat, counts.get(stat) + (model.count || 0));
 	}
-	return best?.count || 1;
+	return counts;
 }
 
 const ABILITY_PATTERNS = [
@@ -231,6 +225,10 @@ function buildProfile(unit, model, stats, weapon, isMelee, attackingModels) {
 	};
 }
 
+/** MONSTER and VEHICLE models may shoot close-quarters and other weapons together. */
+const bigModel = (unit) =>
+	[...(unit.keywords || [])].some((k) => /^(monster|vehicle)$/i.test(k));
+
 function meleeValue(profile) {
 	return (
 		mean(profile.attacksExpr) *
@@ -296,7 +294,27 @@ export function buildAttackerProfiles(unit, phase = "shooting") {
 					alternatives.push(profile);
 				}
 			}
-			profiles.push(...byWeapon.values());
+			const modes = [...byWeapon.values()];
+			// §24.27: a model with a [CLOSE-QUARTERS] (Pistol) weapon shoots either
+			// those or all its other ranged weapons, unless it is a MONSTER or
+			// VEHICLE. Both sides stay here; the one that does more against the
+			// target is picked per target (`resolveUnitVsUnit`).
+			const closeQuarters = modes.filter((p) => p.abilities.closeQuarters);
+			if (
+				closeQuarters.length &&
+				closeQuarters.length < modes.length &&
+				!bigModel(unit)
+			) {
+				const group = `${modelIndex}|volley`;
+				for (const profile of [...modes, ...alternatives]) {
+					if (!profile.choice?.startsWith(`${modelIndex}|ranged|`)) continue;
+					profile.volley = {
+						group,
+						closeQuarters: Boolean(profile.abilities.closeQuarters),
+					};
+				}
+			}
+			profiles.push(...modes);
 			continue;
 		}
 
@@ -364,8 +382,17 @@ export function buildDefenderProfiles(unit) {
 	}
 
 	const groups = [];
+	const counts = modelCountsByStat(unit);
+	const hasModels = (unit.models || []).length > 0;
 	for (const stat of stats) {
-		const count = modelCountForStat(unit, stat);
+		// One statline describes the whole unit; a unit without model entries is one model.
+		const count = !hasModels
+			? 1
+			: stats.length === 1
+				? totalModels
+				: counts.get(stat);
+		// A statline no model uses (e.g. a wargear option not taken) is no group.
+		if (!count) continue;
 		const isLeaderModel = stat.attachedLeader === true;
 		const isCharacter =
 			isLeaderModel ||

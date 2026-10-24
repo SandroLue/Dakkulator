@@ -634,6 +634,8 @@ export function computeAttackStreams(weapon, target, context = {}) {
 			sustainedExpr,
 			lethalHits: lethal,
 			devastatingWounds: devastating,
+			// [ONE SHOT]: once per battle, so only in the first round.
+			oneShot: Boolean(abilities.oneShot),
 			// Phase-specific defender modifiers can give each weapon its own FNP.
 			fnp: group.fnp ?? null,
 			// "Feel No Pain against mortal wounds": [DEVASTATING WOUNDS] damage only.

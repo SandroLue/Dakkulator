@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
 	boltgunSquad,
 	fnpHorde,
+	makeModelStats,
+	makeUnit,
 	makeWeapon,
 	marineTarget,
 	vehicleTarget,
@@ -204,3 +206,71 @@ function structuredCloneUnit(unit) {
 		modelStats: unit.modelStats.map((s) => ({ ...s })),
 	};
 }
+
+describe("buildDefenderProfiles with squads split by wargear", () => {
+	// A roster lists one model entry per wargear choice; with a leader attached
+	// the unit has two statlines, and every entry must count towards its own.
+	const unit = makeUnit({
+		name: "Plague Marines + Plaguecaster",
+		keywords: ["INFANTRY"],
+		modelStats: [
+			makeModelStats({
+				name: "Plague Marine",
+				toughness: 6,
+				wounds: 2,
+				save: "3+",
+			}),
+			{
+				...makeModelStats({
+					name: "Malignant Plaguecaster",
+					toughness: 6,
+					wounds: 4,
+					save: "3+",
+				}),
+				attachedLeader: true,
+			},
+		],
+		models: [
+			{
+				name: "Plague Champion",
+				count: 1,
+				rangedWeapons: [],
+				meleeWeapons: [],
+			},
+			{
+				name: "Plague Marine w/ plasma gun",
+				count: 2,
+				rangedWeapons: [],
+				meleeWeapons: [],
+			},
+			{
+				name: "Plague Marine w/ boltgun",
+				count: 5,
+				rangedWeapons: [],
+				meleeWeapons: [],
+			},
+			{
+				name: "Plague Marine w/ heavy plague weapon",
+				count: 2,
+				rangedWeapons: [],
+				meleeWeapons: [],
+			},
+			{
+				name: "Malignant Plaguecaster",
+				count: 1,
+				rangedWeapons: [],
+				meleeWeapons: [],
+			},
+		],
+	});
+
+	it("counts every model of the squad, not one wargear entry", () => {
+		const groups = buildDefenderProfiles(unit);
+		const byName = Object.fromEntries(groups.map((g) => [g.name, g.count]));
+		expect(byName).toEqual({
+			"Plague Marine": 10,
+			"Malignant Plaguecaster": 1,
+		});
+		expect(getGroupTotalWounds(groups)).toBe(10 * 2 + 4);
+	});
+});

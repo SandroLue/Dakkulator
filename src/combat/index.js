@@ -231,10 +231,18 @@ export function resolveUnitVsUnit(
 		totals: {
 			...totals,
 			pDestroyed,
-			roundsToClear:
-				totals.woundsLost > 0
-					? totalWounds / totals.woundsLost
-					: Number.POSITIVE_INFINITY,
+			roundsToClear: roundsToClear(
+				totalWounds,
+				totals.woundsLost,
+				// [ONE SHOT] weapons fire in the first round only.
+				profiles.reduce(
+					(sum, profile, weapon) =>
+						profile.abilities.oneShot
+							? sum + allocation.weaponWoundsLost[weapon]
+							: sum,
+					0,
+				),
+			),
 			damagePer100Points:
 				attackerPoints > 0 ? (totals.woundsLost / attackerPoints) * 100 : 0,
 			pointsRemoved,
@@ -329,8 +337,18 @@ function woundsLostAlone(profile, groups, targetModelCount, ctx) {
  * from this defender; ties keep the default pick.
  */
 function pickBestProfiles(profiles, groups, targetModelCount, ctx) {
+	if (!groups.length) return profiles;
+	return pickVolleys(
+		pickFiringModes(profiles, groups, targetModelCount, ctx),
+		groups,
+		targetModelCount,
+		ctx,
+	);
+}
+
+function pickFiringModes(profiles, groups, targetModelCount, ctx) {
 	const alternatives = profiles.alternatives || [];
-	if (!alternatives.length || !groups.length) return profiles;
+	if (!alternatives.length) return profiles;
 	const woundsLostBy = (profile) =>
 		woundsLostAlone(profile, groups, targetModelCount, ctx);
 
@@ -358,6 +376,57 @@ function pickBestProfiles(profiles, groups, targetModelCount, ctx) {
 		if (!chosen.includes(p) && !rejected.includes(p)) rejected.push(p);
 	}
 	chosen.alternatives = rejected;
+	return chosen;
+}
+
+/** Wounds several profiles remove from the whole unit when they attack together. */
+function woundsLostTogether(profiles, groups, targetModelCount, ctx) {
+	return allocateAttacks(
+		profiles.map((profile) =>
+			groups.map((group) =>
+				computeAttackStreams(profile, { ...group, targetModelCount }, ctx),
+			),
+		),
+		groups,
+	).woundsLost;
+}
+
+/**
+ * §24.27: a model shoots either its [CLOSE-QUARTERS] weapons or all its other
+ * ranged weapons (see `buildAttackerProfiles`). Of the two, keep the side that
+ * removes more from this target; the other side becomes alternatives. On a tie
+ * the other weapons stay.
+ */
+function pickVolleys(profiles, groups, targetModelCount, ctx) {
+	const sides = new Map();
+	for (const profile of profiles) {
+		if (!profile.volley) continue;
+		const side = sides.get(profile.volley.group) ?? { close: [], other: [] };
+		side[profile.volley.closeQuarters ? "close" : "other"].push(profile);
+		sides.set(profile.volley.group, side);
+	}
+	const dropped = new Set();
+	for (const { close, other } of sides.values()) {
+		if (!close.length || !other.length) continue;
+		const closeWounds = woundsLostTogether(
+			close,
+			groups,
+			targetModelCount,
+			ctx,
+		);
+		const otherWounds = woundsLostTogether(
+			other,
+			groups,
+			targetModelCount,
+			ctx,
+		);
+		for (const p of closeWounds > otherWounds + 1e-9 ? other : close) {
+			dropped.add(p);
+		}
+	}
+	if (!dropped.size) return profiles;
+	const chosen = profiles.filter((p) => !dropped.has(p));
+	chosen.alternatives = [...(profiles.alternatives || []), ...dropped];
 	return chosen;
 }
 
@@ -389,6 +458,21 @@ export const EMPTY_SIMULATION = {
 	clearedBy: [],
 	medianRounds: null,
 };
+
+/**
+ * Rounds the attack needs on average to remove `totalWounds`: the first
+ * round removes `woundsLost`, every later one that minus the share of
+ * [ONE SHOT] weapons, which fire once per battle.
+ */
+function roundsToClear(totalWounds, woundsLost, oneShotWounds) {
+	if (!(woundsLost > 0)) return Number.POSITIVE_INFINITY;
+	if (woundsLost >= totalWounds || !(oneShotWounds > 0)) {
+		return totalWounds / woundsLost;
+	}
+	const later = woundsLost - oneShotWounds;
+	if (!(later > 1e-12)) return Number.POSITIVE_INFINITY;
+	return 1 + (totalWounds - woundsLost) / later;
+}
 
 /** The unit with `extra` more models of its last type. */
 function withExtraModels(groups, extra) {

@@ -2,6 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
 	boltgunSquad,
 	fnpHorde,
+	makeModelStats,
+	makeUnit,
+	makeWeapon,
 	marineTarget,
 	mixedSquad,
 	vehicleTarget,
@@ -446,5 +449,99 @@ describe("the breakdown's potential: every attack, overkill included", () => {
 		expect(
 			Math.abs(full.totals.potentialWoundsLost - sim.meanPotentialWoundsLost),
 		).toBeLessThanOrEqual(4.5 * se);
+	});
+});
+
+describe("close-quarters weapons (§24.27)", () => {
+	// A model with a pistol and a heavier gun shoots one or the other.
+	const pistol = makeWeapon({
+		name: "Pistol",
+		attacks: "6",
+		str: "4",
+		ap: "0",
+		damage: "1",
+		type: "Pistol",
+	});
+	const gun = makeWeapon({
+		name: "Melta",
+		attacks: "1",
+		str: "9",
+		ap: "-4",
+		damage: "D6",
+	});
+	const shooter = (keywords = ["INFANTRY"]) =>
+		makeUnit({
+			name: "Shooters",
+			keywords,
+			modelStats: [makeModelStats({ name: "Shooter", bs: "3+" })],
+			models: [
+				{
+					name: "Shooter",
+					count: 3,
+					rangedWeapons: [pistol, gun],
+					meleeWeapons: [],
+				},
+			],
+		});
+	const names = (result) => result.weapons.map((w) => w.weaponName);
+
+	it("shoots the side that does more and lists the other as an alternative", () => {
+		// Against a tank the melta is worth more than six pistol shots.
+		const vsTank = resolveUnitVsUnit(shooter(), vehicleTarget);
+		expect(names(vsTank)).toEqual(["Melta"]);
+		expect(vsTank.alternatives.map((w) => w.weaponName)).toContain("Pistol");
+		// Against a horde of one-wound models, six shots are worth more.
+		const vsHorde = resolveUnitVsUnit(shooter(), fnpHorde);
+		expect(names(vsHorde)).toEqual(["Pistol"]);
+	});
+
+	it("lets MONSTER and VEHICLE models shoot both", () => {
+		const both = resolveUnitVsUnit(shooter(["VEHICLE"]), vehicleTarget);
+		expect(names(both).sort()).toEqual(["Melta", "Pistol"]);
+	});
+});
+
+describe("[ONE SHOT] weapons fire once per battle", () => {
+	const missile = makeWeapon({
+		name: "Missile",
+		attacks: "1",
+		str: "14",
+		ap: "-3",
+		damage: "D6",
+		type: "One Shot",
+	});
+	const rifle = makeWeapon({
+		name: "Rifle",
+		attacks: "2",
+		str: "5",
+		ap: "-1",
+		damage: "2",
+	});
+	const carrier = (weapons) =>
+		makeUnit({
+			name: "Carrier",
+			modelStats: [makeModelStats({ name: "Carrier", bs: "3+" })],
+			models: [
+				{ name: "Carrier", count: 3, rangedWeapons: weapons, meleeWeapons: [] },
+			],
+		});
+
+	it("count in the first round only when estimating rounds to clear", () => {
+		const both = resolveUnitVsUnit(carrier([missile, rifle]), vehicleTarget);
+		const t = both.totals;
+		// Every round as good as the first would be total / woundsLost.
+		expect(t.roundsToClear).toBeGreaterThan(12 / t.woundsLost);
+		// Missiles alone: once they are gone, nothing is left to finish the job.
+		const alone = resolveUnitVsUnit(carrier([missile]), vehicleTarget);
+		expect(alone.totals.pDestroyed).toBeLessThan(1);
+		expect(alone.totals.roundsToClear).toBe(Number.POSITIVE_INFINITY);
+	});
+
+	it("fire in the first round of the Monte-Carlo, never again", () => {
+		const alone = resolveUnitVsUnit(carrier([missile]), vehicleTarget);
+		const sim = simulatePairing(alone, { trials: 4000, seed: 3, rounds: 5 });
+		expect(sim.clearedBy[0]).toBeGreaterThan(0);
+		// No more kills after the first round.
+		expect(sim.clearedBy.at(-1)).toBe(sim.clearedBy[0]);
 	});
 });

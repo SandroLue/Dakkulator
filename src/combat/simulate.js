@@ -167,6 +167,8 @@ export function simulate(
 			const targeted = alive;
 			for (let profile = 0; profile < profileCount && attacking(); profile++) {
 				const gathered = targets[groupIndex].streams[profile].sampling;
+				// [ONE SHOT] weapons have fired; the battle has no second shot for them.
+				if (round > 0 && gathered.oneShot) continue;
 				const bonus =
 					(gathered.perFive || 0) *
 					(Math.floor(targeted / 5) - (gathered.fullFives || 0));
